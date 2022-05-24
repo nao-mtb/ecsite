@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <h3></h3>
+    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
+    <div class="container"> 
+        <label for="lastname">姓</label>
+        <p>[[${user.lastName}]]</p>
+    </div>
+    <div class="container">
+        <label for="firstName">名</label>
+        <p>[[${user.firstName}]]</p>
+    </div>
+    <div class="container">
+        <label for="mail">Email</label>
+        <p>[[${user.mail}]]</p>
+    </div>
+    <div class="container">
+        <label for="birthDate">生年月日</label>
+        <p>[[${user.birthDate}]]</p>
+    </div>
+    <a th:href="@{/user/{id}/profile/edit/main/(id=${user.id})}">基本情報変更</a><br>
+    <a th:href="@{/user/{id}/profile/edit/password/(id=${user.id})}">パスワード変更</a>
+                
+
+    <li th:each="address:${user.addresses}">
+    <div class="container">
+        <label for="zipCode">郵便番号</label>
+        <p>[[${address.zipCode}]]</p>
+    </div>
+    <div class="container">
+        <label for="prefecture">都道府県</label>
+        <p>[[${address.prefecture}]]</p>
+    </div>
+    <div class="container">
+        <label for="city">市</label>
+        <p>[[${address.city}]]</p>
+    </div>
+    <div class="container">
+        <label for="address1">区町村・番地</label>
+        <p>[[${address.address1}]]</p>
+    </div>
+    <div class="container">
+        <label for="address2">マンション・アパート名</label>
+        <p th:unless="${#strings.isEmpty(address.address2)}">[[${address.address2}]]</p>
+    </div>
+    </li>
+    <a th:href="@{/user/{id}/profile/edit/address/(id=${user.id})}">住所変更</a>
+
+</body>
+</html>

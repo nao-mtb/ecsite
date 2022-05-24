@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <h3>顧客一覧</h3>
+    <a th:href="@{/user/create}">新規登録</a>
+    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th><th>氏名</th><th>Email</th><th>生年月日</th><th>退会</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${users}">
+                <td>[[${user.id}]]</td>
+                <td>[[${user.lastName}]]　[[${user.firstName}]]</td>
+                <td>[[${user.mail}]]</td>
+                <td>[[${user.birthDate}]]</td>
+                <td>[[${user.deleteFlag}]]</td>
+                <td>
+                    <a th:href="@{/user/edit/{id}(id=${user.id})}">編集</a>&nbsp;
+                    <a th:href="@{/user/show/{id}(id=${user.id})}">削除</a>&nbsp;
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

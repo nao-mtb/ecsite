@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <h3>製品一覧</h3>
+    <a th:href="@{/product/create}">新規登録</a>
+    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th><th>製品番号</th><th>製品名</th><th>説明</th><th>単価</th><th>重量</th><th>廃番</th>    
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="product : ${products}">
+                <td>[[${product.id}]]</td>
+                <td>[[${product.code}]]</td>
+                <td>[[${product.name}]]</td>
+                <td>[[${product.info}]]</td>
+                <td>[[${product.unitPrice}]]</td>
+                <td>[[${product.weight}]]</td>
+                <td>[[${product.discontinuedFlag}]]</td>
+                <td>
+                    <a th:href="@{/product/edit/{id}(id=${product.id})}">編集</a>&nbsp;
+                    <a th:href="@{/product/show/{id}(id=${product.id})}">削除</a>&nbsp;
+                </td>
+            </tr>    
+        </tbody>
+    </table>
+</body>
+</html>

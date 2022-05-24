@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+   <h3>データ削除</h3> 
+   <form th:method="delete" th:action="@{/product/delete/{id}(id=${product.id})}" th:object="${product}">
+       <ul>
+           <li>ID: [[*{id}]]</li>
+           <li>製品番号: [[*{code}]]</li>
+           <li>製品名: [[*{name}]]</li>
+           <li>説明: [[*{info}]]</li>
+           <li>単価: [[*{unitPrice}]]</li>
+           <li>重量: [[*{weight}]]</li>
+           <li>廃番: [[*{discontinuedFlag}]]</li>
+       </ul>
+       <input type="submit" value="削除">
+   </form>
+</body>
+</html>

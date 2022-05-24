@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <h3>編集</h3>
+    <form th:method="patch" th:action="@{/product/update/{id}(id=${product.id})}" th:object="${product}">
+        <div class="container">
+            <label for="code">製品番号</label>
+            <input type="hidden" id="oldCode" name="oldCode" th:value="*{oldCode}">
+            <input type="text" id="code" name="code" th:value="*{code}" th:errorclass="bg-warning">
+            <span th:errors="*{code}"></span>
+        </div>
+        <div class="container">
+            <label for="name">製品名</label>
+            <input type="text" id="name" name="name" th:value="*{name}" th:errorclass="bg-warning">
+            <span th:errors="*{name}"></span>
+        </div>
+        <div class="container">
+            <label for="info">説明</label>
+            <input type="text" id="info" name="info" th:value="*{info}" th:errorclass="bg-warning">
+            <span th:errors="*{info}"></span>
+        </div>
+        <div class="container">
+            <label for="unitPrice">単価</label>
+            <input type="text" id="unitPrice" name="unitPrice" th:value="*{unitPrice}" th:errorclass="bg-warning">
+            <span th:errors="*{unitPrice}"></span>
+        </div>
+        <div class="container">
+            <label for="weight">重量</label>
+            <input type="text" id="weight" name="weight" th:value="*{unitPrice}" th:errorclass="bg-warning">
+            <span th:errors="*{weight}"></span>
+        </div>
+        <div class="container">
+            <label for="discontinuedFlag">廃番</label>
+            <select th:field="*{discontinuedFlag}">
+                <option value="0">ー</option>
+                <option value="1">廃番</option>
+            </select>
+        </div>
+        <input type="submit" value="更新">
+    </form>
+</body>
+</html>

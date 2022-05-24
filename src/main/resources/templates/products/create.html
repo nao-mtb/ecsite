@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <h3>製品登録</h3>
+    <form method="POST" th:action="@{/product/save}" th:object="${product}">
+    <ul th:if="${#fields.hasErrors('*')}">
+        <li th:each="err:${#fields.errors('*')}" th:text="${err}"></li>
+    </ul>
+        <div class="container">
+            <label for="code">製品番号</label>
+            <input type="text" th:field="*{code}" th:errorclass="bg-warning">
+            <span th:errors="*{code}"></span>
+        </div>
+        <div class="container">
+            <label for="name">製品名</label>
+            <input type="text" th:field="*{name}" th:errorclass="bg-warning">
+            <span th:errors="*{name}"></span>
+        </div>
+        <div class="container">
+            <label for="info">説明</label>
+            <input type="text" th:field="*{info}" th:errorclass="bg-warning">
+            <span th:errors="*{info}"></span>
+        </div>
+        <div class="container">
+            <label for="unitPrice">単価</label>
+            <input type="text" th:field="*{unitPrice}" th:errorclass="bg-warning">
+            <span th:errors="*{unitPrice}"></span>
+        </div>
+        <div class="container">
+            <label for="weight">重量</label>
+            <input type="text" th:field="*{weight}" th:errorclass="bg-warning">
+            <span th:errors="*{weight}"></span>
+        </div>
+        <input type="submit" value="登録">
+    </form>
+</body>
+</html>

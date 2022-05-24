@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <h3>住所一覧</h3>
+    <a th:href="@{/address/create}">新規登録</a>
+    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>    
+    <table class="table">
+    <thead>
+            <tr>
+                <th>ID</th><th>氏名</th><th>都道府県</th><th>市区町村</th><th>住所1</th><th>住所2</th><th>電話番号</th><th>種別</th><th>発送先デフォルト</th><th>請求先デフォルト</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="address: ${addresses}">
+                <td>[[${address.id}]]</td>
+                <td>[[${address.lastName}]]　[[${address.firstName}]]</td>
+                <td>[[${address.prefecture}]]</td>
+                <td>[[${address.city}]]</td>
+                <td>[[${address.address1}]]</td>
+                <td>[[${address.address2}]]</td>
+                <td>[[${address.tel}]]</td>
+                <td>[[${address.addressType}]]</td>
+
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

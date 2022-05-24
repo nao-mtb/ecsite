@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <h3>テスト</h3>
+    <form th:method="patch" th:action="@{/user/{id}/profile/update/main/(id=${userForm.id})}" th:object="${userForm}">
+        <div class="container">
+            <label for="lastName">姓</label>
+            <input type="text" th:field="*{lastName}" th:errorclass="bg-warning">
+            <span th:errors="*{lastName}"></span>
+        </div>
+        <div class="container">
+            <label for="firstName">名</label>
+            <input type="text" th:field="*{firstName}" th:errorclass="bg-warning">
+        </div>
+        <div class="container">
+            <label for="mail">Email</label>
+            <input type="text" th:field="*{mail}" readonly>
+        </div>
+        <div class="container">
+            <label for="birthDate">生年月日</label>
+            <input type="date" th:field="*{birthDate}" readonly>
+        </div>
+        <input type="submit" value="登録">
+    </form>
+    
+</body>
+</html>
