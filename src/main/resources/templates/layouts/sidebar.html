@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+</head>
+<aside th:fragment="sidebar">
+    <div class="sidebar">
+        <ul>
+            <li><a th:href="@{/user/login}">アカウント</a></li>
+            <li><a th:href="@{/user/login}">購入履歴</a></li>
+            <li><a th:href="@{/user/login}">パスワード変更</a></li>
+        </ul>
+    </div>                
+</aside>
+</html>

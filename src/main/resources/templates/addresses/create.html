@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <h3>新規住所登録</h3>
+    <form th:method="post" th:action="@{/user/address/save/{userId}(userId=${userId})}" th:object="${address}">
+    <ul th:if="${#fields.hasErrors('*')}">
+        <li th:each="err:${#fields.errors('*')}" th:text="${err}"></li>
+    </ul> 
+        <div class="container">
+            <label for="lastName">姓</label>
+            <input type="text" th:field="*{lastName}" th:errorclass="bg-warning">
+            <span th:errors="*{lastName}"></span>
+        </div>
+        <div class="container">
+            <label for="firstName">名</label>
+            <input type="text" th:field="*{firstName}" th:errorclass="bg-warning">
+            <span th:errors="*{firstName}"></span>
+        </div>
+        <div class="container">
+            <input type="hidden" id="user" name="user" th:value="${userId}" >
+        </div>
+
+        <div class="container">
+            <label for="zipCode">郵便番号</label>
+            <input type="text" th:field="*{zipCode}" th:errorclass="bg-warning">
+            <span th:errors="*{zipCode}"></span>
+        </div>
+        <div class="container">
+            <label for="prefecture">都道府県</label>
+            <input type="text" th:field="*{prefecture}" th:errorclass="bg-warning">
+            <span th:errors="*{prefecture}"></span>
+        </div>
+        <div class="container">
+            <label for="city">市区町村</label>
+            <input type="text" th:field="*{city}" th:errorclass="bg-warning">
+            <span th:errors="*{city}"></span>
+        </div>
+        <div class="container">
+            <label for="address1">住所1</label>
+            <input type="text" th:field="*{address1}" th:errorclass="bg-warning">
+            <span th:errors="*{address1}"></span>
+        </div>
+        <div class="container">
+            <label for="address2">住所2</label>
+            <input type="text" th:field="*{address2}" th:errorclass="bg-warning">
+            <span th:errors="*{address2}"></span>
+        </div>
+        <div class="container">
+            <label for="tel">電話番号</label>
+            <input type="text" th:field="*{tel}" th:errorclass="bg-warning">
+            <span th:errors="*{tel}"></span>
+        </div>
+        <div class="container">
+            <label for="addressType">発送/請求先</label>
+            <select th:field="*{addressType}">
+                <option value="0">発送兼請求書先</option>
+                <option value="1">発送先</option>
+                <option value="2">請求書先</option>
+            </select>
+        </div>
+        <div class="container">
+            <label for="shippingDefault">発送先デフォルト指定</label>
+            <select th:field="*{shippingDefault}">
+                <option value="1">する</option>
+                <option value="0">しない</option>    
+            </select>
+        </div>
+        <div class="container">
+            <label for="billingDefault">請求先デフォルト指定</label>
+            <select th:field="*{billingDefault}"> 
+                <option value="1">する</option>
+                <option value="0">しない</option>
+            </select>
+        </div>
+
+        <input type="submit" value="登録">    
+    </form>
+</body>
+</html>    

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+</head>
+<header th:fragment="header">
+    <div class="header">
+        <div class="logo">
+            <a th:href="@{/home}">ABCD</a>
+        </div>
+        <div class="menu">
+            <ul>
+                <li><a th:href="@{/user/login}">ログイン</a></li>
+                <li><a th:href="@{/home}">商品ページ</a></li>
+                <li><a th:href="@{/home}">カート</a>
+                    <ul class="cart-details">
+                        <li>商品数</li>
+                        <li>金額</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>                
+</header>
+</html>

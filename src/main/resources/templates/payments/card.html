@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <h3>カード情報</h3>
+    <form th:method="patch" th:action="@{/payment/{userId}/order/(userId=${userId})}">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>カード番号</th><th>有効期限</th>                
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="creditCard : ${creditCards}">
+                    <td hidden>[[${creditCard.id}]]</td>
+                    <td>
+                        <label>
+                            <input type="radio" th:checked="${creditCard.cardDefault==1}" name="creditCard" th:value="${creditCard.id}">
+                            [[${'  ************ ' + #strings.substring(creditCard.cardNumber, creditCard.cardNumber.length() -4)}]]
+                        </label>
+                    </td>                                
+                    <td>[[${creditCard.expMonth}]]月 / [[${creditCard.expYear}]]年</td>
+                </tr>
+            </tbody>
+            <div>
+                <input type="submit" value="カード決済する">
+            </div>
+        </table>    
+        </label>
+    </form>
+</body>
+</html>

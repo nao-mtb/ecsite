@@ -29,6 +29,7 @@ public class InvoiceDetail {
     @JoinColumn(name="product_id", nullable = false)
     private Product product;
     
+
     @NotNull
     @ManyToOne
     @JoinColumn(name="invoice_id", nullable = false)
@@ -141,6 +142,7 @@ public class InvoiceDetail {
     public void setVersion(int version) {
         this.version = version;
     }
+
     
     
 }

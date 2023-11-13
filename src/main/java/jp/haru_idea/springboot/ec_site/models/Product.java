@@ -53,6 +53,10 @@ public class Product {
 
     @NotNull
     @Positive
+    private Integer sellingPrice;
+
+    @NotNull
+    @Positive
     private Double weight;
 
     //TODO 編集画面で作成
@@ -74,6 +78,12 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     private Collection<OrderDetail> orderDetails;
+
+    @OneToMany(mappedBy = "product")
+    private Collection<InvoiceDetail> invoiceDetails;
+
+    @OneToMany(mappedBy = "product")
+    private Collection<CartDetail> cartDetails;
 
     @Transient
     private String oldCode;
@@ -119,6 +129,14 @@ public class Product {
         this.unitPrice = unitPrice;
     }
 
+    public Integer getSellingPrice() {
+        return sellingPrice;
+    }
+
+    public void setSellingPrice(Integer sellingPrice) {
+        this.sellingPrice = sellingPrice;
+    }
+    
     public Double getWeight() {
         return weight;
     }
@@ -126,7 +144,6 @@ public class Product {
     public void setWeight(Double weight) {
         this.weight = weight;
     }
-
     
     public Integer getDiscontinuedFlag() {
         return discontinuedFlag;
@@ -167,6 +184,22 @@ public class Product {
     public void setOrderDetails(Collection<OrderDetail> orderDetails) {
         this.orderDetails = orderDetails;
     }
+    
+    public Collection<InvoiceDetail> getInvoiceDetails() {
+        return invoiceDetails;
+    }
+
+    public void setInvoiceDetails(Collection<InvoiceDetail> invoiceDetails) {
+        this.invoiceDetails = invoiceDetails;
+    }
+
+    public Collection<CartDetail> getCartDetails() {
+        return cartDetails;
+    }
+
+    public void setCartDetails(Collection<CartDetail> cartDetails) {
+        this.cartDetails = cartDetails;
+    }
 
     public String getOldCode() {
         return oldCode;
@@ -175,6 +208,7 @@ public class Product {
     public void setOldCode(String oldCode) {
         this.oldCode = oldCode;
     }
+
     
         
 }

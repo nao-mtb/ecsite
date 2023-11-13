@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,8 +28,8 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotNull
     @ManyToOne
+    // // @ManyToOne(optional = true, fetch = FetchType.EAGER)
     @JoinColumn(name="user_id", nullable = false)
     private User user;
 
@@ -212,6 +213,15 @@ public class Address {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    @Override
+    public String toString() {
+        return "Address [address1=" + address1 + ", address2=" + address2 + ", addressType=" + addressType
+                + ", billingDefault=" + billingDefault + ", city=" + city + ", createdAt=" + createdAt + ", firstName="
+                + firstName + ", id=" + id + ", lastName=" + lastName + ", prefecture=" + prefecture
+                + ", shippingDefault=" + shippingDefault + ", tel=" + tel + ", updatedAt=" + updatedAt + ", user="
+                + ", version=" + version + ", zipCode=" + zipCode + "]";
     }
 
     

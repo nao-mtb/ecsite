@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <h3>商品一覧</h3>
+    <table class="table">
+        <thead>
+        <tr>
+            <th></th><th>商品名</th><th>価格</th><th>重量</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr th:each="product : ${products}">
+                <td hidden>[[${product.id}]]</td>
+                <td>
+                </td>
+                <td>
+                    <a th:href="@{/product/shopping/detail/{id}(id=${product.id})}">[[${product.name}]]</a>&nbsp;
+                </td>
+                <td>[[${product.sellingPrice}]]</td>
+                <td>[[${product.weight}]]</td>
+                <td>
+                    <a th:href="@{/cart/shoppingcart/{productId}(id=${product.id})}">カートに入れる</a>&nbsp;
+                </td>
+            </tr> 
+        </tbody>
+    </table>
+</body>
+</html>

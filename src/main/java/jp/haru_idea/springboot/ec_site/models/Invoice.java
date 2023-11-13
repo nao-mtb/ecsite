@@ -48,6 +48,11 @@ public class Invoice {
     @OneToMany(mappedBy = "invoice")
     private Collection<InvoiceDetail> invoiceDetails;
 
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name="creditcard_id", nullable = false)
+    private CreditCard creditCard;
+
     public int getId() {
         return id;
     }
@@ -94,6 +99,14 @@ public class Invoice {
 
     public void setInvoiceDetails(Collection<InvoiceDetail> invoiceDetails) {
         this.invoiceDetails = invoiceDetails;
+    }
+
+    public CreditCard getCreditCard() {
+        return creditCard;
+    }
+
+    public void setCreditCard(CreditCard creditCard) {
+        this.creditCard = creditCard;
     }
 
         

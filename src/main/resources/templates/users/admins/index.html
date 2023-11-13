@@ -8,6 +8,7 @@
     <title>Document</title>
 </head>
 <body>
+    <div th:replace="layouts/header::header"></div>
     <h3>顧客一覧</h3>
     <a th:href="@{/user/create}">新規登録</a>
     <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
@@ -25,7 +26,7 @@
                 <td>[[${user.birthDate}]]</td>
                 <td>[[${user.deleteFlag}]]</td>
                 <td>
-                    <a th:href="@{/user/edit/{id}(id=${user.id})}">編集</a>&nbsp;
+                    <a sec:authorize="hasAnyRole('SECURITY','OWNER')" th:href="@{/user/edit/{id}(id=${user.id})}">編集</a>&nbsp;
                     <a th:href="@{/user/show/{id}(id=${user.id})}">削除</a>&nbsp;
                 </td>
             </tr>

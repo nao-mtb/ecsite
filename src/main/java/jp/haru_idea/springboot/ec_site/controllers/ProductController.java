@@ -95,6 +95,19 @@ public class ProductController {
         return "redirect:/product/index";
     }
 
-    
-        
+    @GetMapping("/shopping/index")
+    public String shoppingIndex(Model model){
+        Collection<Product> products = productService.getByDiscontinuedFlag(0); 
+        model.addAttribute("products", products);
+        return "products/shoppings/index";
+    }
+
+    //TO DO html詳細画面の作成
+    @GetMapping("/shopping/detail/{id}")
+    public String detail(@PathVariable int id, Model model){
+        Product product = productService.getById(id);
+        model.addAttribute("product", product);
+        return "products/shoppings/detail";
+    }
+
 }

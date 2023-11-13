@@ -32,4 +32,8 @@ public class ProductService {
     public Product getByCode(String code){
         return productRepository.findByCode(code);
     }
+
+    public Collection<Product> getByDiscontinuedFlag(int flag){
+        return productRepository.findByDiscontinuedFlag(flag);
+    } 
 }

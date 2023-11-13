@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <h3>新規クレジットカード情報登録</h3>
+    <form th:method="post" th:action="@{/user/credit-card/save/{userId}(userId=${userId})}" th:object="${creditCard}">
+        <ul th:if="${#fields.hasErrors('*')}">
+            <li th:each="err:${#fields.errors('*')}" th:text="${err}"></li>
+        </ul> 
+        
+        <div class="container">
+            <input type="hidden" id="user" name="user" th:value="${userId}">
+        </div>
+        <div class="container">
+            <label for="company">カード会社</label>
+            <input type="text" th:field="*{company}" th:errorclass="bg-warning">
+            <span th:errors="*{company}"></span>
+        </div>
+        <div class="container">
+            <label for="cardNumber">カード番号</label>
+            <input type="text" th:field="*{cardNumber}" th:errorclass="bg-warning">
+            <span th:errors="*{cardNumber}"></span>
+        </div>
+        <div class="container">
+            <label for="name">カード名義</label>
+            <input type="text" th:field="*{name}" th:errorclass="bg-warning">
+            <span th:errors="*{name}"></span>
+        </div>
+        <div class="container">
+            <label for="expMonth">有効期限_月</label>
+            <input type="number" th:field="*{expMonth}" min="1" max="12" th:errorclass="bg-warning">
+            <span th:errors="*{expMonth}"></span>
+        </div>
+        <div class="container">
+            <label for="expYear">有効期限_年</label>
+            <input type="number" th:field="*{expYear}" th:min="${year}" th:errorclass="bg-warning">
+            <span th:errors="*{expYear}"></span>
+        </div>
+        <div class="container">
+            <label for="cardDefault">デフォルト設定</label>
+            <select th:field="*{cardDefault}"> 
+                <option value="1">する</option>
+                <option value="0">しない</option>
+            </select>
+        </div>
+        <input type="submit" value="登録">    
+    </form>
+</body>
+</html>

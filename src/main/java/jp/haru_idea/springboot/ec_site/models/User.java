@@ -2,6 +2,7 @@ package jp.haru_idea.springboot.ec_site.models;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -10,42 +11,35 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Proxy;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.ToString;
 
 @Entity
+@Proxy(lazy=false)
 @Table(name="users")
-public class User {
+public class User{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotBlank
-    @Pattern(regexp = "[^!\"#$%&'()*+,-./:;<=>?@[]^_`{]+$]{0,64}", message = "64文字以内の文字（記号を除く）を入力してください")
     @Column(length = 64, nullable = false )
     private String lastName;
 
-    @NotBlank
-    @Pattern(regexp = "[^!\"#$%&'()*+,-./:;<=>?@[]^_`{]+$]{0,64}", message = "64文字以内の文字（記号を除く）を入力してください")
     @Column(length = 64, nullable = false )
     private String firstName;
 
-    //TODO ユニークキー登録時のエラーメッセージを作成
-    //TODO メール正規表現整理
-    @NotBlank
-    @Size(max=128)
-    @Pattern(regexp = "^[a-zA-Z0-9.!#$%&'*+/=?^\\/_`{|}~-]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*$", message = "メール形式で入力してください")
     @Column(unique = true, length = 128, nullable = false )
     private String mail;
 
@@ -55,16 +49,9 @@ public class User {
     // @Column(nullable = false )
     //private Date birthDate;
 
-    //TODO バリデーションエラー時のリセット対処
-    //"[yyyy-MM-dd][yyyy/MM/dd]"から[yyyy/MM/dd]を削除
-    @NotNull
-    @DateTimeFormat(pattern = "[yyyy-MM-dd]")
     @Column(nullable = false )
     private LocalDate birthDate;
     
-
-    @NotBlank
-    @Pattern(regexp = "^[0-9a-zA-Z]{6,20}$", message="6文字以上20文字以下の英数字を入力してください")
     @Column(nullable = false )
     private String password;
 
@@ -84,6 +71,7 @@ public class User {
     @Column(nullable = false, columnDefinition = "int default 0")
     private int version;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<Address> addresses;
 
@@ -95,6 +83,9 @@ public class User {
     
     @OneToMany(mappedBy = "user")
     private Collection<RoleUser> roleUsers;
+
+    @OneToMany(mappedBy = "user")
+    private Collection<Cart> carts;
 
     public int getId() {
         return id;
@@ -128,7 +119,6 @@ public class User {
         this.mail = mail;
     }
 
-    
     public LocalDate getBirthDate() {
         return birthDate;
     }
@@ -193,6 +183,7 @@ public class User {
         this.creditCards = creditCards;
     }
 
+
     public Collection<Order> getOrders() {
         return orders;
     }
@@ -208,6 +199,23 @@ public class User {
     public void setRoleUsers(Collection<RoleUser> roleUsers) {
         this.roleUsers = roleUsers;
     }
+
+    public Collection<Cart> getCart() {
+        return carts;
+    }
+
+    public void setCart(Collection<Cart> carts) {
+        this.carts = carts;
+    }
+    
+    @Override
+    public String toString() {
+        return "User [id=" + id + ", lastName=" + lastName + ", firstName=" + firstName + ", mail=" + mail
+                + ", birthDate=" + birthDate + ", password=" + password + ", deleteFlag=" + deleteFlag + ", createdAt="
+                + createdAt + ", updatedAt=" + updatedAt + ", version=" + version + ", addresses=" + ", creditCards=" + "]";
+    }
+
+    
 
     
 }

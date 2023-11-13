@@ -1,7 +1,6 @@
 package jp.haru_idea.springboot.ec_site.models;
 
 public class AddressForm {
-    private int id;
 
     private String lastName;
 
@@ -24,14 +23,6 @@ public class AddressForm {
     private int shippingDefault;
 
     private int billingDefault;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getLastName() {
         return lastName;
@@ -120,6 +111,5 @@ public class AddressForm {
     public void setBillingDefault(int billingDefault) {
         this.billingDefault = billingDefault;
     }
-    
-    
+        
 }

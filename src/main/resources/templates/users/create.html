@@ -9,7 +9,7 @@
 </head>
 <body>
     <h3>新規ユーザ登録</h3>
-    <form method="POST" th:action="@{/user/save}" th:object="${user}" novalidate>
+    <form method="POST" th:action="@{/user/save}" th:object="${userCreateForm}" novalidate>
     <ul th:if="${#fields.hasErrors('*')}">
         <li th:each="err:${#fields.errors('*')}" th:text="${err}"></li>
     </ul>  
@@ -38,9 +38,6 @@
             <input type="password" th:field="*{password}" th:errorclass="bg-warning">
             <span th:errors="*{password}"></span>
         </div>
-        <div>
-            <input type="hidden" th:field="*{deleteFlag}" value="0">
-        </div>      
         <input type="submit" value="登録">
     </form>
 </body>

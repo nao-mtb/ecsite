@@ -26,8 +26,9 @@
         <label for="birthDate">生年月日</label>
         <p>[[${user.birthDate}]]</p>
     </div>
-    <a th:href="@{/user/{id}/profile/edit/main/(id=${user.id})}">基本情報変更</a><br>
-    <a th:href="@{/user/{id}/profile/edit/password/(id=${user.id})}">パスワード変更</a>
+    <a th:href="@{/user/{id}/profile/main/edit/(id=${user.id})}">基本情報変更</a><br>
+    <a th:href="@{/user/{id}/profile/password/edit/(id=${user.id})}">パスワード変更</a><br>
+    <a th:href="@{/user/{id}/profile/delete/(id=${user.id})}">退会</a>
                 
 
     <li th:each="address:${user.addresses}">
@@ -51,8 +52,32 @@
         <label for="address2">マンション・アパート名</label>
         <p th:unless="${#strings.isEmpty(address.address2)}">[[${address.address2}]]</p>
     </div>
+    <a th:href="@{/user/{id}/profile/address/edit/{addressId}/(id=${user.id},addressId=${address.id})}">住所変更</a>
     </li>
-    <a th:href="@{/user/{id}/profile/edit/address/(id=${user.id})}">住所変更</a>
 
+    <li th:each="creditCard:${user.creditCards}">
+        <div class="container">
+            <label for="company">カード会社</label>
+            <p>[[${creditCard.company}]]</p>
+        </div>
+        <div class="container">
+            <label for="cardNumber">カード番号</label>
+            <p>[[${creditCard.cardNumber}]]</p>
+        </div>
+        <div class="container">
+            <label for="name">カード名義</label>
+            <p>[[${creditCard.name}]]</p>
+        </div>
+        <div class="container">
+            <label for="expMonth">有効期限_月</label>
+            <p>[[${creditCard.expMonth}]]</p>
+        </div>
+        <div class="container">
+            <label for="expYear">有効期限_年</label>
+            <p>[[${creditCard.expYear}]]</p>
+        </div>
+        <a th:href="@{/user/{id}/profile/credit-card/edit/{creditCardId}/(id=${user.id},creditCardId=${creditCard.id})}">カード情報変更</a>
+    </li>
+    
 </body>
 </html>
