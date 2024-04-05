@@ -9,7 +9,7 @@
 </head>
 <body>
     <h3>会員登録を削除します</h3>
-    <form th:method="patch" th:action="@{/user/{id}/profile/user-deleted/(id=${id})}" th:object="${userCommonForm}">
+    <form th:method="patch" th:action="@{/user/profile/user-deleted/}" th:object="${userCommonForm}">
         <input type="hidden" th:field="*{lastName}">
         <input type="hidden" th:field="*{firstName}">
         <input type="hidden" th:field="*{mail}">

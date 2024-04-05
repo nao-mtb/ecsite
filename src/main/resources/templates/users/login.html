@@ -20,7 +20,7 @@
             <input type="text" id="usr" name="usr"><br>
             <label for="passwd">パスワード</label>
             <input type="password" id="passwd" name="passwd"><br>
-            <a class="reset-button" th:href="@{/user/create}">パスワードを忘れた方はこちら</a>
+            <a class="reset-button" th:href="@{/user/profile/password/reset/request}">パスワードを忘れた方はこちら</a>
         </div>
         <input class="button" type="submit" value="ログイン"><br>
         <a class="button" th:href="@{/user/create}">新規会員登録</a>

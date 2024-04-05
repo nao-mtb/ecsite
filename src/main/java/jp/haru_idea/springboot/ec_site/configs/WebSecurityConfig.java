@@ -30,8 +30,6 @@ import org.springframework.security.web.access.intercept.RequestMatcherDelegatin
 import org.springframework.security.web.authentication.RequestMatcherDelegatingAuthenticationManagerResolver;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-//import jp.haru_idea.springboot.ec_site.services.MyUserServiceBK;
-
 import jp.haru_idea.springboot.ec_site.services.LoginUserService;
 
 @Configuration
@@ -41,7 +39,6 @@ import jp.haru_idea.springboot.ec_site.services.LoginUserService;
 public class WebSecurityConfig {
     // @Autowired
     // private LoginUserService loginUserService;
-
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
@@ -51,7 +48,9 @@ public class WebSecurityConfig {
         .authorizeHttpRequests()
         // .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll  //"/CSS/**"などはログインなしでもアクセス可能         
         .antMatchers("/login").permitAll()     //指定URLに全てのユーザがアクセス可能
-        .antMatchers("/cart/**").permitAll()     //指定URLに全てのユーザがアクセス可能
+        .antMatchers("/user/create").permitAll()
+        .antMatchers("/user/profile/password/reset/**").permitAll()
+        .antMatchers("/cart/**").permitAll()
         // .antMatchers("/user/index").hasRole("ADMIN")  //指定URLに指定したロールユーザのみアクセス可能
         .mvcMatchers("/product/**").permitAll()
         // .anyRequest().access(manager)
@@ -65,7 +64,8 @@ public class WebSecurityConfig {
         .usernameParameter("usr")              //ユーザ名のパラメーター名を設定
         .passwordParameter("passwd")           //パスワードのパラメーター名を設定
         // .loginProcessingUrl("/login")          //ユーザ名・パスワードの送信先URL
-        // .successForwardUrl("/product/shopping/index")      //ログイン成功後のリダイレクト先URL
+        .defaultSuccessUrl("/product/index")      //ログイン成功後のリダイレクト先URL
+        // .successForwardUrl("/product/index")      //ログイン成功後のリダイレクト先URL
         // .failureForwardUrl("/login")           //ログイン失敗時のリダイレクト先URL
         .and()
         //ログアウトに関する設定
@@ -104,7 +104,6 @@ public class WebSecurityConfig {
     // }
 
 
-
     // @Bean
     // public InMemoryUserDetailsManager inMemoryUserDetailsManager(){
     //     UserDetails userDetails = User.builder()
@@ -127,9 +126,9 @@ public class WebSecurityConfig {
     //     return new CustomUserDetailsService();
     // }
 
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
+    // @Bean
+    // public PasswordEncoder passwordEncoder(){
+    //     return new BCryptPasswordEncoder();
+    // }
 
 }

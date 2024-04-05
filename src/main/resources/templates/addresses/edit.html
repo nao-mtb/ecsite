@@ -14,7 +14,7 @@
     <h3>住所</h3>
     <form
       th:method="patch"
-      th:action="@{/user/{userId}/profile/address/update/{addressId}/(userId=${userId},addressId=${addressId})}"
+      th:action="@{/user/profile/address/update/{addressId}/(addressId=${addressId})}"
       th:object="${addressForm}"
     >
       <div class="container">

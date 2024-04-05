@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <h3>パスワード変更</h3>
+    <div th:if="${error}" class="alert alert-danger">[[${error}]]</div>
+    <form th:method="patch" th:action="@{/user/profile/password/update}" th:object="${userChangePasswordForm}">
+        <div class="container">
+            <label for="password">現在のパスワード</label>
+            <input type="password" th:field="*{oldPassword}" th:errorclass="bg-warning">
+            <span th:errors="*{oldPassword}"></span>
+        </div>
+        <div class="container">
+            <label for="password">新しいパスワード</label>
+            <input type="password" th:field="*{password}" th:errorclass="bg-warning">
+            <span th:errors="*{password}"></span>
+        </div>
+        <div class="container">
+            <label for="password">新しいパスワード（再入力）</label>
+            <input type="password" th:field="*{confirmPassword}">
+            <span th:errors="*{confirmPassword}"></span>
+        </div>
+        <input type="submit" value="登録">
+    </form>    
+</body>
+</html>
