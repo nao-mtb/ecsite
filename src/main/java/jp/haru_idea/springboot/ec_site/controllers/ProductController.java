@@ -36,18 +36,16 @@ public class ProductController {
     }
 
     @GetMapping("/create")
-    public String create(@ModelAttribute Product product, Model model){
-        // model.addAttribute("product", new Product());
-        // model.addAttribute("discontinuedFlags", DiscontinuedFlag.values());
+    public String create(@ModelAttribute Product product){
         return "products/create";        
     }
 
     @PostMapping("/save")
     public String save(
-        @Validated    
-        @ModelAttribute Product product,
-        BindingResult result, Model model,
-        RedirectAttributes attrs){
+            @Validated    
+            @ModelAttribute Product product,
+            BindingResult result,
+            RedirectAttributes attrs){
         if(result.hasErrors()){
             return "products/create";
         }
@@ -56,41 +54,40 @@ public class ProductController {
         return "redirect:/product/index";
     }
 
-    @GetMapping("/edit/{id}")
-    public String edit(@PathVariable int id, Model model){
-        Product product = productService.getById(id);
+    @GetMapping("/edit/{productId}")
+    public String edit(@PathVariable int productId, Model model){
+        Product product = productService.getById(productId);
         product.setOldCode(product.getName());
         model.addAttribute("product", product);
         return "products/edit";
     }
 
-    @PatchMapping("/update/{id}")
+    @PatchMapping("/update/{productId}")
     public String update(
-        @PathVariable int id, 
-        @Validated
-        @ModelAttribute Product product,
-        BindingResult result, Model model,
-        RedirectAttributes attrs
-        ){
-            if(result.hasErrors()){
-                return "products/edit";
-            }
-            product.setId(id);
-            productService.save(product);
-            attrs.addFlashAttribute("success", "データの更新に成功しました");
-            return "redirect:/product/index";
+            @PathVariable int productId, 
+            @Validated
+            @ModelAttribute Product product,
+            BindingResult result,
+            RedirectAttributes attrs){
+        if(result.hasErrors()){
+            return "products/edit";
+        }
+        product.setId(productId);
+        productService.save(product);
+        attrs.addFlashAttribute("success", "データの更新に成功しました");
+        return "redirect:/product/index";
     }
     
-    @GetMapping("/show/{id}")
-    public String show(@PathVariable int id, Model model){
-        Product product = productService.getById(id);
+    @GetMapping("/show/{productId}")
+    public String show(@PathVariable int productId, Model model){
+        Product product = productService.getById(productId);
         model.addAttribute("product", product);
         return "products/show";
     }
 
-    @DeleteMapping("/delete/{id}")
-    public String delete(@PathVariable int id, Model model, RedirectAttributes attrs){
-        productService.delete(id);
+    @DeleteMapping("/delete/{productId}")
+    public String delete(@PathVariable int productId, RedirectAttributes attrs){
+        productService.delete(productId);
         attrs.addFlashAttribute("success","データの削除に成功しました");
         return "redirect:/product/index";
     }
@@ -103,9 +100,9 @@ public class ProductController {
     }
 
     //TO DO html詳細画面の作成
-    @GetMapping("/shopping/detail/{id}")
-    public String detail(@PathVariable int id, Model model){
-        Product product = productService.getById(id);
+    @GetMapping("/shopping/detail/{productId}")
+    public String detail(@PathVariable int productId, Model model){
+        Product product = productService.getById(productId);
         model.addAttribute("product", product);
         return "products/shoppings/detail";
     }

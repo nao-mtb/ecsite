@@ -83,7 +83,7 @@ public class UserController {
     public String updateMain(
             @Validated
             @ModelAttribute UserCommonForm userCommonForm,
-            BindingResult result, Model model,
+            BindingResult result,
             RedirectAttributes attrs){
         int userId = securitySession.getUserId();
         if (userId == 0){
@@ -105,16 +105,14 @@ public class UserController {
         if (userId == 0){
             return "users/login";
         }
-        // UserChangePasswordForm userChangePasswordForm = new UserChangePasswordForm();
         model.addAttribute("user", userService.getById(userId));
-        model.addAttribute("userChangePasswordForm", userChangePasswordForm);
         return "users/passwords/change";
     }
     @PatchMapping("/profile/password/update")
     public String updatePassword(
             @Validated
             @ModelAttribute UserChangePasswordForm userChangePasswordForm,
-            BindingResult result, Model model,
+            BindingResult result,
             RedirectAttributes attrs){
         int userId = securitySession.getUserId();
         if (userId == 0){
@@ -141,15 +139,14 @@ public class UserController {
 
     //パスワード再発行
     @GetMapping("/profile/password/reset/request")
-    public String requestResetPassword(@ModelAttribute UserMailForm userMailForm, Model model){
-        model.addAttribute("userMailForm", userMailForm);
+    public String requestResetPassword(@ModelAttribute UserMailForm userMailForm){
         return "users/passwords/reset-request";
     }
     @PatchMapping("/profile/password/reset/accept")
     public String generateTokenForResetPassword(
             @Validated 
             @ModelAttribute UserMailForm userMailForm,
-            BindingResult result, Model model,
+            BindingResult result,
             RedirectAttributes attrs){
         User user = userService.getByMail(userMailForm.getMail());
         if (user != null){
@@ -170,10 +167,10 @@ public class UserController {
 
     @GetMapping("/profile/password/reset")
     public String inputResetPassword(
-                            @RequestParam("token") String token,
-                            RedirectAttributes attrs,
-                            @ModelAttribute UserResetPasswordForm userResetPasswordForm,
-                            Model model){
+            @RequestParam("token") String token,
+            RedirectAttributes attrs,
+            @ModelAttribute UserResetPasswordForm userResetPasswordForm,
+            Model model){
         PasswordResetToken passwordResetToken = passwordResetTokenService.getByToken(token);
         if (passwordResetToken == null){
             attrs.addFlashAttribute("error", "URLが無効です。再度パスワードリセット登録をしてください。");
@@ -186,7 +183,7 @@ public class UserController {
             return "redirect:/user/profile/password/reset/request";
         }
         model.addAttribute("mail", passwordResetToken.getUser().getMail());
-        model.addAttribute("userResetPasswordForm", userResetPasswordForm);
+        model.addAttribute("tokenId", passwordResetToken.getId());
         return "users/passwords/reset-token";
     }
     
@@ -194,6 +191,7 @@ public class UserController {
     public String executeResetPassword(
             @Validated
             @RequestParam("mail") String mail,
+            @RequestParam("tokenId") int tokenId,            
             @ModelAttribute("userResetPasswordForm") UserResetPasswordForm userResetPasswordForm,
             BindingResult result, Model model,
             RedirectAttributes attrs){
@@ -203,7 +201,6 @@ public class UserController {
 
         //セッションに残した場合
         // String mail = (String)model.getAttribute("mail");
-        // System.out.println("-------**" + mail);
 
         User user = userService.getByMail(mail);
         if(!userResetPasswordForm.isNewPassword()){
@@ -212,6 +209,7 @@ public class UserController {
         }
         user.setPassword(encodePassword(userResetPasswordForm.getPassword()));
         userService.save(user);
+        passwordResetTokenService.deleteById(tokenId);
         attrs.addFlashAttribute("success","データの更新に成功しました");    
         return "redirect:/user/profile";
     }
@@ -232,7 +230,7 @@ public class UserController {
     @PatchMapping("/profile/user-deleted/")
     public String delete(
             @ModelAttribute UserCommonForm userCommonForm,
-            Model model, RedirectAttributes attrs){
+            RedirectAttributes attrs){
         int userId = securitySession.getUserId();
         if (userId == 0){
             return "users/login";
@@ -260,16 +258,16 @@ public class UserController {
     //新規作成
     //TODO ロール紐づけ
     @GetMapping("/create")
-    public String create(@ModelAttribute UserCreateForm userCreateForm, Model model){
+    public String create(@ModelAttribute UserCreateForm userCreateForm){
         return "users/create";
     }
 
     @PostMapping("/save")
     public String save(
-        @Validated 
-        @ModelAttribute UserCreateForm userCreateForm,
-        BindingResult result, Model model,
-        RedirectAttributes attrs){
+            @Validated 
+            @ModelAttribute UserCreateForm userCreateForm,
+            BindingResult result,
+            RedirectAttributes attrs){
         if(result.hasErrors()){
             return "users/create";
         }
@@ -295,12 +293,11 @@ public class UserController {
     @PreAuthorize("hasAnyRole('SECURITY', 'OWNER')")
     @PatchMapping("/admin/update/{id}")
     public String update(
-        @PathVariable int id,
-        @Validated
-        @ModelAttribute UserAdminForm userAdminForm,
-        BindingResult result, Model model,
-        RedirectAttributes attrs
-    ){
+            @PathVariable int id,
+            @Validated
+            @ModelAttribute UserAdminForm userAdminForm,
+            BindingResult result,
+            RedirectAttributes attrs){
         User user = adminFormToUser(userAdminForm, userService.getById(id));
         userService.save(user);
         attrs.addFlashAttribute("success", "データの更新に成功しました");
@@ -318,7 +315,7 @@ public class UserController {
     }
 
     @DeleteMapping("/admin/delete/{id}")
-    public String delete(@PathVariable int id, Model model, RedirectAttributes attrs){
+    public String delete(@PathVariable int id, RedirectAttributes attrs){
         userService.delete(id);
         attrs.addFlashAttribute("success","データの削除に成功しました");
         return "redirect:/user/index";
