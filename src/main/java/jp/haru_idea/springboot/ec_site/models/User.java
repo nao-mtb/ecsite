@@ -88,6 +88,9 @@ public class User{
     @OneToMany(mappedBy = "user")
     private Collection<Cart> carts;
 
+    @OneToOne(mappedBy = "user")
+    private PasswordResetToken passwordResetToken;
+
     public int getId() {
         return id;
     }
@@ -218,6 +221,14 @@ public class User{
         this.carts = carts;
     }
 
+    public PasswordResetToken getPasswordResetToken() {
+        return passwordResetToken;
+    }
+
+    public void setPasswordResetToken(PasswordResetToken passwordResetToken) {
+        this.passwordResetToken = passwordResetToken;
+    }
+    
     @Override
     public String toString() {
         return "User [id=" + id + ", lastName=" + lastName + ", firstName=" + firstName + ", mail=" + mail

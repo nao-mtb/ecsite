@@ -94,7 +94,7 @@ public class PaymentController {
     @Transactional
     @PatchMapping("/order")
     public String moveCartToOrderAndInvoice(
-            Model model, HttpServletRequest request,
+            HttpServletRequest request,
             HttpServletResponse response, RedirectAttributes attrs,
             User user){
         int userId = securitySession.getUserId();
@@ -163,8 +163,5 @@ public class PaymentController {
     //     orderDetailsService.createOrder();
     //     return ResponseEntity.ok("");
     // }
-            
-
-        
 
 }
