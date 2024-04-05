@@ -1,15 +1,19 @@
 package jp.haru_idea.springboot.ec_site.controllers;
 
 import java.util.Collection;
+import java.util.UUID;
 import java.util.function.BiPredicate;
 
 import javax.annotation.security.RolesAllowed;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -22,88 +26,229 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jp.haru_idea.springboot.ec_site.models.PasswordResetToken;
 import jp.haru_idea.springboot.ec_site.models.User;
 import jp.haru_idea.springboot.ec_site.models.UserAdminForm;
 import jp.haru_idea.springboot.ec_site.models.UserCreateForm;
+import jp.haru_idea.springboot.ec_site.models.UserMailForm;
+import jp.haru_idea.springboot.ec_site.models.UserResetPasswordForm;
+import jp.haru_idea.springboot.ec_site.models.UserChangePasswordForm;
+import jp.haru_idea.springboot.ec_site.securities.SecuritySession;
 import jp.haru_idea.springboot.ec_site.models.UserCommonForm;
+import jp.haru_idea.springboot.ec_site.services.PasswordResetTokenService;
 import jp.haru_idea.springboot.ec_site.services.UserService;
-import net.bytebuddy.jar.asm.commons.ModuleRemapper;
 
 @RequestMapping("/user")
+// @SessionAttributes("mail")
 @Controller
 public class UserController {
 
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private SecuritySession securitySession;
 
-    @GetMapping("/{id}/profile")
-    public String profile(Model model, @PathVariable int id){
-        model.addAttribute("user", userService.getById(id));
+    @Autowired
+    private PasswordResetTokenService passwordResetTokenService;
+
+    @GetMapping("/profile")
+    public String profile(Model model){
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
+        }
+        model.addAttribute("user", userService.getById(userId));
         return "users/profile";
     }
 
     //編集
-    @GetMapping("/{id}/profile/main/edit")
-    public String editMain(Model model, @PathVariable int id){
-        User user = userService.getById(id);
+    @GetMapping("/profile/main/edit")
+    public String editMain(Model model){
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
+        }
+        User user = userService.getById(userId);
         UserCommonForm userCommonForm = convertUserCommonForm(user);
         model.addAttribute("userCommonForm", userCommonForm);
         return "users/edit";
     }
-    
-    @PatchMapping("/{id}/profile/main/update")
+
+    @PatchMapping("/profile/main/update")
     public String updateMain(
-            @PathVariable int id,
             @Validated
             @ModelAttribute UserCommonForm userCommonForm,
             BindingResult result, Model model,
             RedirectAttributes attrs){
-        if(result.hasErrors()){
-            return "users/" + id + "/profile/main/edit";
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
         }
-        User user = commonFormToUser(userCommonForm, userService.getById(id));
+        if(result.hasErrors()){
+            return "users/profile/main/edit";
+        }
+        User user = commonFormToUser(userCommonForm, userService.getById(userId));
         userService.save(user);
         attrs.addFlashAttribute("success","データの更新に成功しました");    
-        return "redirect:/user/" + id + "/profile";
+        return "redirect:/user/profile";
     }
 
     //パスワード変更
-    @GetMapping("/{id}/profile/password/edit")
-    public String editPassword(Model model, @PathVariable int id){
-        model.addAttribute("user", userService.getById(id));
-        
-        return "users/passwords/edit";
+    @GetMapping("/profile/password/change")
+    public String changePassword(@ModelAttribute UserChangePasswordForm userChangePasswordForm, Model model){
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
+        }
+        // UserChangePasswordForm userChangePasswordForm = new UserChangePasswordForm();
+        model.addAttribute("user", userService.getById(userId));
+        model.addAttribute("userChangePasswordForm", userChangePasswordForm);
+        return "users/passwords/change";
+    }
+    @PatchMapping("/profile/password/update")
+    public String updatePassword(
+            @Validated
+            @ModelAttribute UserChangePasswordForm userChangePasswordForm,
+            BindingResult result, Model model,
+            RedirectAttributes attrs){
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
+        }
+        if(result.hasErrors()){
+            return "users/passwords/change";
+        }
+        User user = userService.getById(userId);
+
+        if(!(passwordEncoder().matches(userChangePasswordForm.getOldPassword(), user.getPassword()))){
+            attrs.addFlashAttribute("error", "現在のパスワードが一致しません");
+            return "redirect:/user/profile/password/change";
+        }
+        if(!userChangePasswordForm.isNewPassword()){
+            attrs.addFlashAttribute("error", "新しパスワードと確認用の入力が一致しません");
+            return "redirect:/user/profile/password/change";
+        }
+        user.setPassword(encodePassword(userChangePasswordForm.getPassword()));
+        userService.save(user);
+        attrs.addFlashAttribute("success","データの更新に成功しました");    
+        return "redirect:/user/profile";
+    }
+
+    //パスワード再発行
+    @GetMapping("/profile/password/reset/request")
+    public String requestResetPassword(@ModelAttribute UserMailForm userMailForm, Model model){
+        model.addAttribute("userMailForm", userMailForm);
+        return "users/passwords/reset-request";
+    }
+    @PatchMapping("/profile/password/reset/accept")
+    public String generateTokenForResetPassword(
+            @Validated 
+            @ModelAttribute UserMailForm userMailForm,
+            BindingResult result, Model model,
+            RedirectAttributes attrs){
+        User user = userService.getByMail(userMailForm.getMail());
+        if (user != null){
+            String token = UUID.randomUUID().toString();
+            userService.sendPasswordResetMail(user.getMail(),token);
+
+            PasswordResetToken passwordResetToken = passwordResetTokenService.getByUserId(user.getId());
+            if (passwordResetToken == null){
+                passwordResetToken = new PasswordResetToken();
+                passwordResetToken.setUser(user);
+            }
+            passwordResetToken.setToken(token);
+            passwordResetTokenService.save(passwordResetToken);
+        }
+        attrs.addFlashAttribute("success", "メールを送信しました");
+        return "redirect:/user/profile/password/reset/request";
+    }
+
+    @GetMapping("/profile/password/reset")
+    public String inputResetPassword(
+                            @RequestParam("token") String token,
+                            RedirectAttributes attrs,
+                            @ModelAttribute UserResetPasswordForm userResetPasswordForm,
+                            Model model){
+        PasswordResetToken passwordResetToken = passwordResetTokenService.getByToken(token);
+        if (passwordResetToken == null){
+            attrs.addFlashAttribute("error", "URLが無効です。再度パスワードリセット登録をしてください。");
+            return "redirect:/user/profile/password/reset/request";
+        }
+
+        boolean expirationResult = passwordResetTokenService.checkExpiration(passwordResetToken.getUpdatedAt());
+        if (!expirationResult){
+            attrs.addFlashAttribute("error", "URLの有効期限が切れています。再度パスワードリセット登録をしてください。");
+            return "redirect:/user/profile/password/reset/request";
+        }
+        model.addAttribute("mail", passwordResetToken.getUser().getMail());
+        model.addAttribute("userResetPasswordForm", userResetPasswordForm);
+        return "users/passwords/reset-token";
+    }
+    
+    @PatchMapping("/profile/password/reset/update")
+    public String executeResetPassword(
+            @Validated
+            @RequestParam("mail") String mail,
+            @ModelAttribute("userResetPasswordForm") UserResetPasswordForm userResetPasswordForm,
+            BindingResult result, Model model,
+            RedirectAttributes attrs){
+        if(result.hasErrors()){
+            return "users/passwords/change";
+        }
+
+        //セッションに残した場合
+        // String mail = (String)model.getAttribute("mail");
+        // System.out.println("-------**" + mail);
+
+        User user = userService.getByMail(mail);
+        if(!userResetPasswordForm.isNewPassword()){
+            attrs.addFlashAttribute("error", "新しパスワードと確認用の入力が一致しません");
+            return "redirect:/user/profile/password/reset/{}";
+        }
+        user.setPassword(encodePassword(userResetPasswordForm.getPassword()));
+        userService.save(user);
+        attrs.addFlashAttribute("success","データの更新に成功しました");    
+        return "redirect:/user/profile";
     }
 
     //退会処理
-    @GetMapping("/{id}/profile/delete/")
-    public String confirmDelete(Model model, @PathVariable int id){
-        UserCommonForm userCommonForm = convertUserCommonForm(userService.getById(id));
+    @GetMapping("/profile/delete/")
+    public String confirmDelete(Model model){
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
+        }
+        UserCommonForm userCommonForm = convertUserCommonForm(userService.getById(userId));
         model.addAttribute("userCommonForm", userCommonForm);
         return "users/delete";
     }
 
     //TODO return先をホーム画面に変更
-    @PatchMapping("/{id}/profile/user-deleted/")
+    @PatchMapping("/profile/user-deleted/")
     public String delete(
-            @PathVariable int id, 
             @ModelAttribute UserCommonForm userCommonForm,
             Model model, RedirectAttributes attrs){
-        User user = commonFormToUser(userCommonForm, userService.getById(id));
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
+        }
+        User user = commonFormToUser(userCommonForm, userService.getById(userId));
         user.setDeleteFlag(1);
         userService.save(user);
         attrs.addFlashAttribute("success","ご利用ありがとうございました");    
-        return "redirect:/user/" + id + "/profile";
+        return "redirect:/user/profile";
     }
 
 
     //TODO 一覧表示もformを使用
     // @RolesAllowed("ADMIN")
     @PreAuthorize("hasRole('ADMIN')")
-    // // @PreAuthorize("hasAnyRole('ADMIN','SECURITY', 'OWNER')")
+    // @PreAuthorize("hasAnyRole('ADMIN','SECURITY', 'OWNER')")
     @GetMapping("/index")
     public String index(Model model){
         //Collection<User> users = userService.getAll();
@@ -131,7 +276,8 @@ public class UserController {
         User user = createFormToUser(userCreateForm, new User());
         userService.save(user);
         attrs.addFlashAttribute("success","データの登録に成功しました");
-        return "redirect:/user/address/create/" + user.getId();
+        return "redirect:/user/address/create/";
+        // return "redirect:/user/address/create/" + user.getId();
     }
 
     //管理者用編集
@@ -144,7 +290,7 @@ public class UserController {
         model.addAttribute("userAdminForm", userAdminForm);
         return "users/admins/edit";
     }
-
+    
     //管理者用更新
     @PreAuthorize("hasAnyRole('SECURITY', 'OWNER')")
     @PatchMapping("/admin/update/{id}")
@@ -161,6 +307,7 @@ public class UserController {
         return "redirect:/user/index";
     }
 
+    //管理者用削除
     @GetMapping("/admin/show/{id}")
     public String show(@PathVariable int id, Model model){
         User user = userService.getById(id);
@@ -219,8 +366,25 @@ public class UserController {
     private User createFormToUser(UserCommonForm userCommonForm, User insertUser){
         User user = commonFormToUser(userCommonForm, insertUser);
         UserCreateForm userCreateForm = (UserCreateForm) userCommonForm;
-        user.setPassword(userCreateForm.getPassword());
+        // user.setPassword(userCreateForm.getPassword());
+        user.setPassword(encodePassword(userCreateForm.getPassword()));
         return user;
     }
 
+    // private User changePasswordFormToUser(UserCommonForm userCommonForm, User insertUser){
+    //     User user = commonFormToUser(userCommonForm, insertUser);
+    //     UserChangePasswordForm userChangePasswordForm = (UserChangePasswordForm) userCommonForm;
+    //     user.setPassword(encodePassword(userChangePasswordForm.getPassword()));
+    //     return user;
+    // }
+    
+    
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+    
+    public String encodePassword(String password){
+        return passwordEncoder().encode(password);
+    }
 }

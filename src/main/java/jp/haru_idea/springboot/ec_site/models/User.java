@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -208,14 +209,20 @@ public class User{
         this.carts = carts;
     }
     
+
+    public Collection<Cart> getCarts() {
+        return carts;
+    }
+
+    public void setCarts(Collection<Cart> carts) {
+        this.carts = carts;
+    }
+
     @Override
     public String toString() {
         return "User [id=" + id + ", lastName=" + lastName + ", firstName=" + firstName + ", mail=" + mail
                 + ", birthDate=" + birthDate + ", password=" + password + ", deleteFlag=" + deleteFlag + ", createdAt="
                 + createdAt + ", updatedAt=" + updatedAt + ", version=" + version + ", addresses=" + ", creditCards=" + "]";
     }
-
-    
-
     
 }

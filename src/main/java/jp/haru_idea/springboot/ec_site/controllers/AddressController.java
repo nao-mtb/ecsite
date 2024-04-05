@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jp.haru_idea.springboot.ec_site.models.Address;
 import jp.haru_idea.springboot.ec_site.models.AddressForm;
+import jp.haru_idea.springboot.ec_site.securities.SecuritySession;
 import jp.haru_idea.springboot.ec_site.services.AddressService;
 
 
@@ -28,8 +29,15 @@ public class AddressController {
     @Autowired
     private AddressService addressService;
 
-    @GetMapping("/{userId}/profile/address/edit/{addressId}")
-    public String editAddress(@PathVariable int userId, @PathVariable int addressId, Model model){
+    @Autowired
+    private SecuritySession securitySession;
+
+    @GetMapping("/profile/address/edit/{addressId}")
+    public String editAddress(@PathVariable int addressId, Model model){
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
+        }
         Address address = addressService.getById(addressId);
         AddressForm addressForm = convertAddressForm(address);
         model.addAttribute("userId", userId);
@@ -38,28 +46,30 @@ public class AddressController {
     }
 
     @Transactional
-    @PatchMapping("/{userId}/profile/address/update/{addressId}")
+    @PatchMapping("/profile/address/update/{addressId}")
     public String updateAddress(
-            @PathVariable int userId,
             @PathVariable int addressId,
             @Validated
             @ModelAttribute AddressForm addressForm,
             BindingResult result, Model model,
             RedirectAttributes attrs){
-        if(result.hasErrors()){
-            return "/users/" + userId + "/profile/address/edit/" + addressId;
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
         }
-
+        if(result.hasErrors()){
+            return "/users/profile/address/edit/" + addressId;
+        }
         Address address = formToAddress(addressForm, addressId);
-        if(address.getShippingDefault()==1){
+        if(address.getShippingDefault() == 1){
             addressService.resetShippingDefault(userId);
         }
-        if(address.getBillingDefault()==1){
+        if(address.getBillingDefault() == 1){
             addressService.resetBillingDefault(userId);            
         }
         addressService.save(address);
         attrs.addFlashAttribute("success","データの更新に成功しました");        
-        return "redirect:/user/" + userId + "/profile/";
+        return "redirect:/user/profile";
     }
 
 
@@ -70,30 +80,34 @@ public class AddressController {
         return "addresses/index";
     }
 
-    @GetMapping("/address/create/{userId}")
-    public String create(
-        @PathVariable int userId,
-        @ModelAttribute Address address, 
-        Model model){
+    @GetMapping("/address/create")
+    public String create(@ModelAttribute Address address, Model model){
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
+        }
         model.addAttribute("userId", userId);
         return "addresses/create";
     }
     
-    @PostMapping("/address/save/{userId}")
+    @PostMapping("/address/save")
     public String save(
-        @PathVariable int userId,
-        @Validated
-        @ModelAttribute Address address,
-        BindingResult result, Model model,
-        RedirectAttributes attrs){
+            @Validated
+            @ModelAttribute Address address,
+            BindingResult result, Model model,
+            RedirectAttributes attrs){
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
+        }
         if(result.hasErrors()){
             return "addresses/create";    
         }
         addressService.save(address);
         attrs.addFlashAttribute("success","住所登録に成功しました");
         //TODO クレジットカード登録先に変更
-        //return "redirect:/user/address/create/" + userId;
-        return "redirect:/user/credit-card/create/" + userId; 
+        //return "redirect:/user/address/create/";
+        return "redirect:/user/credit-card/create/"; 
     }
 
     //TODO バリデーションチェック機能追加

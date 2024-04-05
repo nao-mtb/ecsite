@@ -26,8 +26,8 @@
                 <td>[[${user.birthDate}]]</td>
                 <td>[[${user.deleteFlag}]]</td>
                 <td>
-                    <a sec:authorize="hasAnyRole('SECURITY','OWNER')" th:href="@{/user/edit/{id}(id=${user.id})}">編集</a>&nbsp;
-                    <a th:href="@{/user/show/{id}(id=${user.id})}">削除</a>&nbsp;
+                    <a sec:authorize="hasAnyRole('SECURITY','OWNER')" th:href="@{/user/admin/edit/{id}(id=${user.id})}">編集</a>&nbsp;
+                    <a th:href="@{/user/admin/show/{id}(id=${user.id})}">削除</a>&nbsp;
                 </td>
             </tr>
         </tbody>

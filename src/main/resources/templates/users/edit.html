@@ -9,7 +9,7 @@
 </head>
 <body>
     <h3>テスト</h3>
-    <form th:method="patch" th:action="@{/user/{id}/profile/main/update/(id=${id})}" th:object="${userCommonForm}">
+    <form th:method="patch" th:action="@{/user/profile/main/update}" th:object="${userCommonForm}">
         <div class="container">
             <label for="lastName">姓</label>
             <input type="text" th:field="*{lastName}" th:errorclass="bg-warning">

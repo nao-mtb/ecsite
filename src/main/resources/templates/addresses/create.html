@@ -9,7 +9,7 @@
 </head>
 <body>
     <h3>新規住所登録</h3>
-    <form th:method="post" th:action="@{/user/address/save/{userId}(userId=${userId})}" th:object="${address}">
+    <form th:method="post" th:action="@{/user/address/save}" th:object="${address}">
     <ul th:if="${#fields.hasErrors('*')}">
         <li th:each="err:${#fields.errors('*')}" th:text="${err}"></li>
     </ul> 

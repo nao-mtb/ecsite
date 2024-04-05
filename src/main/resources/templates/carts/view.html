@@ -9,7 +9,9 @@
 </head>
 <body>
     <h3>カート</h3>
-    <table class="table" >
+    <form th:method="GET" th:action="@{/payment/card}">
+    <!--<div th:if="${success}" class="alert alert-success">[[${success}]]</div>!-->
+    <table class="table">
         <thead>
             <tr>
                 <th></th><th>商品名</th><th>個数</th><th>合計金額</th>                
@@ -30,7 +32,6 @@
             </tr>
         </tfoot>
     </table>
-    <a th:href="@{/payment/{userId}/card/(userId=${cart.user.id})}">購入</a>
     <input type="submit" value="購入">
 </body>
 </html>

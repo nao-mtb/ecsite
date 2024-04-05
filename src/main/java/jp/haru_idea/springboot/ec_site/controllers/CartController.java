@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jp.haru_idea.springboot.ec_site.models.Cart;
+import jp.haru_idea.springboot.ec_site.securities.SecuritySession;
 import jp.haru_idea.springboot.ec_site.services.CartService;
 
 @RequestMapping("/cart")
@@ -19,9 +20,15 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
-    @GetMapping("/view/{userId}")
-    public String viewUser(@PathVariable int userId, Model model){
-        // Collection<Cart> carts = cartService.getAllById(userId);
+    @Autowired
+    private SecuritySession securitySession;
+
+    @GetMapping("/view")
+    public String viewUser(Model model){
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
+        }
         model.addAttribute("cart", cartService.getByUserId(userId));
         return "carts/view";
     }
@@ -29,7 +36,7 @@ public class CartController {
     @GetMapping("/view-test/{id}")
     public String view(@PathVariable int id, Model model){
         model.addAttribute("cart", cartService.getById(id));
-        return "carts/view";
+        return "carts/view-test";
     }
 
 
