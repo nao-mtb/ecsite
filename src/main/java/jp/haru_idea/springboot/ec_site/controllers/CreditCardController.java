@@ -44,11 +44,11 @@ public class CreditCardController {
 
     @PostMapping("/credit-card/save")
     public String save(
-        @Validated
-        @ModelAttribute CreditCard creditCard,
-        BindingResult result, Model model,
-        RedirectAttributes attrs){
-        int userId = securitySession.getUserId();
+            @Validated
+            @ModelAttribute CreditCard creditCard,
+            BindingResult result,
+            RedirectAttributes attrs){
+            int userId = securitySession.getUserId();
         if (userId == 0){
             return "users/login";
         }
@@ -82,7 +82,7 @@ public class CreditCardController {
             @PathVariable int creditCardId,
             @Validated
             @ModelAttribute CreditCardForm creditCardForm,
-            BindingResult result, Model model,
+            BindingResult result,
             RedirectAttributes attrs){
         int userId = securitySession.getUserId();
         if (userId == 0){

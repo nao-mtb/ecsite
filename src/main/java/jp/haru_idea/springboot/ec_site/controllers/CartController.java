@@ -48,7 +48,7 @@ public class CartController {
     // }
 
     @PatchMapping("/shopping-cart/{productId}")
-    public String addCart(@PathVariable int productId, Model model, RedirectAttributes attrs){
+    public String addCart(@PathVariable int productId, RedirectAttributes attrs){
         Cart cart = cartService.getById(productId);
         cartService.save(cart);
         attrs.addFlashAttribute("success", "商品を追加しました");
@@ -69,7 +69,5 @@ public class CartController {
     //     }
     //     return "redirect:/product/shopping/index";
     // }
-
-
     
 }

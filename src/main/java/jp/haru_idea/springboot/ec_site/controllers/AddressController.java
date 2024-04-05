@@ -51,7 +51,7 @@ public class AddressController {
             @PathVariable int addressId,
             @Validated
             @ModelAttribute AddressForm addressForm,
-            BindingResult result, Model model,
+            BindingResult result,
             RedirectAttributes attrs){
         int userId = securitySession.getUserId();
         if (userId == 0){
@@ -94,7 +94,7 @@ public class AddressController {
     public String save(
             @Validated
             @ModelAttribute Address address,
-            BindingResult result, Model model,
+            BindingResult result,
             RedirectAttributes attrs){
         int userId = securitySession.getUserId();
         if (userId == 0){

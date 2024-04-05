@@ -16,6 +16,10 @@
             <input type="hidden" name="mail" th:value="${mail}">
         </div>
         <div class="container">
+            <label for="tokenId"></label>
+            <input type="hidden" name="tokenId" th:value="${tokenId}">
+        </div>
+        <div class="container">
             <label for="password">新しいパスワード</label>
             <input type="password" th:field="${userResetPasswordForm.password}" th:errorclass="bg-warning">
             <span th:errors="${userResetPasswordForm.password}"></span>

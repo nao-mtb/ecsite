@@ -29,6 +29,10 @@ public class PasswordResetTokenService {
         return passwordResetTokenRepository.findByToken(token);
     }
 
+    public void deleteById(int id){
+        passwordResetTokenRepository.deleteById(id);
+    }   
+
     public boolean checkExpiration(Date updateAt){
         SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
