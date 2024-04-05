@@ -4,7 +4,6 @@ import java.util.Calendar;
 
 import javax.transaction.Transactional;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jp.haru_idea.springboot.ec_site.models.CreditCard;
 import jp.haru_idea.springboot.ec_site.models.CreditCardForm;
+import jp.haru_idea.springboot.ec_site.securities.SecuritySession;
 import jp.haru_idea.springboot.ec_site.services.CreditCardService;
 
 @RequestMapping("/user")
@@ -28,37 +28,48 @@ public class CreditCardController {
     @Autowired
     private CreditCardService creditCardService;
 
-    @GetMapping("/credit-card/create/{userId}")
-    public String create(
-        @PathVariable int userId,
-        @ModelAttribute CreditCard creditCard,
-        Model model){
+    @Autowired
+    private SecuritySession securitySession;
+
+    @GetMapping("/credit-card/create")
+    public String create(@ModelAttribute CreditCard creditCard, Model model){
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
+        }
         model.addAttribute("userId", userId);
         model.addAttribute("year", currentYear());
         return "creditCards/create";
-        }
+    }
 
-    @PostMapping("/credit-card/save/{userId}")
+    @PostMapping("/credit-card/save")
     public String save(
-        @PathVariable int userId,
         @Validated
         @ModelAttribute CreditCard creditCard,
         BindingResult result, Model model,
         RedirectAttributes attrs){
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
+        }
         if(result.hasErrors()){
             return "creditCards/create";
         }
         creditCardService.save(creditCard);
         //TODO addFlashAttribute 表示させる 
         attrs.addFlashAttribute("success","カード情報の登録に成功しました");
-        return "redirect:/user/credit-card/create/" + userId;
+        return "redirect:/user/credit-card/create";
     }
     
 
-    @GetMapping("/{userId}/profile/credit-card/edit/{creditCardId}")
-    public String editCreditCard(@PathVariable int userId, @PathVariable int creditCardId, Model model){
+    @GetMapping("/profile/credit-card/edit/{creditCardId}")
+    public String editCreditCard(@PathVariable int creditCardId, Model model){
         CreditCard creditCard = creditCardService.getById(creditCardId);
         CreditCardForm creditCardForm = convertCreditCardForm(creditCard);
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
+        }
         model.addAttribute("userId", userId);
         model.addAttribute("creditCardForm", creditCardForm);
         model.addAttribute("year", currentYear());        
@@ -66,21 +77,24 @@ public class CreditCardController {
     }
     
     @Transactional
-    @PatchMapping("/{userId}/profile/credit-card/update/{creditCardId}")
+    @PatchMapping("/profile/credit-card/update/{creditCardId}")
     public String updateCreditCard(
-            @PathVariable int userId,
             @PathVariable int creditCardId,
             @Validated
             @ModelAttribute CreditCardForm creditCardForm,
             BindingResult result, Model model,
             RedirectAttributes attrs){
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
+        }
         if(result.hasErrors()){
             return "";
         }
         CreditCard creditCard = formToCreditCard(creditCardForm, creditCardId);
         creditCardService.save(creditCard);
         attrs.addFlashAttribute("success","データの更新に成功しました");        
-        return "redirect:/user/" + userId + "/profile/";
+        return "redirect:/user/profile/";
     }
 
     private CreditCardForm convertCreditCardForm(CreditCard creditCard){
