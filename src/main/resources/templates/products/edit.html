@@ -9,7 +9,7 @@
 </head>
 <body>
     <h3>編集</h3>
-    <form th:method="patch" th:action="@{/product/update/{id}(id=${product.id})}" th:object="${product}">
+    <form th:method="patch" th:action="@{/product/update/{productId}(productId=${product.id})}" th:object="${product}">
         <div class="container">
             <label for="code">製品番号</label>
             <input type="hidden" id="oldCode" name="oldCode" th:value="*{oldCode}">
@@ -30,6 +30,11 @@
             <label for="unitPrice">単価</label>
             <input type="text" id="unitPrice" name="unitPrice" th:value="*{unitPrice}" th:errorclass="bg-warning">
             <span th:errors="*{unitPrice}"></span>
+        </div>
+        <div class="container">
+            <label for="sellingPrice">販売価格</label>
+            <input type="text" id="sellingPrice" name="sellingPrice" th:value="*{sellingPrice}" th:errorclass="bg-warning">
+            <span th:errors="*{sellingPrice}"></span>
         </div>
         <div class="container">
             <label for="weight">重量</label>
