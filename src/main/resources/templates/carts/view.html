@@ -18,17 +18,25 @@
             </tr>
         </thead>
         <tbody>
-            <tr th:each="cartDetail : ${cart.cartDetails}">
-                <td>[[${cartDetail.id}]]</td>
-                <td>[[${cartDetail.product.name}]]</td>
-                <td>[[${cartDetail.quantity}]]</td>        
-                <td><span th:text="${cartDetail.quantity * cartDetail.product.sellingPrice}"></span></td>
-            </tr>
+            <th:block th:unless="${cart} eq null">
+                <tr th:each="cartDetail : ${cart.cartDetails}">
+                    <td>[[${cartDetail.id}]]</td>
+                    <td>[[${cartDetail.product.name}]]</td>
+                    <td>[[${cartDetail.quantity}]]</td>        
+                    <td><span th:text="${cartDetail.quantity * cartDetail.product.sellingPrice}"></span></td>                    
+                </tr>
+            </th:block>
         </tbody>
         <tfoot>
             <tr>
                 <th class="total">カート内合計金額</th>
-                <td><span th:text="${#aggregates.sum(cart.cartDetails.![quantity * product.sellingPrice])}"></span></td>
+                <tr th:unless="${cart} eq null">
+                    <td><span th:text="${#aggregates.sum(cart.cartDetails.![quantity * product.sellingPrice])}"></span></td>
+                </tr>
+
+                <tr th:if="${cart} eq null or ${#lists.isEmpty(cart.cartDetails)}">
+                    <td><span th:text="買い物かごに商品が入っていません"></span></td>
+                </tr>
             </tr>
         </tfoot>
     </table>
