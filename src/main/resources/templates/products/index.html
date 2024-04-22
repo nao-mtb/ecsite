@@ -14,7 +14,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th><th>製品番号</th><th>製品名</th><th>説明</th><th>単価</th><th>重量</th><th>廃番</th>    
+                <th>ID</th><th>製品番号</th><th>製品名</th><th>説明</th><th>単価</th><th>販売価格</th><th>重量</th><th>廃番</th>    
             </tr>
         </thead>
         <tbody>
@@ -24,11 +24,12 @@
                 <td>[[${product.name}]]</td>
                 <td>[[${product.info}]]</td>
                 <td>[[${product.unitPrice}]]</td>
+                <td>[[${product.sellingPrice}]]</td>
                 <td>[[${product.weight}]]</td>
                 <td>[[${product.discontinuedFlag}]]</td>
                 <td>
-                    <a th:href="@{/product/edit/{id}(id=${product.id})}">編集</a>&nbsp;
-                    <a th:href="@{/product/show/{id}(id=${product.id})}">削除</a>&nbsp;
+                    <a th:href="@{/product/edit/{productId}(productId=${product.id})}">編集</a>&nbsp;
+                    <a th:href="@{/product/show/{productId}(productId=${product.id})}">削除</a>&nbsp;
                 </td>
             </tr>    
         </tbody>

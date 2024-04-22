@@ -9,7 +9,7 @@
 </head>
 <body>
    <h3>データ削除</h3> 
-   <form th:method="delete" th:action="@{/product/delete/{id}(id=${product.id})}" th:object="${product}">
+   <form th:method="delete" th:action="@{/product/delete/{productId}(productId=${product.id})}" th:object="${product}">
        <ul>
            <li>ID: [[*{id}]]</li>
            <li>製品番号: [[*{code}]]</li>
