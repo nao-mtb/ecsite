@@ -39,10 +39,6 @@ public class CartDetail {
     @Column(nullable = false)
     private int quantity;
 
-    @NotNull
-    @Column(nullable = false, columnDefinition = "int default 1")
-    private int orderFlag;
-
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     @Column(updatable = false , nullable = false )
@@ -113,18 +109,10 @@ public class CartDetail {
         this.version = version;
     }
 
-    public int getOrderFlag() {
-        return orderFlag;
-    }
-
-    public void setOrderFlag(int orderFlag) {
-        this.orderFlag = orderFlag;
-    }
-
     @Override
     public String toString() {
         return "CartDetail [id=" + id + ", cart=" + cart + ", product=" + product + ", quantity=" + quantity
-                + ", orderFlag=" + orderFlag + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", version="
+                + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", version="
                 + version + "]";
     }
     

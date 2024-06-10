@@ -12,7 +12,7 @@
     <table class="table">
         <thead>
         <tr>
-            <th></th><th>商品名</th><th>価格</th><th>重量</th>
+            <th></th><th>商品名</th><th>価格</th><th>重量</th><th>注文数</th>
         </tr>
         </thead>
         <tbody>
@@ -26,7 +26,11 @@
                 <td>[[${product.sellingPrice}]]</td>
                 <td>[[${product.weight}]]</td>
                 <td>
-                    <a th:href="@{/cart/shoppingcart/{productId}(id=${product.id})}">カートに入れる</a>&nbsp;
+                    <form th:method="PATCH" th:action="@{/cart/shoppingcart}">
+                        <input type="number" name="quantity" size="4" value="1" min="1">
+                        <input type="hidden" name="id" th:value="${product.id}">
+                        <input type="submit" value="カートに追加">
+                    </form>
                 </td>
             </tr> 
         </tbody>

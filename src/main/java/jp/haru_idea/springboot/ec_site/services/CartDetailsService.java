@@ -30,6 +30,18 @@ public class CartDetailsService {
         cartDetailsRepository.deleteById(id);
     }
 
+    public void save(CartDetail cartDetail){
+        cartDetailsRepository.save(cartDetail);
+    }
+
+    public CartDetail getByProductCartId(int productId, int cartId){
+        return cartDetailsRepository.findByProductIdAndCartId(productId, cartId);
+    }
+
+    public CartDetail getById(int id){
+        return cartDetailsRepository.findById(id);
+    }
+
     // @Query("SELECT * FROM Carts INNER JOIN CartDetails on cart.id = cartDetails.cartId WHERE orderFlag = ?2")
     // public List<CartDetail> getByUserIdAndOrderFlag(int userId, int orderFlag){
     //     return cartDetailsRepository.findByUserIdAndOrderFlag(userId, orderFlag);
