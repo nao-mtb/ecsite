@@ -48,8 +48,10 @@ public class WebSecurityConfig {
         .authorizeHttpRequests()
         // .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll  //"/CSS/**"などはログインなしでもアクセス可能         
         .antMatchers("/login").permitAll()     //指定URLに全てのユーザがアクセス可能
-        .antMatchers("/user/create").permitAll()
-        .antMatchers("/user/profile/password/reset/**").permitAll()
+        .antMatchers("/user/**").permitAll()
+
+        // .antMatchers("/user/create").permitAll()
+        // .antMatchers("/user/profile/password/reset/**").permitAll()
         .antMatchers("/cart/**").permitAll()
         // .antMatchers("/user/index").hasRole("ADMIN")  //指定URLに指定したロールユーザのみアクセス可能
         .mvcMatchers("/product/**").permitAll()

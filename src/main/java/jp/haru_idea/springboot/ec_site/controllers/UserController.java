@@ -5,6 +5,8 @@ import java.util.UUID;
 import java.util.function.BiPredicate;
 
 import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -266,16 +268,16 @@ public class UserController {
     public String save(
             @Validated 
             @ModelAttribute UserCreateForm userCreateForm,
-            BindingResult result,
-            RedirectAttributes attrs){
+            Model model, BindingResult result,
+            RedirectAttributes attrs, HttpSession session){
         if(result.hasErrors()){
             return "users/create";
         }
         User user = createFormToUser(userCreateForm, new User());
         userService.save(user);
+        session.setAttribute("userId",user.getId());
         attrs.addFlashAttribute("success","データの登録に成功しました");
-        return "redirect:/user/address/create/";
-        // return "redirect:/user/address/create/" + user.getId();
+        return "forward:/user/address/create/";
     }
 
     //管理者用編集

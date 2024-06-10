@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jp.haru_idea.springboot.ec_site.models.CreditCard;
@@ -32,11 +34,9 @@ public class CreditCardController {
     private SecuritySession securitySession;
 
     @GetMapping("/credit-card/create")
-    public String create(@ModelAttribute CreditCard creditCard, Model model){
-        int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
+    public String create(
+            @ModelAttribute CreditCard creditCard,
+            @SessionAttribute("userId") int userId, Model model){
         model.addAttribute("userId", userId);
         model.addAttribute("year", currentYear());
         return "creditCards/create";
@@ -48,10 +48,10 @@ public class CreditCardController {
             @ModelAttribute CreditCard creditCard,
             BindingResult result,
             RedirectAttributes attrs){
-            int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
+        // int userId = securitySession.getUserId();
+        // if (userId == 0){
+        //     return "users/login";
+        // }
         if(result.hasErrors()){
             return "creditCards/create";
         }
