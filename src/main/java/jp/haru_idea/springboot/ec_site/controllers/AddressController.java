@@ -2,6 +2,9 @@ package jp.haru_idea.springboot.ec_site.controllers;
 
 import java.util.Collection;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jp.haru_idea.springboot.ec_site.models.Address;
@@ -80,12 +85,10 @@ public class AddressController {
         return "addresses/index";
     }
 
-    @GetMapping("/address/create")
-    public String create(@ModelAttribute Address address, Model model){
-        int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
+    @PostMapping("/address/create")
+    public String create(
+                @ModelAttribute Address address, 
+                @SessionAttribute("userId") int userId, Model model){
         model.addAttribute("userId", userId);
         return "addresses/create";
     }
@@ -96,10 +99,6 @@ public class AddressController {
             @ModelAttribute Address address,
             BindingResult result,
             RedirectAttributes attrs){
-        int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
         if(result.hasErrors()){
             return "addresses/create";    
         }
