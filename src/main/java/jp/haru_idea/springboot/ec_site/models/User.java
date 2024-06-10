@@ -85,8 +85,8 @@ public class User{
     @OneToMany(mappedBy = "user")
     private Collection<RoleUser> roleUsers;
 
-    @OneToMany(mappedBy = "user")
-    private Collection<Cart> carts;
+    @OneToOne(mappedBy = "user")
+    private Cart cart;
 
     @OneToOne(mappedBy = "user")
     private PasswordResetToken passwordResetToken;
@@ -204,21 +204,12 @@ public class User{
         this.roleUsers = roleUsers;
     }
 
-    public Collection<Cart> getCart() {
-        return carts;
+    public Cart getCart() {
+        return cart;
     }
 
-    public void setCart(Collection<Cart> carts) {
-        this.carts = carts;
-    }
-    
-
-    public Collection<Cart> getCarts() {
-        return carts;
-    }
-
-    public void setCarts(Collection<Cart> carts) {
-        this.carts = carts;
+    public void setCart(Cart cart) {
+        this.cart = cart;
     }
 
     public PasswordResetToken getPasswordResetToken() {

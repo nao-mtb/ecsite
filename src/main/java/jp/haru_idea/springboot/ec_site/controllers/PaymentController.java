@@ -1,6 +1,7 @@
 package jp.haru_idea.springboot.ec_site.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jp.haru_idea.springboot.ec_site.configs.AuthUserID;
 import jp.haru_idea.springboot.ec_site.models.Cart;
@@ -72,28 +74,53 @@ public class PaymentController {
     private SecuritySession securitySession;
     
     // TODO 支払指定するカードが有効期限切れの時はカード情報を再入力 
-    @GetMapping("/card")
-    public String payment(Model model, RedirectAttributes attrs){
+    // @GetMapping("/card")
+    // public String payment(Model model, RedirectAttributes attrs){
+    //         int userId = securitySession.getUserId();
+    //     if (userId == 0){
+    //         return "users/login";
+    //     }
+    //     // AuthUserID authUserID = new AuthUserID();
+    //     // Boolean result = authUserID.checkUserId();
+        
+    //     Collection<CreditCard> creditCards = creditCardService.getUserIdOrderByCardDefaultDesc(userId);
+    //     if (creditCards.size() == 0) {
+    //         return "redirect:/user/credit-card/create/";
+    //     }else{
+    //         model.addAttribute("creditCards", creditCards);
+    //         return "payments/card";    
+    //     }
+    // } 
+
+    @PostMapping("/card")
+    public String payment(
+            Model model, RedirectAttributes attrs,
+            @RequestParam(name="cartDetailId", required = false) Collection<Integer> cartDetailsIds
+        ){
         int userId = securitySession.getUserId();
         if (userId == 0){
             return "users/login";
         }
-        // AuthUserID authUserID = new AuthUserID();
-        // Boolean result = authUserID.checkUserId();
-        
-        Collection<CreditCard> creditCards = creditCardService.getUserIdOrderByCardDefaultDesc(userId);
-        if (creditCards.size() == 0) {
-            return "redirect:/user/credit-card/create/";
+        if (cartDetailsIds != null){
+            Collection<CreditCard> creditCards = creditCardService.getUserIdOrderByCardDefaultDesc(userId);
+            if (creditCards.size() == 0) {
+                return "redirect:/user/credit-card/create/";
+            }else{
+                model.addAttribute("creditCards", creditCards);
+                model.addAttribute("cartDetailsIds", cartDetailsIds);
+                return "payments/card";    
+            }
         }else{
-            model.addAttribute("creditCards", creditCards);
-            return "payments/card";    
+            attrs.addFlashAttribute("success", "購入商品がありません");
+            return "redirect:/cart/view/";
         }
     } 
 
-    // TODO 後で購入する商品を削除して決済
+
     @Transactional
     @PatchMapping("/order")
     public String moveCartToOrderAndInvoice(
+            @RequestParam("cartDetailsId") Collection<Integer> cartDetailsIds,
             HttpServletRequest request,
             HttpServletResponse response, RedirectAttributes attrs,
             User user){
@@ -101,49 +128,43 @@ public class PaymentController {
         if (userId == 0){
             return "users/login";
         }
-
-        Cart cart = cartService.getByUserId(userId);
-        Collection<CartDetail> cartDetails = cart.getCartDetails();
+        Collection<CartDetail> cartDetails = new ArrayList<CartDetail>() ;
+        for(Integer cartDetailId : cartDetailsIds){
+            cartDetails.add(cartDetailsService.getById(cartDetailId));
+        }
         Order order = new Order();
         order.setUser(userService.getById(userId));
         order.setOrderDate(new Date());
         orderService.save(order);
         for(CartDetail cartDetail : cartDetails){
-            if(cartDetail.getOrderFlag() == 1){
-                OrderDetail orderDetail = new OrderDetail();
-                orderDetail.setOrder(order);
-                orderDetail.setProduct(cartDetail.getProduct());              
-                orderDetail.setPrice(cartDetail.getProduct().getSellingPrice());
-                orderDetail.setTax(0.1);
-                orderDetail.setNumber(cartDetail.getQuantity());
-                orderDetailsService.save(orderDetail);
-            }
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setOrder(order);
+            orderDetail.setProduct(cartDetail.getProduct());              
+            orderDetail.setPrice(cartDetail.getProduct().getSellingPrice());
+            orderDetail.setTax(0.1);
+            orderDetail.setNumber(cartDetail.getQuantity());
+            orderDetailsService.save(orderDetail);
         }
-
         Invoice invoice = new Invoice();
         invoice.setOrder(order);
         invoice.setCreditCard(creditCardService.getById(Integer.parseInt(request.getParameter("creditCard"))));
         invoiceService.save(invoice);
         for(CartDetail cartDetail : cartDetails){
-            if(cartDetail.getOrderFlag() == 1){                
-                InvoiceDetail invoiceDetail = new InvoiceDetail();
-                invoiceDetail.setInvoice(invoice);
-                invoiceDetail.setProduct(cartDetail.getProduct());
-                invoiceDetail.setPrice(cartDetail.getProduct().getSellingPrice());
-                invoiceDetail.setTax(0.1);
-                invoiceDetail.setNumber(cartDetail.getQuantity());
-                invoiceDetailsService.save(invoiceDetail);
-            }
+            InvoiceDetail invoiceDetail = new InvoiceDetail();
+            invoiceDetail.setInvoice(invoice);
+            invoiceDetail.setProduct(cartDetail.getProduct());
+            invoiceDetail.setPrice(cartDetail.getProduct().getSellingPrice());
+            invoiceDetail.setTax(0.1);
+            invoiceDetail.setNumber(cartDetail.getQuantity());
+            invoiceDetailsService.save(invoiceDetail);
         }
         for(CartDetail cartDetail : cartDetails){
-            if(cartDetail.getOrderFlag() == 1){
-                cartDetailsService.delete(cartDetail.getId());
-            }
+            cartDetailsService.delete(cartDetail.getId());
         }
-        //TODO FlashAttributeを表示
         attrs.addFlashAttribute("success", "商品の購入が完了しました");
         return "redirect:/cart/view/";
     }
+
 
 
     // @PostMapping("/view/{userId}/pre-order")
