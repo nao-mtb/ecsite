@@ -9,7 +9,7 @@
 </head>
 <body>
     <h3>新規ユーザ登録</h3>
-    <form method="POST" th:action="@{/user/save}" th:object="${userCreateForm}" novalidate>
+    <form th:method="POST" th:action="@{/user/save}" th:object="${userCreateForm}" novalidate>
     <ul th:if="${#fields.hasErrors('*')}">
         <li th:each="err:${#fields.errors('*')}" th:text="${err}"></li>
     </ul>  
