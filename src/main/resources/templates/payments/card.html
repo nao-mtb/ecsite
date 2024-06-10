@@ -10,6 +10,9 @@
 <body>
     <h3>カード情報</h3>
     <form th:method="patch" th:action="@{/payment/order}">
+        <div th:each="cartDetailsId : ${cartDetailsIds}">
+            <input type="hidden" name="cartDetailsId" th:value="${cartDetailsId}">
+        </div>
         <table class="table">
             <thead>
                 <tr>
