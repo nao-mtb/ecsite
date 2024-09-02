@@ -1,8 +1,15 @@
 package jp.haru_idea.springboot.ec_site.controllers;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,6 +21,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -21,8 +29,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jp.haru_idea.springboot.ec_site.models.CreditCard;
 import jp.haru_idea.springboot.ec_site.models.CreditCardForm;
+import jp.haru_idea.springboot.ec_site.models.User;
 import jp.haru_idea.springboot.ec_site.securities.SecuritySession;
 import jp.haru_idea.springboot.ec_site.services.CreditCardService;
+import jp.haru_idea.springboot.ec_site.services.UserService;
 
 @RequestMapping("/user")
 @Controller
@@ -33,19 +43,26 @@ public class CreditCardController {
     @Autowired
     private SecuritySession securitySession;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/credit-card/create")
     public String create(
             @ModelAttribute CreditCard creditCard,
             @SessionAttribute("userId") int userId, Model model){
-        model.addAttribute("userId", userId);
-        model.addAttribute("year", currentYear());
+        User user = userService.getById(userId);
+        creditCard.setUser(user);
+        int currentYear = currentYear();
+        model.addAttribute("year", currentYear);
         return "creditCards/create";
     }
-
     @PostMapping("/credit-card/save")
     public String save(
             @Validated
-            @ModelAttribute CreditCard creditCard,
+            @ModelAttribute @RequestBody CreditCard creditCard,
             BindingResult result,
             RedirectAttributes attrs){
         // int userId = securitySession.getUserId();
@@ -56,7 +73,6 @@ public class CreditCardController {
             return "creditCards/create";
         }
         creditCardService.save(creditCard);
-        //TODO addFlashAttribute 表示させる 
         attrs.addFlashAttribute("success","カード情報の登録に成功しました");
         return "redirect:/user/credit-card/create";
     }
@@ -70,18 +86,18 @@ public class CreditCardController {
         if (userId == 0){
             return "users/login";
         }
+        int currentYear = currentYear();
         model.addAttribute("userId", userId);
         model.addAttribute("creditCardForm", creditCardForm);
-        model.addAttribute("year", currentYear());        
+        model.addAttribute("year", currentYear);
         return "creditCards/edit";
     }
     
-    @Transactional
     @PatchMapping("/profile/credit-card/update/{creditCardId}")
     public String updateCreditCard(
             @PathVariable int creditCardId,
             @Validated
-            @ModelAttribute CreditCardForm creditCardForm,
+            @ModelAttribute @RequestBody CreditCardForm creditCardForm,
             BindingResult result,
             RedirectAttributes attrs){
         int userId = securitySession.getUserId();
@@ -89,7 +105,7 @@ public class CreditCardController {
             return "users/login";
         }
         if(result.hasErrors()){
-            return "";
+            return "creditCards/edit";
         }
         CreditCard creditCard = formToCreditCard(creditCardForm, creditCardId);
         creditCardService.save(creditCard);
@@ -120,7 +136,12 @@ public class CreditCardController {
     }
 
     private int currentYear(){
-        Calendar calendar = Calendar.getInstance();
-        return calendar.get(Calendar.YEAR);
+        LocalDate today = LocalDate.now();
+        return today.getYear();
     }
+    // public boolean checkExpireDate(CreditCard creditCard){
+    //     LocalDate today = LocalDate.now();
+    //     LocalDate creditCardDate = LocalDate.of(creditCard.getExpYear(), creditCard.getExpMonth(),1);
+    //     return creditCardDate.isAfter(today);
+    // }
 }

@@ -14,6 +14,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -73,28 +75,9 @@ public class PaymentController {
     @Autowired
     private SecuritySession securitySession;
     
-    // TODO 支払指定するカードが有効期限切れの時はカード情報を再入力 
-    // @GetMapping("/card")
-    // public String payment(Model model, RedirectAttributes attrs){
-    //         int userId = securitySession.getUserId();
-    //     if (userId == 0){
-    //         return "users/login";
-    //     }
-    //     // AuthUserID authUserID = new AuthUserID();
-    //     // Boolean result = authUserID.checkUserId();
-        
-    //     Collection<CreditCard> creditCards = creditCardService.getUserIdOrderByCardDefaultDesc(userId);
-    //     if (creditCards.size() == 0) {
-    //         return "redirect:/user/credit-card/create/";
-    //     }else{
-    //         model.addAttribute("creditCards", creditCards);
-    //         return "payments/card";    
-    //     }
-    // } 
-
-    @PostMapping("/card")
-    public String payment(
-            Model model, RedirectAttributes attrs,
+    @GetMapping("/card")
+    public String payment(@Valid
+            Model model, RedirectAttributes attrs, HttpSession session,
             @RequestParam(name="cartDetailId", required = false) Collection<Integer> cartDetailsIds
         ){
         int userId = securitySession.getUserId();
@@ -108,14 +91,13 @@ public class PaymentController {
             }else{
                 model.addAttribute("creditCards", creditCards);
                 model.addAttribute("cartDetailsIds", cartDetailsIds);
-                return "payments/card";    
+                return "payments/card";
             }
         }else{
             attrs.addFlashAttribute("success", "購入商品がありません");
             return "redirect:/cart/view/";
         }
     } 
-
 
     @Transactional
     @PatchMapping("/order")
@@ -128,6 +110,15 @@ public class PaymentController {
         if (userId == 0){
             return "users/login";
         }
+        
+        // CreditCard creditCard = new CreditCard();
+        // creditCard = creditCardService.getById(Integer.parseInt(request.getParameter("creditCard")));
+        // CreditCardController creditCardController = new CreditCardController();
+        // if(!creditCardController.checkExpireDate(creditCard)){
+        //     attrs.addFlashAttribute("error","カード情報の有効期限が切れています");
+        //     return "redirect:/payment/card";
+        // }
+
         Collection<CartDetail> cartDetails = new ArrayList<CartDetail>() ;
         for(Integer cartDetailId : cartDetailsIds){
             cartDetails.add(cartDetailsService.getById(cartDetailId));
@@ -164,25 +155,5 @@ public class PaymentController {
         attrs.addFlashAttribute("success", "商品の購入が完了しました");
         return "redirect:/cart/view/";
     }
-
-
-
-    // @PostMapping("/view/{userId}/pre-order")
-    // public String  preOrder(@PathVariable int userId, HttpServletRequest request, Model model){
-    //     HttpSession session = request.getSession();
-    //     session.setAttribute("cart", cartService.getById(id));
-    //     return "redirect:/" 
-    // }\
-
-    // @GetMapping("/view/{userId}/payment")
-    // public String payment(@PathVariable int userId, Model model){
-    //     model.addAttribute("cart", cartService.getByUserId(userId));
-    //     return "carts/buy";
-    // }
-    // @PostMapping("/{userId}/order")
-    // public ResponseEntity<String> createOrder(){
-    //     orderDetailsService.createOrder();
-    //     return ResponseEntity.ok("");
-    // }
 
 }

@@ -23,8 +23,11 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Range;
 
+import jp.haru_idea.springboot.ec_site.validators.annotations.CreditCardExpirationDate;
+
 @Entity
 @Table(name="credit_cards")
+@CreditCardExpirationDate
 public class CreditCard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

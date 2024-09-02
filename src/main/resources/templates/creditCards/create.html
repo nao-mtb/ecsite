@@ -9,13 +9,15 @@
 </head>
 <body>
     <h3>新規クレジットカード情報登録</h3>
+    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
+    <div th:if="${error}" class="alert alert-danger">[[${error}]]</div>
     <form th:method="post" th:action="@{/user/credit-card/save/}" th:object="${creditCard}">
         <ul th:if="${#fields.hasErrors('*')}">
             <li th:each="err:${#fields.errors('*')}" th:text="${err}"></li>
         </ul> 
         
         <div class="container">
-            <input type="hidden" id="user" name="user" th:value="${userId}">
+            <input type="hidden" id="user" name="user" th:field="*{user}">
         </div>
         <div class="container">
             <label for="company">カード会社</label>
