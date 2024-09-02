@@ -1,5 +1,8 @@
 package jp.haru_idea.springboot.ec_site.models;
 
+import jp.haru_idea.springboot.ec_site.validators.annotations.CreditCardExpirationDate;
+
+@CreditCardExpirationDate
 public class CreditCardForm {
     private User user;
 
