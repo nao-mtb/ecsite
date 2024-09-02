@@ -24,18 +24,31 @@
                     <td hidden>[[${creditCard.id}]]</td>
                     <td>
                         <label>
-                            <input type="radio" th:checked="${creditCard.cardDefault==1}" name="creditCard" th:value="${creditCard.id}">
+                            <input type="radio" th:checked="${creditCard.cardDefault==1}" name="creditCard" th:value="${creditCard.id}"
+                             th:disabled="${#dates.create(creditCard.expYear, creditCard.expMonth+1, 0) lt #dates.createToday()}">
                             [[${'  ************ ' + #strings.substring(creditCard.cardNumber, creditCard.cardNumber.length() -4)}]]
                         </label>
                     </td>                                
-                    <td>[[${creditCard.expMonth}]]月 / [[${creditCard.expYear}]]年</td>
+                    <!-- <td>[[${creditCard.expMonth}]]月 / [[${creditCard.expYear}]]年</td> -->
+                    <td>
+                        [[${creditCard.expMonth}]]月 / [[${creditCard.expYear}]]年
+                        <span th:if="${#dates.create(creditCard.expYear, creditCard.expMonth+1, 0) lt #dates.createToday()}" class="text-danger">
+                            カードの有効期限が切れています
+                        </span>
+                    </td>
                 </tr>
             </tbody>
             <div>
                 <input type="submit" value="カード決済する">
             </div>
-        </table>    
-        </label>
+        </table>
+        <!--/* <div th:if="${#fields.hasErrors('*')}">
+            <ul>
+                <li th:each="error : ${#fields.errors('*')}" th:text="${error}">
+                    
+                </li>
+            </ul>
+        </div> */-->
     </form>
 </body>
 </html>
