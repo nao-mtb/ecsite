@@ -1,23 +1,36 @@
 package jp.haru_idea.springboot.ec_site.models;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.NotFound;
+
 public class AddressForm {
 
+    @NotBlank
     private String lastName;
 
+    @NotBlank
     private String firstName;
 
+    @NotBlank
     private String zipCode;
 
+    @NotBlank
     private String prefecture;
 
+    @NotBlank
     private String city;
 
+    @NotBlank
     private String address1;
 
     private String address2;
 
+    @NotBlank
     private String tel;
 
+    @NotNull
     private int addressType;
 
     private int shippingDefault;

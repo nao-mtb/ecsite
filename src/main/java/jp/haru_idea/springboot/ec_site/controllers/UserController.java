@@ -268,7 +268,7 @@ public class UserController {
     public String save(
             @Validated 
             @ModelAttribute UserCreateForm userCreateForm,
-            Model model, BindingResult result,
+            BindingResult result, 
             RedirectAttributes attrs, HttpSession session){
         if(result.hasErrors()){
             return "users/create";
