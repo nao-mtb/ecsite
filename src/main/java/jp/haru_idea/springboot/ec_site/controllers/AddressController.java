@@ -18,14 +18,17 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jp.haru_idea.springboot.ec_site.models.Address;
 import jp.haru_idea.springboot.ec_site.models.AddressForm;
+import jp.haru_idea.springboot.ec_site.models.User;
 import jp.haru_idea.springboot.ec_site.securities.SecuritySession;
 import jp.haru_idea.springboot.ec_site.services.AddressService;
+import jp.haru_idea.springboot.ec_site.services.UserService;
 
 
 @RequestMapping("/user")
@@ -36,6 +39,9 @@ public class AddressController {
 
     @Autowired
     private SecuritySession securitySession;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/profile/address/edit/{addressId}")
     public String editAddress(@PathVariable int addressId, Model model){
@@ -88,25 +94,24 @@ public class AddressController {
     @PostMapping("/address/create")
     public String create(
                 @ModelAttribute Address address, 
-                @SessionAttribute("userId") int userId, Model model){
-        model.addAttribute("userId", userId);
+                @SessionAttribute("userId") int userId){
+        User user = userService.getById(userId);
+        address.setUser(user);
         return "addresses/create";
     }
     
     @PostMapping("/address/save")
     public String save(
-            @Validated
+            @Validated 
             @ModelAttribute Address address,
             BindingResult result,
             RedirectAttributes attrs){
         if(result.hasErrors()){
-            return "addresses/create";    
+            return "addresses/create";
         }
         addressService.save(address);
         attrs.addFlashAttribute("success","住所登録に成功しました");
-        //TODO クレジットカード登録先に変更
-        //return "redirect:/user/address/create/";
-        return "redirect:/user/credit-card/create/"; 
+        return "redirect:/user/credit-card/create"; 
     }
 
     //TODO バリデーションチェック機能追加

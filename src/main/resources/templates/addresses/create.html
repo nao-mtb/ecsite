@@ -24,7 +24,7 @@
             <span th:errors="*{firstName}"></span>
         </div>
         <div class="container">
-            <input type="hidden" id="user" name="user" th:value="${userId}" >
+            <input type="hidden" id="user" name="user" th:field="*{user}" >
         </div>
 
         <div class="container">
