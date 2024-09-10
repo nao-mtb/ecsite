@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <h3>カード情報</h3>
+    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
+    <!--/* <div th:each="cartDetailsId : ${cartDetailsIds}">
+        <input type="hidden" name="cartDetailsId" th:value="${cartDetailsId}">
+    </div> */-->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>カード番号</th><th>有効期限</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="creditCard:${user.creditCards}">
+                <td hidden>[[${creditCard.id}]]</td>
+                <td>
+                    [[${'  ************ ' + #strings.substring(creditCard.cardNumber, creditCard.cardNumber.length() -4)}]]
+                </td>                                
+                <td>
+                    [[${creditCard.expMonth}]]月 / [[${creditCard.expYear}]]年
+                    <span th:if="${#dates.create(creditCard.expYear, creditCard.expMonth+1, 0) lt #dates.createToday()}" class="text-danger">
+                        カードの有効期限が切れています
+                    </span>
+                </td>
+                <td>
+                    <a th:href="@{/user/profile/credit-card/{edit}/{creditCardId}/(edit=edit1,creditCardId=${creditCard.id})}">変更</a>
+                    <a th:href="@{/user/profile/credit-card/delete/{creditCardId}/(creditCardId=${creditCard.id})}">削除</a>
+                </td>    
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

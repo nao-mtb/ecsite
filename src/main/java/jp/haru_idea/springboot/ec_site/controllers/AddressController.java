@@ -43,6 +43,16 @@ public class AddressController {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/profile/address/info")
+    public String profile(Model model){
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
+        }
+        model.addAttribute("user", userService.getById(userId));
+        return "addresses/info";
+    }
+
     @GetMapping("/profile/address/edit/{addressId}")
     public String editAddress(@PathVariable int addressId, Model model){
         int userId = securitySession.getUserId();
@@ -80,7 +90,7 @@ public class AddressController {
         }
         addressService.save(address);
         attrs.addFlashAttribute("success","データの更新に成功しました");        
-        return "redirect:/user/profile";
+        return "redirect:/user/profile/address/info";
     }
 
 
