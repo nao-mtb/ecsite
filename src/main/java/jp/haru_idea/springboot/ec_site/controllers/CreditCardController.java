@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -30,6 +32,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jp.haru_idea.springboot.ec_site.models.CreditCard;
 import jp.haru_idea.springboot.ec_site.models.CreditCardForm;
 import jp.haru_idea.springboot.ec_site.models.User;
+import jp.haru_idea.springboot.ec_site.models.UserAdminForm;
 import jp.haru_idea.springboot.ec_site.securities.SecuritySession;
 import jp.haru_idea.springboot.ec_site.services.CreditCardService;
 import jp.haru_idea.springboot.ec_site.services.UserService;
@@ -48,6 +51,16 @@ public class CreditCardController {
 
     @Autowired
     private UserService userService;
+
+    @GetMapping("/profile/credit-card/info")
+    public String profile(Model model){
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
+        }
+        model.addAttribute("user", userService.getById(userId));
+        return "creditCards/info";
+    }
 
     @GetMapping("/credit-card/create")
     public String create(
@@ -77,9 +90,12 @@ public class CreditCardController {
         return "redirect:/user/credit-card/create";
     }
     
-
-    @GetMapping("/profile/credit-card/edit/{creditCardId}")
-    public String editCreditCard(@PathVariable int creditCardId, Model model){
+    // @GetMapping({"/profile/credit-card/edit1/{creditCardId}","/profile/credit-card/edit2/{creditCardId}"})
+    @GetMapping("/profile/credit-card/{edit}/{creditCardId}")
+    public String editCreditCard(
+            @PathVariable int creditCardId, 
+            @PathVariable String edit,
+            Model model){
         CreditCard creditCard = creditCardService.getById(creditCardId);
         CreditCardForm creditCardForm = convertCreditCardForm(creditCard);
         int userId = securitySession.getUserId();
@@ -90,12 +106,14 @@ public class CreditCardController {
         model.addAttribute("userId", userId);
         model.addAttribute("creditCardForm", creditCardForm);
         model.addAttribute("year", currentYear);
+        model.addAttribute("edit", edit);
         return "creditCards/edit";
     }
     
     @PatchMapping("/profile/credit-card/update/{creditCardId}")
     public String updateCreditCard(
             @PathVariable int creditCardId,
+            @RequestParam("edit") String edit,
             @Validated
             @ModelAttribute @RequestBody CreditCardForm creditCardForm,
             BindingResult result,
@@ -109,9 +127,23 @@ public class CreditCardController {
         }
         CreditCard creditCard = formToCreditCard(creditCardForm, creditCardId);
         creditCardService.save(creditCard);
-        attrs.addFlashAttribute("success","データの更新に成功しました");        
-        return "redirect:/user/profile/";
+        attrs.addFlashAttribute("success","データの更新に成功しました");
+        if(edit.equals("edit1")){
+            return "redirect:/user/profile/credit-card/info";
+        }
+        return "redirect:/cart/view";
     }
+
+    // @DeleteMapping("/profile/credit-card/delete/{creditCardId}")
+    // public String deleteCreditCard(@PathVariable int creditCardId, RedirectAttributes attrs){
+    //     int userId = securitySession.getUserId();
+    //     if (userId == 0){
+    //         return "users/login";
+    //     }
+    //     creditCardService.delete(creditCardId);
+    //     attrs.addFlashAttribute("success","カード情報の削除に成功しました");        
+    //     return "redirect:/user/profile/credit-card/info";
+    // }
 
     private CreditCardForm convertCreditCardForm(CreditCard creditCard){
         CreditCardForm creditCardForm = new CreditCardForm();

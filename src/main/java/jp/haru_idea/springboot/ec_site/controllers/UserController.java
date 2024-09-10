@@ -58,14 +58,14 @@ public class UserController {
     @Autowired
     private PasswordResetTokenService passwordResetTokenService;
 
-    @GetMapping("/profile")
+    @GetMapping("/profile/main/info")
     public String profile(Model model){
         int userId = securitySession.getUserId();
         if (userId == 0){
             return "users/login";
         }
         model.addAttribute("user", userService.getById(userId));
-        return "users/profile";
+        return "users/info";
     }
 
     //編集
@@ -97,7 +97,7 @@ public class UserController {
         User user = commonFormToUser(userCommonForm, userService.getById(userId));
         userService.save(user);
         attrs.addFlashAttribute("success","データの更新に成功しました");    
-        return "redirect:/user/profile";
+        return "redirect:/user/profile/main/info";
     }
 
     //パスワード変更
@@ -136,7 +136,7 @@ public class UserController {
         user.setPassword(encodePassword(userChangePasswordForm.getPassword()));
         userService.save(user);
         attrs.addFlashAttribute("success","データの更新に成功しました");    
-        return "redirect:/user/profile";
+        return "redirect:/user/profile/main/info";
     }
 
     //パスワード再発行
@@ -213,7 +213,7 @@ public class UserController {
         userService.save(user);
         passwordResetTokenService.deleteById(tokenId);
         attrs.addFlashAttribute("success","データの更新に成功しました");    
-        return "redirect:/user/profile";
+        return "redirect:/user/profile/main/info";
     }
 
     //退会処理

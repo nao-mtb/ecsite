@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
+    <li th:each="address:${user.addresses}">
+        <div class="container">
+            <label for="zipCode">郵便番号</label>
+            <p>[[${address.zipCode}]]</p>
+        </div>
+        <div class="container">
+            <label for="prefecture">都道府県</label>
+            <p>[[${address.prefecture}]]</p>
+        </div>
+        <div class="container">
+            <label for="city">市</label>
+            <p>[[${address.city}]]</p>
+        </div>
+        <div class="container">
+            <label for="address1">区町村・番地</label>
+            <p>[[${address.address1}]]</p>
+        </div>
+        <div class="container">
+            <label for="address2">マンション・アパート名</label>
+            <p th:unless="${#strings.isEmpty(address.address2)}">[[${address.address2}]]</p>
+        </div>
+        <a th:href="@{/user/profile/address/edit/{addressId}/(addressId=${address.id})}">住所変更</a>
+    </li>
+</body>
+</html>

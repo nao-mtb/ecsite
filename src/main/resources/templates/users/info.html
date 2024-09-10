@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
+    <div class="container"> 
+        <label for="lastname">姓</label>
+        <p>[[${user.lastName}]]</p>
+    </div>
+    <div class="container">
+        <label for="firstName">名</label>
+        <p>[[${user.firstName}]]</p>
+    </div>
+    <div class="container">
+        <label for="mail">Email</label>
+        <p>[[${user.mail}]]</p>
+    </div>
+    <div class="container">
+        <label for="birthDate">生年月日</label>
+        <p>[[${user.birthDate}]]</p>
+    </div>
+    <a th:href="@{/user/profile/main/edit/}">基本情報変更</a><br>
+    <a th:href="@{/user/profile/password/change/}">パスワード変更</a><br>
+    <a th:href="@{/user/profile/delete/}">退会</a>    
+</body>
+</html>
