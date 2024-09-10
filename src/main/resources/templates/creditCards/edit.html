@@ -13,7 +13,10 @@
     <form th:method="patch" th:action="@{/user/profile/credit-card/update/{creditCardId}/(creditCardId=${creditCardId})}" th:object="${creditCardForm}">
         <ul th:if="${#fields.hasErrors('*')}">
             <li th:each="err:${#fields.errors('*')}" th:text="${err}"></li>
-        </ul> 
+        </ul>
+        <div class="container">
+            <input type="hidden" name="edit" th:value="${edit}">
+        </div>
         <div class="container">
             <label for="company">カード会社</label>
             <input type="text" th:field="*{company}" th:errorclass="bg-warning" />
