@@ -15,7 +15,7 @@
             <li th:each="err:${#fields.errors('*')}" th:text="${err}"></li>
         </ul>
         <div class="container">
-            <input type="hidden" name="edit" th:value="${edit}">
+            <input type="hidden" name="source" th:value="${source}">
         </div>
         <div class="container">
             <label for="company">カード会社</label>
@@ -49,8 +49,7 @@
                 <option value="0">しない</option>
             </select>
         </div>
-        <input type="submit" value="登録">    
+        <input type="submit" value="変更">    
     </form>
-
 </body>
-</html>    
+</html>
