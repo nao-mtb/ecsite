@@ -10,9 +10,6 @@
 <body>
     <h3>カード情報</h3>
     <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
-    <!--/* <div th:each="cartDetailsId : ${cartDetailsIds}">
-        <input type="hidden" name="cartDetailsId" th:value="${cartDetailsId}">
-    </div> */-->
     <table class="table">
         <thead>
             <tr>
@@ -32,9 +29,9 @@
                     </span>
                 </td>
                 <td>
-                    <a th:href="@{/user/profile/credit-card/{edit}/{creditCardId}/(edit=edit1,creditCardId=${creditCard.id})}">変更</a>
-                    <a th:href="@{/user/profile/credit-card/delete/{creditCardId}/(creditCardId=${creditCard.id})}">削除</a>
-                </td>    
+                    <a th:href="@{/user/profile/credit-card/edit/{creditCardId}/(creditCardId=${creditCard.id},source='info')}">変更</a>
+                    <a th:href="@{/user/profile/credit-card/delete/{creditCardId}/(creditCardId=${creditCard.id},source='info')}">削除</a>
+                </td>
             </tr>
         </tbody>
     </table>

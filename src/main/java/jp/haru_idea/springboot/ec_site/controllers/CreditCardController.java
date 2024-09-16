@@ -91,10 +91,10 @@ public class CreditCardController {
     }
     
     // @GetMapping({"/profile/credit-card/edit1/{creditCardId}","/profile/credit-card/edit2/{creditCardId}"})
-    @GetMapping("/profile/credit-card/{edit}/{creditCardId}")
+    @GetMapping("/profile/credit-card/edit/{creditCardId}")
     public String editCreditCard(
             @PathVariable int creditCardId, 
-            @PathVariable String edit,
+            @RequestParam("source") String source,
             Model model){
         CreditCard creditCard = creditCardService.getById(creditCardId);
         CreditCardForm creditCardForm = convertCreditCardForm(creditCard);
@@ -106,14 +106,14 @@ public class CreditCardController {
         model.addAttribute("userId", userId);
         model.addAttribute("creditCardForm", creditCardForm);
         model.addAttribute("year", currentYear);
-        model.addAttribute("edit", edit);
+        model.addAttribute("source", source);
         return "creditCards/edit";
     }
     
     @PatchMapping("/profile/credit-card/update/{creditCardId}")
     public String updateCreditCard(
             @PathVariable int creditCardId,
-            @RequestParam("edit") String edit,
+            @RequestParam("source") String source,
             @Validated
             @ModelAttribute @RequestBody CreditCardForm creditCardForm,
             BindingResult result,
@@ -128,22 +128,53 @@ public class CreditCardController {
         CreditCard creditCard = formToCreditCard(creditCardForm, creditCardId);
         creditCardService.save(creditCard);
         attrs.addFlashAttribute("success","データの更新に成功しました");
-        if(edit.equals("edit1")){
+        if(source.equals("info")){
             return "redirect:/user/profile/credit-card/info";
         }
         return "redirect:/cart/view";
     }
 
-    // @DeleteMapping("/profile/credit-card/delete/{creditCardId}")
-    // public String deleteCreditCard(@PathVariable int creditCardId, RedirectAttributes attrs){
-    //     int userId = securitySession.getUserId();
-    //     if (userId == 0){
-    //         return "users/login";
-    //     }
-    //     creditCardService.delete(creditCardId);
-    //     attrs.addFlashAttribute("success","カード情報の削除に成功しました");        
-    //     return "redirect:/user/profile/credit-card/info";
-    // }
+    //TODO Javascriptを用いてポップアップ画面からの削除
+    @GetMapping("/profile/credit-card/delete/{creditCardId}")
+    public String confirmDelete(
+            @PathVariable int creditCardId,
+            @RequestParam("source") String source,
+            Model model){
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
+        }
+        CreditCard creditCard = creditCardService.getById(creditCardId);
+        int cardUserId = creditCard.getUser().getId();
+        if (userId != cardUserId){
+            return "users/login";
+        }
+        model.addAttribute("creditCard", creditCard);
+        model.addAttribute("source", source);
+        return "creditCards/delete";
+    }
+
+    @DeleteMapping("/profile/credit-card/delete2/{creditCardId}")
+    public String delete(
+            @PathVariable int creditCardId,
+            @RequestParam("source") String source,
+            @RequestParam("select") String select,
+            RedirectAttributes attrs){
+        int userId = securitySession.getUserId();
+        if (userId == 0){
+            return "users/login";
+        }
+        if(select.equals("キャンセル")){
+            return "redirect:/user/profile/credit-card/info";
+        }
+
+        creditCardService.delete(creditCardId);
+        attrs.addFlashAttribute("success","カード情報の削除に成功しました");        
+        if(source.equals("info")){
+            return "redirect:/user/profile/credit-card/info";
+        }
+        return "redirect:/cart/view";
+    }
 
     private CreditCardForm convertCreditCardForm(CreditCard creditCard){
         CreditCardForm creditCardForm = new CreditCardForm();
