@@ -10,7 +10,7 @@
 <body>
     <h3>カード情報変更</h3>
     <div th:if="${error}" class="alert alert-danger">[[${error}]]</div>
-    <form th:method="patch" th:action="@{/user/profile/credit-card/update/{creditCardId}/(creditCardId=${creditCardId})}" th:object="${creditCardForm}">
+    <form th:method="patch" th:action="@{/user/profile/credit-card/update/{creditCardId}/(creditCardId=${creditCardId},referer=${referer})}" th:object="${creditCardForm}">
         <ul th:if="${#fields.hasErrors('*')}">
             <li th:each="err:${#fields.errors('*')}" th:text="${err}"></li>
         </ul>
@@ -51,5 +51,6 @@
         </div>
         <input type="submit" value="変更">    
     </form>
+    <a th:href="${referer}">キャンセル</a>
 </body>
 </html>

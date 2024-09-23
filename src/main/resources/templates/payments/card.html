@@ -36,8 +36,8 @@
                         </span>
                     </td>
                     <td>
-                        <a th:href="@{/user/profile/credit-card/edit/{creditCardId}/(creditCardId=${creditCard.id},source='cart')}">変更</a>
-                        <a th:href="@{/user/profile/credit-card/delete/{creditCardId}/(creditCardId=${creditCard.id},source='cart')}">削除</a>
+                        <a th:href="@{/user/profile/credit-card/edit/{creditCardId}/(creditCardId=${creditCard.id},referer='/cart/view')}">変更</a>
+                        <a th:href="@{/user/profile/credit-card/delete/{creditCardId}/(creditCardId=${creditCard.id},referer='/cart/view')}">削除</a>
                     </td>    
                 </tr>
             </tbody>
@@ -45,6 +45,7 @@
                 <input type="submit" value="カード決済する">
             </div>
         </table>
+        <a class="button" th:href="@{/user/credit-card/create}">追加登録</a>
     </form>
 </body>
 </html>

@@ -3,15 +3,19 @@ package jp.haru_idea.springboot.ec_site.controllers;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jp.haru_idea.springboot.ec_site.models.CreditCard;
@@ -62,26 +67,39 @@ public class CreditCardController {
         return "creditCards/info";
     }
 
+    //URLを分けた方がよい？追加の時のURLを別にして、認証させた方がよいのか
     @GetMapping("/credit-card/create")
     public String create(
             @ModelAttribute CreditCard creditCard,
-            @SessionAttribute("userId") int userId, Model model){
+            HttpSession session, Model model){
+        if (session.getAttribute("userId") == null && securitySession.getUserId() == 0){
+            return "users/login";
+        }
+        int userId = 0;
+        if(session.getAttribute("userId") != null){
+            userId = (Integer)session.getAttribute("userId");
+        }else{
+            userId = securitySession.getUserId();
+        }
         User user = userService.getById(userId);
         creditCard.setUser(user);
         int currentYear = currentYear();
         model.addAttribute("year", currentYear);
         return "creditCards/create";
     }
+
+    @Transactional
     @PostMapping("/credit-card/save")
     public String save(
             @Validated
             @ModelAttribute @RequestBody CreditCard creditCard,
+            HttpSession session,
             BindingResult result,
             RedirectAttributes attrs){
-        // int userId = securitySession.getUserId();
-        // if (userId == 0){
-        //     return "users/login";
-        // }
+        int userId = securitySession.getUserId();
+        if (session.getAttribute("userId") == null && userId == 0){
+            return "users/login";
+        }
         if(result.hasErrors()){
             return "creditCards/create";
         }
@@ -90,90 +108,68 @@ public class CreditCardController {
         return "redirect:/user/credit-card/create";
     }
     
-    // @GetMapping({"/profile/credit-card/edit1/{creditCardId}","/profile/credit-card/edit2/{creditCardId}"})
     @GetMapping("/profile/credit-card/edit/{creditCardId}")
     public String editCreditCard(
             @PathVariable int creditCardId, 
-            @RequestParam("source") String source,
+            @RequestParam("referer") String referer,
             Model model){
         CreditCard creditCard = creditCardService.getById(creditCardId);
         CreditCardForm creditCardForm = convertCreditCardForm(creditCard);
         int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
         int currentYear = currentYear();
         model.addAttribute("userId", userId);
         model.addAttribute("creditCardForm", creditCardForm);
         model.addAttribute("year", currentYear);
-        model.addAttribute("source", source);
+        model.addAttribute("referer", referer);
         return "creditCards/edit";
     }
     
+    @Transactional
     @PatchMapping("/profile/credit-card/update/{creditCardId}")
     public String updateCreditCard(
             @PathVariable int creditCardId,
-            @RequestParam("source") String source,
-            @Validated
-            @ModelAttribute @RequestBody CreditCardForm creditCardForm,
+            @RequestParam("referer") String referer,
+            @Validated @ModelAttribute 
+            @RequestBody CreditCardForm creditCardForm,
             BindingResult result,
             RedirectAttributes attrs){
         int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
         if(result.hasErrors()){
             return "creditCards/edit";
         }
         CreditCard creditCard = formToCreditCard(creditCardForm, creditCardId);
         creditCardService.save(creditCard);
         attrs.addFlashAttribute("success","データの更新に成功しました");
-        if(source.equals("info")){
-            return "redirect:/user/profile/credit-card/info";
-        }
-        return "redirect:/cart/view";
+        return "redirect:" + referer;
     }
 
     //TODO Javascriptを用いてポップアップ画面からの削除
     @GetMapping("/profile/credit-card/delete/{creditCardId}")
     public String confirmDelete(
             @PathVariable int creditCardId,
-            @RequestParam("source") String source,
+            @RequestParam("referer") String referer,
             Model model){
         int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
         CreditCard creditCard = creditCardService.getById(creditCardId);
         int cardUserId = creditCard.getUser().getId();
+        
+        //TODO 自作例外処理画面
         if (userId != cardUserId){
-            return "users/login";
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         model.addAttribute("creditCard", creditCard);
-        model.addAttribute("source", source);
+        model.addAttribute("referer", referer);
         return "creditCards/delete";
     }
 
     @DeleteMapping("/profile/credit-card/delete2/{creditCardId}")
     public String delete(
             @PathVariable int creditCardId,
-            @RequestParam("source") String source,
-            @RequestParam("select") String select,
+            @RequestParam("referer") String referer,
             RedirectAttributes attrs){
-        int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
-        if(select.equals("キャンセル")){
-            return "redirect:/user/profile/credit-card/info";
-        }
-
         creditCardService.delete(creditCardId);
         attrs.addFlashAttribute("success","カード情報の削除に成功しました");        
-        if(source.equals("info")){
-            return "redirect:/user/profile/credit-card/info";
-        }
-        return "redirect:/cart/view";
+        return "redirect:" + referer;
     }
 
     private CreditCardForm convertCreditCardForm(CreditCard creditCard){
