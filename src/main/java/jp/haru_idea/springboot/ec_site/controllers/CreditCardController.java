@@ -67,7 +67,6 @@ public class CreditCardController {
         return "creditCards/info";
     }
 
-    //URLを分けた方がよい？追加の時のURLを別にして、認証させた方がよいのか
     @GetMapping("/credit-card/create")
     public String create(
             @ModelAttribute CreditCard creditCard,
@@ -111,7 +110,7 @@ public class CreditCardController {
     @GetMapping("/profile/credit-card/edit/{creditCardId}")
     public String editCreditCard(
             @PathVariable int creditCardId, 
-            @RequestParam("referer") String referer,
+            @RequestParam("source") String source,
             Model model){
         CreditCard creditCard = creditCardService.getById(creditCardId);
         CreditCardForm creditCardForm = convertCreditCardForm(creditCard);
@@ -120,7 +119,7 @@ public class CreditCardController {
         model.addAttribute("userId", userId);
         model.addAttribute("creditCardForm", creditCardForm);
         model.addAttribute("year", currentYear);
-        model.addAttribute("referer", referer);
+        model.addAttribute("source", source);
         return "creditCards/edit";
     }
     
@@ -128,7 +127,7 @@ public class CreditCardController {
     @PatchMapping("/profile/credit-card/update/{creditCardId}")
     public String updateCreditCard(
             @PathVariable int creditCardId,
-            @RequestParam("referer") String referer,
+            @RequestParam("source") String source,
             @Validated @ModelAttribute 
             @RequestBody CreditCardForm creditCardForm,
             BindingResult result,
@@ -138,38 +137,57 @@ public class CreditCardController {
             return "creditCards/edit";
         }
         CreditCard creditCard = formToCreditCard(creditCardForm, creditCardId);
+        //一旦ゼロクリアして登録に変更
+        if(creditCardForm.getCardDefault() == 1){
+            CreditCard defaultCreditCard = creditCardService.getDefaultCreditCards(userId);
+            defaultCreditCard.setCardDefault(0);
+            creditCardService.save(defaultCreditCard);
+        }
         creditCardService.save(creditCard);
         attrs.addFlashAttribute("success","データの更新に成功しました");
-        return "redirect:" + referer;
+        if(source.equals("info")){
+            return "redirect:/user/profile/credit-card/info";
+        }else if(source.equals("cart")){
+            return "redirect:/cart/view";
+        //TODO エラー画面自作
+        }else{
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
     }
 
     //TODO Javascriptを用いてポップアップ画面からの削除
     @GetMapping("/profile/credit-card/delete/{creditCardId}")
     public String confirmDelete(
             @PathVariable int creditCardId,
-            @RequestParam("referer") String referer,
+            @RequestParam("source") String source,
             Model model){
         int userId = securitySession.getUserId();
         CreditCard creditCard = creditCardService.getById(creditCardId);
-        int cardUserId = creditCard.getUser().getId();
-        
-        //TODO 自作例外処理画面
+        int cardUserId = creditCard.getUser().getId();        
+        //TODO エラー画面自作
         if (userId != cardUserId){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         model.addAttribute("creditCard", creditCard);
-        model.addAttribute("referer", referer);
+        model.addAttribute("source", source);
         return "creditCards/delete";
     }
 
     @DeleteMapping("/profile/credit-card/delete2/{creditCardId}")
     public String delete(
             @PathVariable int creditCardId,
-            @RequestParam("referer") String referer,
+            @RequestParam("source") String source,
             RedirectAttributes attrs){
         creditCardService.delete(creditCardId);
         attrs.addFlashAttribute("success","カード情報の削除に成功しました");        
-        return "redirect:" + referer;
+        if(source.equals("info")){
+            return "redirect:/user/profile/credit-card/info";
+        }else if(source.equals("cart")){
+            return "redirect:/cart/view";
+        //TODO エラー画面自作
+        }else{
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
     }
 
     private CreditCardForm convertCreditCardForm(CreditCard creditCard){

@@ -14,4 +14,5 @@ public interface CreditCardRepository extends JpaRepository<CreditCard, Integer>
     Collection<CreditCard> findByUserId(int userId);
     Collection<CreditCard> findByUserIdOrderByCardDefaultDesc(int userId);
     CreditCard deleteById(int id);
+    int findByCardDefault(int userId);
 }
