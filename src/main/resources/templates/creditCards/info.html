@@ -29,8 +29,8 @@
                     </span>
                 </td>
                 <td>
-                    <a th:href="@{/user/profile/credit-card/edit/{creditCardId}/(creditCardId=${creditCard.id},referer='/user/profile/credit-card/info')}">変更</a>
-                    <a th:href="@{/user/profile/credit-card/delete/{creditCardId}/(creditCardId=${creditCard.id},referer='/user/profile/credit-card/info')}">削除</a>
+                    <a th:href="@{/user/profile/credit-card/edit/{creditCardId}/(creditCardId=${creditCard.id},source='info')}">変更</a>
+                    <a th:href="@{/user/profile/credit-card/delete/{creditCardId}/(creditCardId=${creditCard.id},source='info')}">削除</a>
                 </td>
             </tr>
         </tbody>

@@ -9,7 +9,7 @@
 </head>
 <body>
     <h3>クレジットカード情報を削除</h3>
-    <form th:method="delete" th:action="@{/user/profile/credit-card/delete2/{creditCardId}/(creditCardId=${creditCardId},referer=${referer})}" th:object="${creditCard}">
+    <form th:method="delete" th:action="@{/user/profile/credit-card/delete2/{creditCardId}/(creditCardId=${creditCardId})}" th:object="${creditCard}">
         <div class="container">
             <input type="hidden" name="source" th:value="${source}">
         </div>
@@ -27,6 +27,6 @@
         </div>
         <input type="submit" value="削除">
     </form>
-    <a th:href="${referer}">キャンセル</a>
+    <a th:href="(${source} == 'info' ? @{/user/profile/credit-card/info} : @{/cart/view})">キャンセル</a>
 </body>
 </html>

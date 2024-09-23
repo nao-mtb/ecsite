@@ -38,5 +38,16 @@ public class CreditCardService {
         return creditCardRepository.findByUserIdOrderByCardDefaultDesc(userId);
     }
 
+    public CreditCard getDefaultCreditCards(int userId){
+        Collection<CreditCard> creditCards = getUserId(userId);
+        CreditCard defaultCreditCard = creditCards.stream()
+            .filter(creditCard -> creditCard.getCardDefault() == 1)
+            .findFirst()
+            .orElse(null);
+        return defaultCreditCard;
+    }
 
+    public int getCardDefault(int userId){
+        return creditCardRepository.findByCardDefault(userId);
+    }    
 }
