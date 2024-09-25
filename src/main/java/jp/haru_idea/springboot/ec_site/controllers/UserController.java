@@ -61,20 +61,37 @@ public class UserController {
     @GetMapping("/profile/main/info")
     public String profile(Model model){
         int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
         model.addAttribute("user", userService.getById(userId));
         return "users/info";
+    }
+
+    //新規作成
+    //TODO ロール紐づけ
+    @GetMapping("/create")
+    public String create(@ModelAttribute UserCreateForm userCreateForm){
+        return "users/create";
+    }
+
+    @PostMapping("/save")
+    public String save(
+            @Validated 
+            @ModelAttribute UserCreateForm userCreateForm,
+            BindingResult result, 
+            RedirectAttributes attrs, HttpSession session){
+        if(result.hasErrors()){
+            return "users/create";
+        }
+        User user = createFormToUser(userCreateForm, new User());
+        userService.save(user);
+        session.setAttribute("userId",user.getId());
+        attrs.addFlashAttribute("success","データの登録に成功しました");
+        return "forward:/user/address/create/";
     }
 
     //編集
     @GetMapping("/profile/main/edit")
     public String editMain(Model model){
         int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
         User user = userService.getById(userId);
         UserCommonForm userCommonForm = convertUserCommonForm(user);
         model.addAttribute("userCommonForm", userCommonForm);
@@ -88,9 +105,6 @@ public class UserController {
             BindingResult result,
             RedirectAttributes attrs){
         int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
         if(result.hasErrors()){
             return "users/profile/main/edit";
         }
@@ -104,9 +118,6 @@ public class UserController {
     @GetMapping("/profile/password/change")
     public String changePassword(@ModelAttribute UserChangePasswordForm userChangePasswordForm, Model model){
         int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
         model.addAttribute("user", userService.getById(userId));
         return "users/passwords/change";
     }
@@ -117,9 +128,6 @@ public class UserController {
             BindingResult result,
             RedirectAttributes attrs){
         int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
         if(result.hasErrors()){
             return "users/passwords/change";
         }
@@ -220,9 +228,6 @@ public class UserController {
     @GetMapping("/profile/delete/")
     public String confirmDelete(Model model){
         int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
         UserCommonForm userCommonForm = convertUserCommonForm(userService.getById(userId));
         model.addAttribute("userCommonForm", userCommonForm);
         return "users/delete";
@@ -234,9 +239,6 @@ public class UserController {
             @ModelAttribute UserCommonForm userCommonForm,
             RedirectAttributes attrs){
         int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
         User user = commonFormToUser(userCommonForm, userService.getById(userId));
         user.setDeleteFlag(1);
         userService.save(user);
@@ -244,12 +246,9 @@ public class UserController {
         return "redirect:/user/profile";
     }
 
-
     //TODO 一覧表示もformを使用
-    // @RolesAllowed("ADMIN")
-    @PreAuthorize("hasRole('ADMIN')")
-    // @PreAuthorize("hasAnyRole('ADMIN','SECURITY', 'OWNER')")
-    @GetMapping("/index")
+    //************ 管理者用 ************
+    @GetMapping("/admin/index")
     public String index(Model model){
         //Collection<User> users = userService.getAll();
         Collection<User> users = userService.getAll();
@@ -257,31 +256,7 @@ public class UserController {
         return "users/admins/index";
     }
 
-    //新規作成
-    //TODO ロール紐づけ
-    @GetMapping("/create")
-    public String create(@ModelAttribute UserCreateForm userCreateForm){
-        return "users/create";
-    }
-
-    @PostMapping("/save")
-    public String save(
-            @Validated 
-            @ModelAttribute UserCreateForm userCreateForm,
-            BindingResult result, 
-            RedirectAttributes attrs, HttpSession session){
-        if(result.hasErrors()){
-            return "users/create";
-        }
-        User user = createFormToUser(userCreateForm, new User());
-        userService.save(user);
-        session.setAttribute("userId",user.getId());
-        attrs.addFlashAttribute("success","データの登録に成功しました");
-        return "forward:/user/address/create/";
-    }
-
     //管理者用編集
-    @PreAuthorize("hasAnyRole('SECURITY', 'OWNER')")
     @GetMapping("/admin/edit/{id}")
     public String edit(@PathVariable int id, Model model){
         User user = userService.getById(id);
@@ -290,9 +265,7 @@ public class UserController {
         model.addAttribute("userAdminForm", userAdminForm);
         return "users/admins/edit";
     }
-    
     //管理者用更新
-    @PreAuthorize("hasAnyRole('SECURITY', 'OWNER')")
     @PatchMapping("/admin/update/{id}")
     public String update(
             @PathVariable int id,
@@ -315,15 +288,12 @@ public class UserController {
         model.addAttribute("userAdminForm", userAdminForm);
         return "users/admins/show";    
     }
-
     @DeleteMapping("/admin/delete/{id}")
     public String delete(@PathVariable int id, RedirectAttributes attrs){
         userService.delete(id);
         attrs.addFlashAttribute("success","データの削除に成功しました");
         return "redirect:/user/index";
     }
-
-    
 
     private UserCommonForm convertUserCommonForm(User user){
         UserCommonForm userCommonForm = new UserCommonForm();
@@ -376,7 +346,6 @@ public class UserController {
     //     user.setPassword(encodePassword(userChangePasswordForm.getPassword()));
     //     return user;
     // }
-    
     
     @Bean
     public PasswordEncoder passwordEncoder(){
