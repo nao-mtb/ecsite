@@ -3,6 +3,7 @@ package jp.haru_idea.springboot.ec_site.controllers;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -39,7 +40,6 @@ public class ProductController {
     public String create(@ModelAttribute Product product){
         return "products/create";        
     }
-
     @PostMapping("/save")
     public String save(
             @Validated    
@@ -61,7 +61,6 @@ public class ProductController {
         model.addAttribute("product", product);
         return "products/edit";
     }
-
     @PatchMapping("/update/{productId}")
     public String update(
             @PathVariable int productId, 
@@ -84,7 +83,6 @@ public class ProductController {
         model.addAttribute("product", product);
         return "products/show";
     }
-
     @DeleteMapping("/delete/{productId}")
     public String delete(@PathVariable int productId, RedirectAttributes attrs){
         productService.delete(productId);
@@ -92,6 +90,7 @@ public class ProductController {
         return "redirect:/product/index";
     }
 
+    //TODO FIXカート追加→ログイン後の挙動
     @GetMapping("/shopping/index")
     public String shoppingIndex(Model model){
         Collection<Product> products = productService.getByDiscontinuedFlag(0); 
@@ -99,12 +98,11 @@ public class ProductController {
         return "products/shoppings/index";
     }
 
-    //TO DO html詳細画面の作成
+    //TODO html詳細画面の作成
     @GetMapping("/shopping/detail/{productId}")
     public String detail(@PathVariable int productId, Model model){
         Product product = productService.getById(productId);
         model.addAttribute("product", product);
         return "products/shoppings/detail";
     }
-
 }

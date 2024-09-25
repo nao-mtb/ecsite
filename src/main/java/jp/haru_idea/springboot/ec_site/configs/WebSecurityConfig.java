@@ -46,36 +46,35 @@ public class WebSecurityConfig {
         http
         //アクセス制限に関する設定
         .authorizeHttpRequests()
-        // .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll  //"/CSS/**"などはログインなしでもアクセス可能         
-        .antMatchers("/login").permitAll()     //指定URLに全てのユーザがアクセス可能
-        .antMatchers("/user/**").permitAll()
+            // .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll  //"/CSS/**"などはログインなしでもアクセス可能
+            .antMatchers("/login").permitAll()     //指定URLに全てのユーザがアクセス可能
+            .antMatchers("/user/create","/user/save").permitAll()
+            .antMatchers("/product/shopping/index").permitAll()
+            .antMatchers("/user/admin/index").hasAnyRole("ADMIN","SYSTEM","OWNER","SUPPORT")  //指定URLに指定したロールユーザのみアクセス可能
+            .antMatchers("/user/admin/**").hasAnyRole("ADMIN","SYSTEM")
+            .antMatchers("/product/shopping/**").authenticated() //URLに認証を要求
+            .antMatchers("/product/index","/product/edit/**","/product/update/**").hasAnyRole("ADMIN","SYSTEM","OWNER","CONTENT")
+            .antMatchers("/product/**").hasAnyRole("ADMIN","SYSTEM","OWNER")
+            .antMatchers("user/**","/cart/**","/payment/**").authenticated()
+            // .anyRequest().access(manager)
+            // .anyRequest().authenticated()          //他のURLはログイン後のみアクセス可能
 
-        // .antMatchers("/user/create").permitAll()
-        // .antMatchers("/user/profile/password/reset/**").permitAll()
-        .antMatchers("/cart/**").permitAll()
-        // .antMatchers("/user/index").hasRole("ADMIN")  //指定URLに指定したロールユーザのみアクセス可能
-        .mvcMatchers("/product/**").permitAll()
-        // .anyRequest().access(manager)
-        // .antMatchers("/**/{userId}").access(manager)
-        // .antMatchers("/**/{id}").access("@resourceAccessControl.checkUserId(authentication, userId)")
-        .anyRequest().authenticated()          //他のURLはログイン後のみアクセス可能
         .and()
         //ログインに関する設定
         .formLogin()                           //フォーム認証を有効化
-        .loginPage("/login")                   //ログイン画面のURL
-        .usernameParameter("usr")              //ユーザ名のパラメーター名を設定
-        .passwordParameter("passwd")           //パスワードのパラメーター名を設定
-        // .loginProcessingUrl("/login")          //ユーザ名・パスワードの送信先URL
-        .defaultSuccessUrl("/product/index")      //ログイン成功後のリダイレクト先URL
-        // .successForwardUrl("/product/index")      //ログイン成功後のリダイレクト先URL
-        // .failureForwardUrl("/login")           //ログイン失敗時のリダイレクト先URL
+            .loginPage("/login")                   //ログイン画面のURL
+            .usernameParameter("usr")              //ユーザ名のパラメーター名を設定
+            .passwordParameter("passwd")           //パスワードのパラメーター名を設定
+            // .loginProcessingUrl("/login")          //ユーザ名・パスワードの送信先URL
+            // .defaultSuccessUrl("/product/index")      //ログイン成功後のリダイレクト先URL
+            // .failureForwardUrl("/login")           //ログイン失敗時のリダイレクト先URL
         .and()
         //ログアウトに関する設定
         .logout()                             
-        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))  //ログアウトのためのURL
-        .logoutSuccessUrl("/index")           //ログアウト成功後のリダイレクト先URL
-        // .deleteCookies("")                    //ログアウト時に削除するクッキー名
-        .invalidateHttpSession(true);         //ログアウト時のセッション破棄有無(tureは破棄)
+            .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))  //ログアウトのためのURL
+            .logoutSuccessUrl("/product/index")           //ログアウト成功後のリダイレクト先URL
+            // .deleteCookies("")                    //ログアウト時に削除するクッキー名
+            .invalidateHttpSession(true);         //ログアウト時のセッション破棄有無(tureは破棄)
         return http.build();
     }
 

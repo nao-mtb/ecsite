@@ -25,7 +25,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import jp.haru_idea.springboot.ec_site.configs.AuthUserID;
 import jp.haru_idea.springboot.ec_site.models.Cart;
 import jp.haru_idea.springboot.ec_site.models.CartDetail;
 import jp.haru_idea.springboot.ec_site.models.CreditCard;
@@ -81,9 +80,6 @@ public class PaymentController {
             @RequestParam(name="cartDetailId", required = false) Collection<Integer> cartDetailsIds
         ){
         int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
         if (cartDetailsIds != null){
             Collection<CreditCard> creditCards = creditCardService.getUserIdOrderByCardDefaultDesc(userId);
             if (creditCards.size() == 0) {
@@ -107,18 +103,6 @@ public class PaymentController {
             HttpServletResponse response, RedirectAttributes attrs,
             User user){
         int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
-        
-        // CreditCard creditCard = new CreditCard();
-        // creditCard = creditCardService.getById(Integer.parseInt(request.getParameter("creditCard")));
-        // CreditCardController creditCardController = new CreditCardController();
-        // if(!creditCardController.checkExpireDate(creditCard)){
-        //     attrs.addFlashAttribute("error","カード情報の有効期限が切れています");
-        //     return "redirect:/payment/card";
-        // }
-
         Collection<CartDetail> cartDetails = new ArrayList<CartDetail>() ;
         for(Integer cartDetailId : cartDetailsIds){
             cartDetails.add(cartDetailsService.getById(cartDetailId));
@@ -155,5 +139,4 @@ public class PaymentController {
         attrs.addFlashAttribute("success", "商品の購入が完了しました");
         return "redirect:/cart/view/";
     }
-
 }
