@@ -44,9 +44,6 @@ public class CartController {
     @GetMapping("/view")
     public String viewUser(Model model){
         int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
         model.addAttribute("cart", cartService.getByUserId(userId));
         return "carts/view";
     }
@@ -72,10 +69,6 @@ public class CartController {
             @RequestParam("id") int productId,
             RedirectAttributes attrs){
         int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
-
         User user = userService.getById(userId);
         Cart cart = cartService.getByUserId(userId);
         if (cart == null){
@@ -97,6 +90,5 @@ public class CartController {
         cartDetailsService.save(cartDetail);
         attrs.addFlashAttribute("success", "商品を追加しました");
         return "redirect:/cart/view";
-    }
-    
+    }    
 }

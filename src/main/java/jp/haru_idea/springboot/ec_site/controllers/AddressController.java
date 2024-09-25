@@ -46,59 +46,8 @@ public class AddressController {
     @GetMapping("/profile/address/info")
     public String profile(Model model){
         int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
         model.addAttribute("user", userService.getById(userId));
         return "addresses/info";
-    }
-
-    @GetMapping("/profile/address/edit/{addressId}")
-    public String editAddress(@PathVariable int addressId, Model model){
-        int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
-        Address address = addressService.getById(addressId);
-        AddressForm addressForm = convertAddressForm(address);
-        model.addAttribute("userId", userId);
-        model.addAttribute("addressForm", addressForm);
-        return "addresses/edit";
-    }
-
-    @Transactional
-    @PatchMapping("/profile/address/update/{addressId}")
-    public String updateAddress(
-            @PathVariable int addressId,
-            @Validated
-            @ModelAttribute AddressForm addressForm,
-            BindingResult result,
-            RedirectAttributes attrs){
-        int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
-        if(result.hasErrors()){
-            return "/users/profile/address/edit/" + addressId;
-        }
-        Address address = formToAddress(addressForm, addressId);
-        if(address.getShippingDefault() == 1){
-            addressService.resetShippingDefault(userId);
-        }
-        if(address.getBillingDefault() == 1){
-            addressService.resetBillingDefault(userId);            
-        }
-        addressService.save(address);
-        attrs.addFlashAttribute("success","データの更新に成功しました");        
-        return "redirect:/user/profile/address/info";
-    }
-
-
-    @GetMapping("/address/index")
-    public String index(Model model){
-        Collection<Address> addresses = addressService.getAll();
-        model.addAttribute("addresses",addresses);
-        return "addresses/index";
     }
 
     @PostMapping("/address/create")
@@ -123,6 +72,49 @@ public class AddressController {
         attrs.addFlashAttribute("success","住所登録に成功しました");
         return "redirect:/user/credit-card/create"; 
     }
+
+    @GetMapping("/profile/address/edit/{addressId}")
+    public String editAddress(@PathVariable int addressId, Model model){
+        int userId = securitySession.getUserId();
+        Address address = addressService.getById(addressId);
+        AddressForm addressForm = convertAddressForm(address);
+        model.addAttribute("userId", userId);
+        model.addAttribute("addressForm", addressForm);
+        return "addresses/edit";
+    }
+
+    @Transactional
+    @PatchMapping("/profile/address/update/{addressId}")
+    public String updateAddress(
+            @PathVariable int addressId,
+            @Validated
+            @ModelAttribute AddressForm addressForm,
+            BindingResult result,
+            RedirectAttributes attrs){
+        int userId = securitySession.getUserId();
+        if(result.hasErrors()){
+            return "/users/profile/address/edit/" + addressId;
+        }
+        Address address = formToAddress(addressForm, addressId);
+        if(address.getShippingDefault() == 1){
+            addressService.resetShippingDefault(userId);
+        }
+        if(address.getBillingDefault() == 1){
+            addressService.resetBillingDefault(userId);            
+        }
+        addressService.save(address);
+        attrs.addFlashAttribute("success","データの更新に成功しました");        
+        return "redirect:/user/profile/address/info";
+    }
+
+
+    @GetMapping("/address/index")
+    public String index(Model model){
+        Collection<Address> addresses = addressService.getAll();
+        model.addAttribute("addresses",addresses);
+        return "addresses/index";
+    }
+
 
     //TODO バリデーションチェック機能追加
     private AddressForm convertAddressForm(Address address){
