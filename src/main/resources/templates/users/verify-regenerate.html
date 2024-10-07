@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <h3>認証メール再送信</h3>
+    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>    
+    <form th:method="patch" th:action="@{/user/create/auth/resend-completed}">
+        <div class="container">
+            <label for="mail"></label>
+            <input type="hidden" name="mail" th:value="${mail}">
+        </div>
+        <input type="submit" value="再送信">
+    </form>
+    <a th:href="@{/login/}">ログイン画面へ</a><br>
+    </body>
+</html>
