@@ -48,14 +48,15 @@ public class WebSecurityConfig {
         .authorizeHttpRequests()
             // .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll  //"/CSS/**"などはログインなしでもアクセス可能
             .antMatchers("/login").permitAll()     //指定URLに全てのユーザがアクセス可能
-            .antMatchers("/user/create","/user/save").permitAll()
+            .antMatchers("/user/create/**","/user/save").permitAll()
             .antMatchers("/product/shopping/index").permitAll()
             .antMatchers("/user/admin/index").hasAnyRole("ADMIN","SYSTEM","OWNER","SUPPORT")  //指定URLに指定したロールユーザのみアクセス可能
             .antMatchers("/user/admin/**").hasAnyRole("ADMIN","SYSTEM")
             .antMatchers("/product/shopping/**").authenticated() //URLに認証を要求
             .antMatchers("/product/index","/product/edit/**","/product/update/**").hasAnyRole("ADMIN","SYSTEM","OWNER","CONTENT")
             .antMatchers("/product/**").hasAnyRole("ADMIN","SYSTEM","OWNER")
-            .antMatchers("user/**","/cart/**","/payment/**").authenticated()
+            .antMatchers("/user/**","/cart/**","/payment/**").authenticated()
+
             // .anyRequest().access(manager)
             // .anyRequest().authenticated()          //他のURLはログイン後のみアクセス可能
 

@@ -7,6 +7,7 @@ import java.util.function.BiPredicate;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +30,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import jp.haru_idea.springboot.ec_site.models.PasswordResetToken;
+import jp.haru_idea.springboot.ec_site.models.Token;
 import jp.haru_idea.springboot.ec_site.models.User;
 import jp.haru_idea.springboot.ec_site.models.UserAdminForm;
 import jp.haru_idea.springboot.ec_site.models.UserCreateForm;
@@ -41,7 +43,7 @@ import jp.haru_idea.springboot.ec_site.models.UserResetPasswordForm;
 import jp.haru_idea.springboot.ec_site.models.UserChangePasswordForm;
 import jp.haru_idea.springboot.ec_site.securities.SecuritySession;
 import jp.haru_idea.springboot.ec_site.models.UserCommonForm;
-import jp.haru_idea.springboot.ec_site.services.PasswordResetTokenService;
+import jp.haru_idea.springboot.ec_site.services.TokenService;
 import jp.haru_idea.springboot.ec_site.services.UserService;
 
 @RequestMapping("/user")
@@ -56,7 +58,7 @@ public class UserController {
     private SecuritySession securitySession;
 
     @Autowired
-    private PasswordResetTokenService passwordResetTokenService;
+    private TokenService tokenService;
 
     @GetMapping("/profile/main/info")
     public String profile(Model model){
@@ -68,24 +70,81 @@ public class UserController {
     //新規作成
     //TODO ロール紐づけ
     @GetMapping("/create")
-    public String create(@ModelAttribute UserCreateForm userCreateForm){
+    public String createUser(@ModelAttribute UserCreateForm userCreateForm){
         return "users/create";
     }
 
     @PostMapping("/save")
-    public String save(
+    public String saveUser(
             @Validated 
             @ModelAttribute UserCreateForm userCreateForm,
-            BindingResult result, 
-            RedirectAttributes attrs, HttpSession session){
+            BindingResult result, Model model,
+            RedirectAttributes attrs){
         if(result.hasErrors()){
             return "users/create";
         }
+        if(userService.isUserExists(userCreateForm.getMail())){
+            attrs.addFlashAttribute("error","メールアドレスが既に登録されています");
+            model.addAttribute("mail", userCreateForm.getMail());
+            return "users/verify-regenerate";
+        }
         User user = createFormToUser(userCreateForm, new User());
         userService.save(user);
-        session.setAttribute("userId",user.getId());
-        attrs.addFlashAttribute("success","データの登録に成功しました");
-        return "forward:/user/address/create/";
+
+        // send mail with token
+        String tokenStr = UUID.randomUUID().toString();
+        userService.sendTokenMail("register",user.getMail(), tokenStr);
+        Token token = tokenService.findOrCreateUserToken(user);
+        token.setToken(tokenStr);
+        tokenService.save(token);
+        attrs.addFlashAttribute("success","メールを送信しました。メールのURLからアクセスしなおしてください");
+        return "redirect:/user/create/";
+    }
+
+    @GetMapping("/create/auth/resend-request")
+    public String resendTokenToExistsUser(@RequestParam("mail") String mail, Model model){
+        model.addAttribute("mail", mail);
+        return "users/verify-regenerate";
+    }
+
+    @PatchMapping("/create/auth/resend-completed")
+    public String regenerateToken(@RequestParam("mail") String mail, RedirectAttributes attrs){
+        User user = userService.getByMail(mail);
+        // send mail with token
+        String tokenStr = UUID.randomUUID().toString();
+        userService.sendTokenMail("register",mail, tokenStr);
+        Token token = tokenService.findOrCreateUserToken(user);
+        token.setToken(tokenStr);
+        tokenService.save(token);
+        attrs.addFlashAttribute("success","メールを送信しました。メールのURLからアクセスしなおしてください");
+        return "redirect:/user/create/";
+    }
+
+    @Transactional
+    @GetMapping("/create/auth/verify")
+    public String verifyUser(
+            @RequestParam("token") String tokenStr,
+            Model model, RedirectAttributes attrs){
+        Token token = tokenService.getByToken(tokenStr);
+        //TODO URL無効時の遷移先変更
+        if (token == null){
+            attrs.addFlashAttribute("error", "URLが無効です");
+            return "redirect:/user/create";
+            // return "redirect:/user/create/auth/resend-request";
+        }
+        String mail = token.getUser().getMail();
+        if (!tokenService.isExpirationDate(token.getUpdatedAt())){
+            model.addAttribute("mail", mail);
+            attrs.addFlashAttribute("error", "URLの有効期限が切れています");
+            return "users/verify-regenerate";
+        }
+        User user = userService.getByMail(mail);
+        user.setVerified(true);
+        userService.save(user);
+        tokenService.deleteById(token.getId());
+        attrs.addFlashAttribute("success","認証に成功しました");
+        // return "redirect:/user/credit-card/create";
+        return "redirect:/user/address/create";
     }
 
     //編集
@@ -138,7 +197,7 @@ public class UserController {
             return "redirect:/user/profile/password/change";
         }
         if(!userChangePasswordForm.isNewPassword()){
-            attrs.addFlashAttribute("error", "新しパスワードと確認用の入力が一致しません");
+            attrs.addFlashAttribute("error", "新しいパスワードと確認用の入力が一致しません");
             return "redirect:/user/profile/password/change";
         }
         user.setPassword(encodePassword(userChangePasswordForm.getPassword()));
@@ -154,22 +213,22 @@ public class UserController {
     }
     @PatchMapping("/profile/password/reset/accept")
     public String generateTokenForResetPassword(
-            @Validated 
+            @Validated
             @ModelAttribute UserMailForm userMailForm,
             BindingResult result,
             RedirectAttributes attrs){
         User user = userService.getByMail(userMailForm.getMail());
         if (user != null){
-            String token = UUID.randomUUID().toString();
-            userService.sendPasswordResetMail(user.getMail(),token);
-
-            PasswordResetToken passwordResetToken = passwordResetTokenService.getByUserId(user.getId());
-            if (passwordResetToken == null){
-                passwordResetToken = new PasswordResetToken();
-                passwordResetToken.setUser(user);
-            }
-            passwordResetToken.setToken(token);
-            passwordResetTokenService.save(passwordResetToken);
+            String tokenStr = UUID.randomUUID().toString();
+            userService.sendTokenMail("resetPassword",user.getMail(), tokenStr);
+            Token token = tokenService.findOrCreateUserToken(user);
+            // Token token = tokenService.getByUserId(user.getId());
+            // if (token == null){
+            //     token = new Token();
+            //     token.setUser(user);
+            // }
+            token.setToken(tokenStr);
+            tokenService.save(token);
         }
         attrs.addFlashAttribute("success", "メールを送信しました");
         return "redirect:/user/profile/password/reset/request";
@@ -177,23 +236,21 @@ public class UserController {
 
     @GetMapping("/profile/password/reset")
     public String inputResetPassword(
-            @RequestParam("token") String token,
+            @RequestParam("token") String tokenStr,
             RedirectAttributes attrs,
             @ModelAttribute UserResetPasswordForm userResetPasswordForm,
             Model model){
-        PasswordResetToken passwordResetToken = passwordResetTokenService.getByToken(token);
-        if (passwordResetToken == null){
+        Token token = tokenService.getByToken(tokenStr);
+        if (token == null){
             attrs.addFlashAttribute("error", "URLが無効です。再度パスワードリセット登録をしてください。");
             return "redirect:/user/profile/password/reset/request";
         }
-
-        boolean expirationResult = passwordResetTokenService.checkExpiration(passwordResetToken.getUpdatedAt());
-        if (!expirationResult){
+        if (!tokenService.isExpirationDate(token.getUpdatedAt())){
             attrs.addFlashAttribute("error", "URLの有効期限が切れています。再度パスワードリセット登録をしてください。");
             return "redirect:/user/profile/password/reset/request";
         }
-        model.addAttribute("mail", passwordResetToken.getUser().getMail());
-        model.addAttribute("tokenId", passwordResetToken.getId());
+        model.addAttribute("mail", token.getUser().getMail());
+        model.addAttribute("tokenId", token.getId());
         return "users/passwords/reset-token";
     }
     
@@ -201,7 +258,7 @@ public class UserController {
     public String executeResetPassword(
             @Validated
             @RequestParam("mail") String mail,
-            @RequestParam("tokenId") int tokenId,            
+            @RequestParam("tokenId") int tokenId,
             @ModelAttribute("userResetPasswordForm") UserResetPasswordForm userResetPasswordForm,
             BindingResult result, Model model,
             RedirectAttributes attrs){
@@ -219,13 +276,13 @@ public class UserController {
         }
         user.setPassword(encodePassword(userResetPasswordForm.getPassword()));
         userService.save(user);
-        passwordResetTokenService.deleteById(tokenId);
+        tokenService.deleteById(tokenId);
         attrs.addFlashAttribute("success","データの更新に成功しました");    
         return "redirect:/user/profile/main/info";
     }
 
     //退会処理
-    @GetMapping("/profile/delete/")
+    @GetMapping("/delete")
     public String confirmDelete(Model model){
         int userId = securitySession.getUserId();
         UserCommonForm userCommonForm = convertUserCommonForm(userService.getById(userId));
@@ -234,7 +291,7 @@ public class UserController {
     }
 
     //TODO return先をホーム画面に変更
-    @PatchMapping("/profile/user-deleted/")
+    @PatchMapping("/user-deleted")
     public String delete(
             @ModelAttribute UserCommonForm userCommonForm,
             RedirectAttributes attrs){

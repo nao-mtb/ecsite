@@ -50,10 +50,9 @@ public class AddressController {
         return "addresses/info";
     }
 
-    @PostMapping("/address/create")
-    public String create(
-                @ModelAttribute Address address, 
-                @SessionAttribute("userId") int userId){
+    @GetMapping("/address/create")
+    public String create(@ModelAttribute Address address){
+        int userId = securitySession.getUserId();
         User user = userService.getById(userId);
         address.setUser(user);
         return "addresses/create";

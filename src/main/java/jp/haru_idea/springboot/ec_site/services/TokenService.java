@@ -9,31 +9,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
-import jp.haru_idea.springboot.ec_site.models.PasswordResetToken;
-import jp.haru_idea.springboot.ec_site.repositories.PasswordResetTokenRepository;
+import jp.haru_idea.springboot.ec_site.models.Token;
+import jp.haru_idea.springboot.ec_site.models.User;
+import jp.haru_idea.springboot.ec_site.repositories.TokenRepository;
 
 @Service
-public class PasswordResetTokenService {
+public class TokenService {
     @Autowired
-    PasswordResetTokenRepository passwordResetTokenRepository;
+    TokenRepository tokenRepository;
 
-    public void save(PasswordResetToken passwordResetToken){
-        passwordResetTokenRepository.save(passwordResetToken);
+    public void save(Token token){
+        tokenRepository.save(token);
     }
     
-    public PasswordResetToken getByUserId(int userId){
-        return passwordResetTokenRepository.findByUserId(userId);
+    public Token getByUserId(int userId){
+        return tokenRepository.findByUserId(userId);
     }
 
-    public PasswordResetToken getByToken(String token){
-        return passwordResetTokenRepository.findByToken(token);
+    public Token getByToken(String token){
+        return tokenRepository.findByToken(token);
     }
 
     public void deleteById(int id){
-        passwordResetTokenRepository.deleteById(id);
+        tokenRepository.deleteById(id);
     }   
 
-    public boolean checkExpiration(Date updateAt){
+    public boolean isExpirationDate(Date updateAt){
         SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -42,4 +43,14 @@ public class PasswordResetTokenService {
         LocalDateTime currentDateTime = LocalDateTime.now();
         return currentDateTime.isBefore(expireDateTime);
     }
+
+    public Token findOrCreateUserToken(User user){
+        Token token = getByUserId(user.getId());
+        if (token == null){
+            token = new Token();
+            token.setUser(user);
+        }
+        return token;
+    }
+
 }

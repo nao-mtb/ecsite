@@ -59,6 +59,9 @@ public class User{
     @Column(nullable = false , columnDefinition = "int default 0")
     private Integer deleteFlag = 0;
 
+    @Column(nullable = false , columnDefinition = "boolean default false")
+    private boolean verified = false;
+
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     @Column(updatable = false , nullable = false )
@@ -89,7 +92,7 @@ public class User{
     private Cart cart;
 
     @OneToOne(mappedBy = "user")
-    private PasswordResetToken passwordResetToken;
+    private Token token;
 
     public int getId() {
         return id;
@@ -145,6 +148,14 @@ public class User{
 
     public void setDeleteFlag(Integer deleteFlag) {
         this.deleteFlag = deleteFlag;
+    }
+    
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
     }
 
     public Date getCreatedAt() {
@@ -212,12 +223,12 @@ public class User{
         this.cart = cart;
     }
 
-    public PasswordResetToken getPasswordResetToken() {
-        return passwordResetToken;
+    public Token getToken() {
+        return token;
     }
 
-    public void setPasswordResetToken(PasswordResetToken passwordResetToken) {
-        this.passwordResetToken = passwordResetToken;
+    public void setToken(Token token) {
+        this.token = token;
     }
     
     @Override
@@ -225,6 +236,5 @@ public class User{
         return "User [id=" + id + ", lastName=" + lastName + ", firstName=" + firstName + ", mail=" + mail
                 + ", birthDate=" + birthDate + ", password=" + password + ", deleteFlag=" + deleteFlag + ", createdAt="
                 + createdAt + ", updatedAt=" + updatedAt + ", version=" + version + ", addresses=" + ", creditCards=" + "]";
-    }
-    
+    }   
 }

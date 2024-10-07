@@ -15,7 +15,6 @@ public class UserChangePasswordForm{
     @Transient
     @NotBlank
     @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?!.*[^0-9a-zA-Z]).{6,30}", message="数字1文字以上、英字1文字以上で6文字以上20文字以下になるように入力してください")
-
     private String password;
 
     @Transient
