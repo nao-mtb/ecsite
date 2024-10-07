@@ -68,19 +68,19 @@ public class Address {
     private int addressType;
 
     @Column(nullable = false, columnDefinition = "int default 0")
-    private int shippingDefault = 0;
+    private int shippingDefault;
 
     @Column(nullable = false, columnDefinition = "int default 0")
-    private int billingDefault = 0;
+    private int billingDefault;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
-    @Column(updatable = false , nullable = false )
+    @Column(updatable = false, nullable = false)
     private Date createdAt;
 
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
-    @Column(nullable = false )
+    @Column(nullable = false)
     private Date updatedAt;
 
     @Column(nullable = false, columnDefinition = "int default 0")

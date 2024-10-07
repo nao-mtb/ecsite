@@ -124,5 +124,4 @@ public class AddressForm {
     public void setBillingDefault(int billingDefault) {
         this.billingDefault = billingDefault;
     }
-        
 }

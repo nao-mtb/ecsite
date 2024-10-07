@@ -34,7 +34,7 @@ public class CreditCard {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name="user_id", nullable = false )
+    @JoinColumn(name="user_id", nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "creditCard")
@@ -55,24 +55,24 @@ public class CreditCard {
 
     @NotNull
     @Range(min=1, max=12)
-    @Column(length = 2, nullable = false )
+    @Column(length = 2, nullable = false)
     private int expMonth;
 
     @NotNull
-    @Column(length = 4, nullable = false )
+    @Column(length = 4, nullable = false)
     private int expYear;
 
-    @Column(nullable = true )
+    @Column(nullable = false,  columnDefinition = "int default 0")
     private int cardDefault;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
-    @Column(updatable = false , nullable = false )
+    @Column(updatable = false, nullable = false)
     private Date createdAt;
 
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
-    @Column(nullable = false )
+    @Column(nullable = false)
     private Date updatedAt;
 
     @Column(nullable = false, columnDefinition = "int default 0")

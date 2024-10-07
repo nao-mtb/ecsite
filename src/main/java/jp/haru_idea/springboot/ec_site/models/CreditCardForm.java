@@ -1,19 +1,27 @@
 package jp.haru_idea.springboot.ec_site.models;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import jp.haru_idea.springboot.ec_site.validators.annotations.CreditCardExpirationDate;
 
 @CreditCardExpirationDate
 public class CreditCardForm {
     private User user;
 
+    @NotBlank
     private String company;
 
+    @NotBlank
     private String cardNumber;
 
+    @NotBlank
     private String name;
 
+    @NotNull
     private int expMonth;
 
+    @NotNull
     private int expYear;
 
     private int cardDefault;
