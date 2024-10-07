@@ -34,12 +34,12 @@ public class Product {
     //TODO ユニークキー登録時にエラーメッセージを表記
     @NotBlank
     @Size(max=64)
-    @Column(unique = true, length = 64, nullable = false )
+    @Column(unique = true, length = 64, nullable = false)
     private String code;
 
     @NotBlank
     @Size(max=64)
-    @Column(length = 64, nullable = false )
+    @Column(length = 64, nullable = false)
     private String name;
 
     @Size(max=255)
@@ -65,12 +65,12 @@ public class Product {
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
-    @Column(updatable = false , nullable = false )
+    @Column(updatable = false, nullable = false)
     private Date createdAt;
 
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
-    @Column(nullable = false )
+    @Column(nullable = false)
     private Date updatedAt;
 
     @Column(nullable = false, columnDefinition = "int default 0")
@@ -208,7 +208,5 @@ public class Product {
     public void setOldCode(String oldCode) {
         this.oldCode = oldCode;
     }
-
-    
         
 }
