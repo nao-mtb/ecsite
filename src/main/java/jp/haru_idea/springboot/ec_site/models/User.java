@@ -35,41 +35,41 @@ public class User{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(length = 64, nullable = false )
+    @Column(length = 64, nullable = false)
     private String lastName;
 
-    @Column(length = 64, nullable = false )
+    @Column(length = 64, nullable = false)
     private String firstName;
 
-    @Column(unique = true, length = 128, nullable = false )
+    @Column(unique = true, length = 128, nullable = false)
     private String mail;
 
     // @NotNull
     // @Temporal(TemporalType.DATE)
     // @DateTimeFormat(pattern = "[yyyy/MM/dd][yyyy-MM-dd]")
-    // @Column(nullable = false )
+    // @Column(nullable = false)
     //private Date birthDate;
 
-    @Column(nullable = false )
+    @Column(nullable = false)
     private LocalDate birthDate;
     
-    @Column(nullable = false )
+    @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false , columnDefinition = "int default 0")
+    @Column(nullable = false, columnDefinition = "int default 0")
     private Integer deleteFlag = 0;
 
-    @Column(nullable = false , columnDefinition = "boolean default false")
+    @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean verified = false;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
-    @Column(updatable = false , nullable = false )
+    @Column(updatable = false, nullable = false)
     private Date createdAt;
 
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
-    @Column(nullable = false )
+    @Column(nullable = false)
     private Date updatedAt;
 
     @Column(nullable = false, columnDefinition = "int default 0")

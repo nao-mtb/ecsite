@@ -29,7 +29,6 @@ public class InvoiceDetail {
     @JoinColumn(name="product_id", nullable = false)
     private Product product;
     
-
     @NotNull
     @ManyToOne
     @JoinColumn(name="invoice_id", nullable = false)
@@ -52,12 +51,12 @@ public class InvoiceDetail {
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
-    @Column(updatable = false , nullable = false )
+    @Column(updatable = false, nullable = false)
     private Date createdAt;
 
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
-    @Column(nullable = false )
+    @Column(nullable = false)
     private Date updatedAt;
 
     @Column(nullable = false, columnDefinition = "int default 0")
@@ -142,7 +141,5 @@ public class InvoiceDetail {
     public void setVersion(int version) {
         this.version = version;
     }
-
-    
     
 }

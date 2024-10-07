@@ -26,17 +26,17 @@ public class Role {
     private int id;
 
     @NotBlank
-    @Column(length = 64, nullable = false )
+    @Column(length = 64, nullable = false)
     private String name;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
-    @Column(updatable = false , nullable = false )
+    @Column(updatable = false, nullable = false)
     private Date createdAt;
 
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
-    @Column(nullable = false )
+    @Column(nullable = false)
     private Date updatedAt;
 
     @Column(nullable = false, columnDefinition = "int default 0")
@@ -92,6 +92,5 @@ public class Role {
     public void setRoleUsers(Collection<RoleUser> roleUsers) {
         this.roleUsers = roleUsers;
     }
-    
     
 }

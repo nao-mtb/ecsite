@@ -18,7 +18,6 @@ public class UserCommonForm {
     @Pattern(regexp = "[^!\"#$%&'()*+,-./:;<=>?@[]^_`{]+$]{0,64}", message = "64文字以内の文字（記号を除く）を入力してください")
     private String firstName;
     
-    //TODO ユニークキー登録時のエラーメッセージを作成
     //TODO メール正規表現整理
     @NotBlank
     @Size(max=128)
