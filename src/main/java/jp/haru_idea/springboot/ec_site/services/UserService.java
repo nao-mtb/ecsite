@@ -67,14 +67,26 @@ public class UserService {
         return userRepository.findByMail(mail);
     }
 
-    public void sendPasswordResetMail(String mail, String token){
-        String url = "http://localhost:8080/user/profile/password/reset?token=" + token;
+    public boolean isUserExists(String mail){
+        return getByMail(mail) != null;
+    }
+
+    public void sendTokenMail(String status, String mail, String token){
+        String url = "";
+        String subject = "";
+        if(status.equals("register")){
+            url = "http://localhost:8080/user/create/auth/verify?token=" + token;
+            subject = "【XXXX】Create New Account";
+        }else if(status.equals("resetPassword")){
+            url = "http://localhost:8080/user/profile/password/reset?token=" + token;
+            subject = "【XXXX】Reset Password";
+        }
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(mail);
         mailMessage.setFrom("u6b70co@gmail.com");
-        mailMessage.setSubject("【XXXX】パスワードリセット");
+        mailMessage.setSubject(subject);
         mailMessage.setText(
-            "以下のリンクにアクセスして新しいパスワードを設定してください\r\n\r\n" + 
+            "以下のリンクにアクセスしてください\r\n\r\n" + 
             url + "\r\n\r\n" + " ※このリンクの有効期限は2時間です\r\n" 
             );
         try{
@@ -83,5 +95,22 @@ public class UserService {
             System.out.println("mail error");
         }
     }
+    
+    // public void sendPasswordResetMail(String mail, String token){
+    //     String url = "http://localhost:8080/user/profile/password/reset?token=" + token;
+    //     SimpleMailMessage mailMessage = new SimpleMailMessage();
+    //     mailMessage.setTo(mail);
+    //     mailMessage.setFrom("u6b70co@gmail.com");
+    //     mailMessage.setSubject("【XXXX】パスワードリセット");
+    //     mailMessage.setText(
+    //         "以下のリンクにアクセスして新しいパスワードを設定してください\r\n\r\n" + 
+    //         url + "\r\n\r\n" + " ※このリンクの有効期限は2時間です\r\n" 
+    //         );
+    //     try{
+    //         mailSender.send(mailMessage);
+    //     }catch(MailException e){
+    //         System.out.println("mail error");
+    //     }
+    // }
     
 }

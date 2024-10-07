@@ -11,6 +11,7 @@
 <body>
     <h3>ログイン</h3>
     <div th:fragment="main">
+    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
     <div class="alert" th:if="${param.error}">
         ユーザ名/パスワード名が正しくありません
     </div>

@@ -60,26 +60,13 @@ public class CreditCardController {
     @GetMapping("/profile/credit-card/info")
     public String profile(Model model){
         int userId = securitySession.getUserId();
-        if (userId == 0){
-            return "users/login";
-        }
         model.addAttribute("user", userService.getById(userId));
         return "creditCards/info";
     }
 
     @GetMapping("/credit-card/create")
-    public String create(
-            @ModelAttribute CreditCard creditCard,
-            HttpSession session, Model model){
-        if (session.getAttribute("userId") == null && securitySession.getUserId() == 0){
-            return "users/login";
-        }
-        int userId = 0;
-        if(session.getAttribute("userId") != null){
-            userId = (Integer)session.getAttribute("userId");
-        }else{
-            userId = securitySession.getUserId();
-        }
+    public String create(@ModelAttribute CreditCard creditCard, Model model){
+        int userId = securitySession.getUserId();
         User user = userService.getById(userId);
         creditCard.setUser(user);
         int currentYear = currentYear();
@@ -87,18 +74,11 @@ public class CreditCardController {
         return "creditCards/create";
     }
 
-    @Transactional
     @PostMapping("/credit-card/save")
     public String save(
             @Validated
             @ModelAttribute @RequestBody CreditCard creditCard,
-            HttpSession session,
-            BindingResult result,
-            RedirectAttributes attrs){
-        int userId = securitySession.getUserId();
-        if (session.getAttribute("userId") == null && userId == 0){
-            return "users/login";
-        }
+            BindingResult result, RedirectAttributes attrs){
         if(result.hasErrors()){
             return "creditCards/create";
         }
