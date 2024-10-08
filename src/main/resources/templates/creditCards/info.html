@@ -10,16 +10,21 @@
 <body>
     <h3>カード情報</h3>
     <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
-    <table class="table">
+    <form th:method="patch" th:action="@{/user/profile/credit-card/update/default}">
+        <table class="table">
         <thead>
             <tr>
                 <th>カード番号</th><th>有効期限</th>
             </tr>
         </thead>
         <tbody>
-            <tr th:each="creditCard:${user.creditCards}">
+            <tr th:each="creditCard:${creditCards}">
                 <td hidden>[[${creditCard.id}]]</td>
                 <td>
+                    <label>
+                        <input type="radio" th:checked="${creditCard.cardDefault==1}" name="creditCard" th:value="${creditCard.id}"
+                        th:disabled="${#dates.create(creditCard.expYear, creditCard.expMonth+1, 0) lt #dates.createToday()}">
+                    </label>
                     [[${'  ************ ' + #strings.substring(creditCard.cardNumber, creditCard.cardNumber.length() -4)}]]
                 </td>                                
                 <td>
@@ -34,7 +39,10 @@
                 </td>
             </tr>
         </tbody>
-    </table>
-    <a class="button" th:href="@{/user/credit-card/create}">追加登録</a>
+        <div>
+            <input type="submit" value="いつも使うカードの指定を変更">
+        </div>
+        </table>
+        <a class="button" th:href="@{/user/credit-card/create}">追加登録</a>
+    </form>
 </body>
-</html>

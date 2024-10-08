@@ -11,7 +11,8 @@ import jp.haru_idea.springboot.ec_site.repositories.CreditCardRepository;
 
 @Service
 public class CreditCardService {
-    @Autowired CreditCardRepository creditCardRepository;
+    @Autowired
+    CreditCardRepository creditCardRepository;
 
     public void save(CreditCard creditCard){
         creditCardRepository.save(creditCard);
@@ -29,6 +30,10 @@ public class CreditCardService {
         return creditCardRepository.findByUserId(userId);
     }
 
+    public void saveAll(Collection<CreditCard> creditCards){
+        creditCardRepository.saveAll(creditCards);
+    }
+
     //発生日付をソートして表示する場合
     // public Collection<HouseholdAccount> getAll(){
     //     Sort sortOrder = Sort.by("eventDate");
@@ -36,6 +41,12 @@ public class CreditCardService {
     // }
     public Collection<CreditCard> getUserIdOrderByCardDefaultDesc(int userId){
         return creditCardRepository.findByUserIdOrderByCardDefaultDesc(userId);
+    }
+
+    public void resetDefault(int userId){
+        Collection<CreditCard> creditCards = getUserId(userId);
+        creditCards.forEach(creditCard -> creditCard.setCardDefault(0));
+        saveAll(creditCards);
     }
 
     public CreditCard getDefaultCreditCards(int userId){

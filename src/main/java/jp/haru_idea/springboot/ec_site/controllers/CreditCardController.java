@@ -10,9 +10,11 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import javax.validation.constraints.Null;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -60,7 +62,7 @@ public class CreditCardController {
     @GetMapping("/profile/credit-card/info")
     public String profile(Model model){
         int userId = securitySession.getUserId();
-        model.addAttribute("user", userService.getById(userId));
+        model.addAttribute("creditCards", creditCardService.getUserIdOrderByCardDefaultDesc(userId));
         return "creditCards/info";
     }
 
@@ -81,6 +83,14 @@ public class CreditCardController {
             BindingResult result, RedirectAttributes attrs){
         if(result.hasErrors()){
             return "creditCards/create";
+        }
+        int userId = securitySession.getUserId();
+        if(creditCardService.getUserId(userId) == null){
+            creditCard.setCardDefault(1);    
+        }else{
+            if(creditCard.getCardDefault() == 1){
+                creditCardService.resetDefault(userId);
+            }
         }
         creditCardService.save(creditCard);
         attrs.addFlashAttribute("success","カード情報の登録に成功しました");
@@ -116,13 +126,10 @@ public class CreditCardController {
         if(result.hasErrors()){
             return "creditCards/edit";
         }
-        CreditCard creditCard = formToCreditCard(creditCardForm, creditCardId);
-        //一旦ゼロクリアして登録に変更
         if(creditCardForm.getCardDefault() == 1){
-            CreditCard defaultCreditCard = creditCardService.getDefaultCreditCards(userId);
-            defaultCreditCard.setCardDefault(0);
-            creditCardService.save(defaultCreditCard);
+            creditCardService.resetDefault(userId);
         }
+        CreditCard creditCard = formToCreditCard(creditCardForm, creditCardId);
         creditCardService.save(creditCard);
         attrs.addFlashAttribute("success","データの更新に成功しました");
         if(source.equals("info")){
@@ -133,6 +140,18 @@ public class CreditCardController {
         }else{
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
+    }
+
+    // デフォルトカード指定を変更
+    @PatchMapping("/profile/credit-card/update/default")
+    public String changeDefault(HttpServletRequest request, RedirectAttributes attrs){
+        int userId = securitySession.getUserId();
+        creditCardService.resetDefault(userId);
+        CreditCard creditCard = creditCardService.getById(Integer.parseInt(request.getParameter("creditCard")));
+        creditCard.setCardDefault(1);
+        creditCardService.save(creditCard);
+        attrs.addFlashAttribute("success","いつも使うカード指定を変更しました");
+        return "redirect:/user/profile/credit-card/info";
     }
 
     //TODO Javascriptを用いてポップアップ画面からの削除
@@ -196,9 +215,4 @@ public class CreditCardController {
         LocalDate today = LocalDate.now();
         return today.getYear();
     }
-    // public boolean checkExpireDate(CreditCard creditCard){
-    //     LocalDate today = LocalDate.now();
-    //     LocalDate creditCardDate = LocalDate.of(creditCard.getExpYear(), creditCard.getExpMonth(),1);
-    //     return creditCardDate.isAfter(today);
-    // }
 }
