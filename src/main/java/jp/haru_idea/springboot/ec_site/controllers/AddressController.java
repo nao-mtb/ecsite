@@ -25,6 +25,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jp.haru_idea.springboot.ec_site.models.Address;
 import jp.haru_idea.springboot.ec_site.models.AddressForm;
+import jp.haru_idea.springboot.ec_site.models.CreditCard;
 import jp.haru_idea.springboot.ec_site.models.User;
 import jp.haru_idea.springboot.ec_site.securities.SecuritySession;
 import jp.haru_idea.springboot.ec_site.services.AddressService;
@@ -46,7 +47,21 @@ public class AddressController {
     @GetMapping("/profile/address/info")
     public String profile(Model model){
         int userId = securitySession.getUserId();
-        model.addAttribute("user", userService.getById(userId));
+        model.addAttribute("addresses", addressService.getByUserId(userId));
+        return "addresses/info";
+    }
+
+    @GetMapping("/profile/address/info/category")
+    public String shippingProfile(@RequestParam("category") String category, Model model){
+        int userId = securitySession.getUserId();
+        int addressType = 0;
+        //一覧表示のための変数設定,設定数字以外を表示（発送先兼請求書0、発送先1、請求書先2）
+        if(category.equals("shipping")){
+            addressType = 2;
+        }else if(category.equals("billing")){
+            addressType = 1;
+        }
+        model.addAttribute("addresses", addressService.getByUserIdAndAddressTypeNot(userId, addressType));
         return "addresses/info";
     }
 
@@ -94,18 +109,42 @@ public class AddressController {
         if(result.hasErrors()){
             return "/users/profile/address/edit/" + addressId;
         }
-        Address address = formToAddress(addressForm, addressId);
-        if(address.getShippingDefault() == 1){
+        if(addressForm.getShippingDefault() == 1){
             addressService.resetShippingDefault(userId);
         }
-        if(address.getBillingDefault() == 1){
+        if(addressForm.getBillingDefault() == 1){
             addressService.resetBillingDefault(userId);            
         }
+        Address address = formToAddress(addressForm, addressId);
         addressService.save(address);
         attrs.addFlashAttribute("success","データの更新に成功しました");        
         return "redirect:/user/profile/address/info";
     }
 
+    //デフォルト登録先変更
+    @Transactional
+    @PatchMapping("/profile/address/update/default-shipping")
+    public String changeShippingDefault(HttpServletRequest request, RedirectAttributes attrs){
+        int userId = securitySession.getUserId();
+        addressService.resetShippingDefault(userId);
+        Address address = addressService.getById(Integer.parseInt(request.getParameter("addressId")));
+        address.setShippingDefault(1);
+        addressService.save(address);
+        attrs.addFlashAttribute("success","いつも使用するお届け先に変更しました");
+        return "redirect:/user/profile/address/info";
+    }
+
+    @Transactional
+    @PatchMapping("/profile/address/update/default-billing")
+    public String changeBillingDefault(HttpServletRequest request, RedirectAttributes attrs){
+        int userId = securitySession.getUserId();
+        addressService.resetBillingDefault(userId);
+        Address address = addressService.getById(Integer.parseInt(request.getParameter("addressId")));
+        address.setBillingDefault(1);
+        addressService.save(address);
+        attrs.addFlashAttribute("success","いつも使用する請求書送付先に変更しました");
+        return "redirect:/user/profile/address/info";
+    }
 
     @GetMapping("/address/index")
     public String index(Model model){
