@@ -30,13 +30,27 @@ public class AddressService {
         return addressRepository.findById(id);
     }
 
-
-    public void resetShippingDefault(@Param("userId") int userId){
-        addressRepository.resetShippingDefault(userId);
+    public Collection<Address> getByUserId(int userId){
+        return addressRepository.findByUserId(userId);
     }
 
-    public void resetBillingDefault(@Param("userId") int userId){
-        addressRepository.resetBillingDefault(userId);
+    public Collection<Address> getByUserIdAndAddressTypeNot(int userId, int addressType){
+        return addressRepository.findByUserIdAndAddressTypeNot(userId, addressType);
     }
 
+    public void saveAll(Collection<Address> addresses){
+        addressRepository.saveAll(addresses);
+    }
+
+    public void resetShippingDefault(int userId){
+        Collection<Address> addresses = getByUserId(userId);
+        addresses.forEach(address -> address.setShippingDefault(0));
+        saveAll(addresses);
+    }
+
+    public void resetBillingDefault(int userId){
+        Collection<Address> addresses = getByUserId(userId);
+        addresses.forEach(address -> address.setBillingDefault(0));
+        saveAll(addresses);
+    }
 }

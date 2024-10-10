@@ -34,11 +34,7 @@
       </div>
       <div class="container">
         <label for="prefecture">都道府県</label>
-        <input
-          type="text"
-          th:field="*{prefecture}"
-          th:errorclass="bg-warning"
-        />
+        <input type="text" th:field="*{prefecture}" th:errorclass="bg-warning" />
         <span th:errors="*{prefecture}"></span>
       </div>
       <div class="container">

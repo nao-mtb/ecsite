@@ -9,28 +9,55 @@
 </head>
 <body>
     <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
-    <li th:each="address:${user.addresses}">
-        <div class="container">
-            <label for="zipCode">郵便番号</label>
-            <p>[[${address.zipCode}]]</p>
+    <h3>ご登録の住所</h3>
+    <a th:href="@{/user/profile/address/info/}">全表示</a>
+    <a th:href="@{/user/profile/address/info/category/(category='shipping')}">お届け先に指定の住所のみ表示</a>
+    <a th:href="@{/user/profile/address/info/category/(category='billing')}">請求書送付先に指定の住所のみ表示</a>
+    <div th:each="address:${addresses}">
+        <div th:switch="${address.addressType}">
+            <p th:case="0">お届け先/請求書送付先</p>
+            <p th:case="1">お届け先</p>
+            <p th:case="2">請求書送付先</p>
+        </div>
+        <div th:if="${address.addressType ne 2}">
+            <div th:if="${address.shippingDefault}">
+                <span class="value">いつも使用するお届け先</span>
+            </div>
+            <form th:method="patch" th:action="@{/user/profile/address/update/default-shipping}">
+                <div th:unless="${address.shippingDefault}">
+                    <input type="hidden" name="addressId" th:value="${address.id}">
+                    <input type="submit" value="いつも使用するお届け先に変更">
+                </div>    
+            </form>    
+        </div>
+        <div th:if="${address.addressType ne 1}">
+            <div th:if="${address.billingDefault}">
+                <span class="value">いつも使用する請求書送付先</span>
+            </div>
+            <form th:method="patch" th:action="@{/user/profile/address/update/default-billing}">
+                <div th:unless="${address.billingDefault}">
+                    <input type="hidden" name="addressId" th:value="${address.id}">
+                    <input type="submit" value="いつも使用する請求書送付先に変更">
+                </div>    
+            </form>    
         </div>
         <div class="container">
-            <label for="prefecture">都道府県</label>
-            <p>[[${address.prefecture}]]</p>
+            <span class="label">氏名：</span>
+            <span class="value">[[${address.lastName}]] [[${address.firstName}]]</span>
         </div>
         <div class="container">
-            <label for="city">市</label>
-            <p>[[${address.city}]]</p>
+            <span class="label">郵便番号：</span>
+            <span class="value">[[${address.zipCode}]]</span>
         </div>
         <div class="container">
-            <label for="address1">区町村・番地</label>
-            <p>[[${address.address1}]]</p>
+            <span class="label">住所：</span>
+            <span class="value">[[${address.prefecture}]][[${address.city}]][[${address.address1}]][[${address.address2}]]</span>
         </div>
         <div class="container">
-            <label for="address2">マンション・アパート名</label>
-            <p th:unless="${#strings.isEmpty(address.address2)}">[[${address.address2}]]</p>
+            <span class="label">電話番号：</span>
+            <span class="value">[[${address.tel}]]</span>
         </div>
         <a th:href="@{/user/profile/address/edit/{addressId}/(addressId=${address.id})}">住所変更</a>
-    </li>
+    </div>
 </body>
 </html>
