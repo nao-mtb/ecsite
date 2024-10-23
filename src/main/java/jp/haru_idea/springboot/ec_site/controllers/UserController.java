@@ -1,6 +1,7 @@
 package jp.haru_idea.springboot.ec_site.controllers;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiPredicate;
 
@@ -34,6 +35,8 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jp.haru_idea.springboot.ec_site.models.Role;
+import jp.haru_idea.springboot.ec_site.models.RoleUser;
 import jp.haru_idea.springboot.ec_site.models.Token;
 import jp.haru_idea.springboot.ec_site.models.User;
 import jp.haru_idea.springboot.ec_site.models.UserAdminForm;
@@ -43,6 +46,8 @@ import jp.haru_idea.springboot.ec_site.models.UserResetPasswordForm;
 import jp.haru_idea.springboot.ec_site.models.UserChangePasswordForm;
 import jp.haru_idea.springboot.ec_site.securities.SecuritySession;
 import jp.haru_idea.springboot.ec_site.models.UserCommonForm;
+import jp.haru_idea.springboot.ec_site.services.MailService;
+import jp.haru_idea.springboot.ec_site.services.RoleUserService;
 import jp.haru_idea.springboot.ec_site.services.TokenService;
 import jp.haru_idea.springboot.ec_site.services.UserService;
 
@@ -59,6 +64,12 @@ public class UserController {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private MailService mailService;
+
+    @Autowired
+    private RoleUserService roleUserService;
 
     @GetMapping("/profile/main/info")
     public String profile(Model model){
@@ -93,10 +104,9 @@ public class UserController {
 
         // send mail with token
         String tokenStr = UUID.randomUUID().toString();
-        userService.sendTokenMail("register",user.getMail(), tokenStr);
-        Token token = tokenService.findOrCreateUserToken(user);
-        token.setToken(tokenStr);
-        tokenService.save(token);
+        Map<String, String> contents = mailService.createTokenMailContent("register", tokenStr);
+        mailService.sendMail(user.getMail(), contents.get("subject"), contents.get("message"));
+        tokenService.processSaveToken(user, tokenStr);
         attrs.addFlashAttribute("success","メールを送信しました。メールのURLからアクセスしなおしてください");
         return "redirect:/user/create/";
     }
@@ -112,10 +122,9 @@ public class UserController {
         User user = userService.getByMail(mail);
         // send mail with token
         String tokenStr = UUID.randomUUID().toString();
-        userService.sendTokenMail("register",mail, tokenStr);
-        Token token = tokenService.findOrCreateUserToken(user);
-        token.setToken(tokenStr);
-        tokenService.save(token);
+        Map<String, String> contents = mailService.createTokenMailContent("register", tokenStr);
+        mailService.sendMail(user.getMail(), contents.get("subject"), contents.get("message"));
+        tokenService.processSaveToken(user, tokenStr);
         attrs.addFlashAttribute("success","メールを送信しました。メールのURLからアクセスしなおしてください");
         return "redirect:/user/create/";
     }
@@ -139,11 +148,9 @@ public class UserController {
             return "users/verify-regenerate";
         }
         User user = userService.getByMail(mail);
-        user.setVerified(true);
-        userService.save(user);
+        roleUserService.addRoleUser(user, "ROLE_USER");
         tokenService.deleteById(token.getId());
         attrs.addFlashAttribute("success","認証に成功しました");
-        // return "redirect:/user/credit-card/create";
         return "redirect:/user/address/create";
     }
 
@@ -220,15 +227,9 @@ public class UserController {
         User user = userService.getByMail(userMailForm.getMail());
         if (user != null){
             String tokenStr = UUID.randomUUID().toString();
-            userService.sendTokenMail("resetPassword",user.getMail(), tokenStr);
-            Token token = tokenService.findOrCreateUserToken(user);
-            // Token token = tokenService.getByUserId(user.getId());
-            // if (token == null){
-            //     token = new Token();
-            //     token.setUser(user);
-            // }
-            token.setToken(tokenStr);
-            tokenService.save(token);
+            Map<String, String> contents = mailService.createTokenMailContent("resetPassword", tokenStr);
+            mailService.sendMail(user.getMail(), contents.get("subject"), contents.get("message"));
+            tokenService.processSaveToken(user, tokenStr);
         }
         attrs.addFlashAttribute("success", "メールを送信しました");
         return "redirect:/user/profile/password/reset/request";
@@ -300,7 +301,7 @@ public class UserController {
         user.setDeleteFlag(1);
         userService.save(user);
         attrs.addFlashAttribute("success","ご利用ありがとうございました");    
-        return "redirect:/user/profile";
+        return "redirect:/user/login";
     }
 
     //TODO 一覧表示もformを使用

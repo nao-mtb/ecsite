@@ -150,14 +150,6 @@ public class User{
         this.deleteFlag = deleteFlag;
     }
     
-    public boolean isVerified() {
-        return verified;
-    }
-
-    public void setVerified(boolean verified) {
-        this.verified = verified;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }

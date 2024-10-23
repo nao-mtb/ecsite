@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,15 +18,7 @@ import jp.haru_idea.springboot.ec_site.repositories.TokenRepository;
 public class TokenService {
     @Autowired
     TokenRepository tokenRepository;
-
-    public void save(Token token){
-        tokenRepository.save(token);
-    }
     
-    public Token getByUserId(int userId){
-        return tokenRepository.findByUserId(userId);
-    }
-
     public Token getByToken(String token){
         return tokenRepository.findByToken(token);
     }
@@ -33,6 +26,10 @@ public class TokenService {
     public void deleteById(int id){
         tokenRepository.deleteById(id);
     }   
+
+    public String createUUID(){
+        return UUID.randomUUID().toString();
+    }
 
     public boolean isExpirationDate(Date updateAt){
         SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -44,8 +41,8 @@ public class TokenService {
         return currentDateTime.isBefore(expireDateTime);
     }
 
-    public Token findOrCreateUserToken(User user){
-        Token token = getByUserId(user.getId());
+    private Token findOrCreateUserToken(User user){
+        Token token = tokenRepository.findByUserId(user.getId());
         if (token == null){
             token = new Token();
             token.setUser(user);
@@ -53,4 +50,9 @@ public class TokenService {
         return token;
     }
 
+    public void processSaveToken(User user, String tokenStr){
+        Token token = findOrCreateUserToken(user);
+        token.setToken(tokenStr);
+        tokenRepository.save(token);
+    }
 }
