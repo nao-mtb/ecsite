@@ -8,5 +8,5 @@ import jp.haru_idea.springboot.ec_site.models.Role;
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Integer>{
     Role findById(int id);
-    Role findByName(int roleId);    
+    Role findByName(String name);    
 }
