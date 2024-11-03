@@ -4,28 +4,46 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-    />
+    <!-- <link href="stylesheet" href="css/style_dist.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"> -->
+    <link rel="stylesheet" th:href="css/layouts/header.css">
 </head>
 <header th:fragment="header">
     <div class="header">
-        <div class="logo">
+        <h3 class="logo">
             <a th:href="@{/home}">ABCD</a>
-        </div>
-        <div class="menu">
+        </h3>
+        <nav>
             <ul>
-                <li><a th:href="@{/user/login}">ログイン</a></li>
-                <li><a th:href="@{/home}">商品ページ</a></li>
-                <li><a th:href="@{/home}">カート</a>
-                    <ul class="cart-details">
-                        <li>商品数</li>
-                        <li>金額</li>
+                <div sec:authorize="isAuthenticated()">
+                    <li><a th:href="@{/user/profile/main/info}">
+                        <!-- <span sec:authentication="principal.lastName"> </span>
+                        <span sec:authentication="principal.firstName"></span>さんの登録情報 -->
+                        <span th:text="${lastName}"></span>
+                        <span th:text="${firstName}"></span>さんの登録情報
+                    </a></li>
+                </div>
+                <li><a th:href="@{/product/shopping/index}">商品ページ</a></li>
+                <li><a th:href="@{/cart/view}">カート</a>
+                    <ul class="details">
+                        <li>商品数: <span th:text="${totalCartQuantity}"></span></li>
+                        <li>金額: <span th:text="${totalCartPrice}"></span></li>
                     </ul>
                 </li>
             </ul>
+        </nav>
+        <div class="account">
+            <div sec:authorize="isAuthenticated()">
+                <form method="post" th:action="@{/user/logout}">
+                    <button class="loguout">ログアウト</button>
+                </form>
+            </div>
+            <div sec:authorize="!isAuthenticated()">
+                <form method="get" th:action="@{/login}">
+                    <button class="login">ログイン/新規会員登録</button>
+                </form>
+            </div>
         </div>
-    </div>                
+    </div>
 </header>
 </html>

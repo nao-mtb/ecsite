@@ -28,6 +28,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.access.intercept.RequestMatcherDelegatingAuthorizationManager;
 import org.springframework.security.web.authentication.RequestMatcherDelegatingAuthenticationManagerResolver;
+import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
+import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import jp.haru_idea.springboot.ec_site.services.LoginUserService;
@@ -67,17 +69,18 @@ public class WebSecurityConfig {
             .loginPage("/login")                   //ログイン画面のURL
             .usernameParameter("usr")              //ユーザ名のパラメーター名を設定
             .passwordParameter("passwd")           //パスワードのパラメーター名を設定
+            .defaultSuccessUrl("/home")      //ログイン成功後のリダイレクト先URL
             // .loginProcessingUrl("/login")          //ユーザ名・パスワードの送信先URL
-            // .defaultSuccessUrl("/product/index")      //ログイン成功後のリダイレクト先URL
             // .failureForwardUrl("/login")           //ログイン失敗時のリダイレクト先URL
         .and()
         //ログアウトに関する設定
-        .logout()                             
-            .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))  //ログアウトのためのURL
-            .logoutSuccessUrl("/product/index")           //ログアウト成功後のリダイレクト先URL
+        .logout()
+            .logoutUrl("/user/logout")             //POSTでログアウト
+            // .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))  //Getでログアウト
+            .logoutSuccessUrl("/home")           //ログアウト成功後のリダイレクト先URL
             // .deleteCookies("")                    //ログアウト時に削除するクッキー名
             .invalidateHttpSession(true);         //ログアウト時のセッション破棄有無(tureは破棄)
-        return http.build();
+            return http.build();
     }
 
     // @Bean
