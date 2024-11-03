@@ -15,4 +15,5 @@ public interface CartDetailsRepository extends JpaRepository<CartDetail, Integer
     CartDetail findByProductIdAndCartId(int productId, int cartId);
     int countByQuantity(int id);
     CartDetail findById(int id);
+    Collection<CartDetail> findAllByCartId(int cartId);
 }

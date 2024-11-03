@@ -42,6 +42,25 @@ public class CartDetailsService {
         return cartDetailsRepository.findById(id);
     }
 
+    // private Collection<CartDetail> getByAllCartId(int cartId){
+    //     return cartDetailsRepository.findAllByCartId(cartId);
+    // }
+
+    public int totalQuantity(int cartId){
+        // return getByAllCartId(cartId).size();
+        return cartDetailsRepository.findAllByCartId(cartId).size();
+    }
+
+    public int totalPrice(int cartId){        
+        // Collection<CartDetail> cartDetails = getByAllCartId(cartId);
+        Collection<CartDetail> cartDetails = cartDetailsRepository.findAllByCartId(cartId);
+        int price = 0;
+        for(CartDetail cartDetail : cartDetails){
+            price = price + cartDetail.getProduct().getSellingPrice() * cartDetail.getQuantity();
+        }
+        return price;
+    }
+
     // @Query("SELECT * FROM Carts INNER JOIN CartDetails on cart.id = cartDetails.cartId WHERE orderFlag = ?2")
     // public List<CartDetail> getByUserIdAndOrderFlag(int userId, int orderFlag){
     //     return cartDetailsRepository.findByUserIdAndOrderFlag(userId, orderFlag);
