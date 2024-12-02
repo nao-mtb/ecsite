@@ -9,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -30,6 +32,10 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @ManyToOne
+    @JoinColumn(name="tax_id", nullable = false)
+    private Tax tax;
 
     //TODO ユニークキー登録時にエラーメッセージを表記
     @NotBlank
@@ -94,6 +100,14 @@ public class Product {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Tax getTax() {
+        return tax;
+    }
+
+    public void setTax(Tax tax) {
+        this.tax = tax;
     }
 
     public String getCode() {
@@ -208,5 +222,4 @@ public class Product {
     public void setOldCode(String oldCode) {
         this.oldCode = oldCode;
     }
-        
 }
