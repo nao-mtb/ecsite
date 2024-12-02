@@ -164,6 +164,7 @@ public class UserController {
         return "users/edit";
     }
 
+    //TODO 氏名変更時のヘッダーメニューの氏名反映
     @PatchMapping("/profile/main/update")
     public String updateMain(
             @Validated
@@ -176,7 +177,7 @@ public class UserController {
         }
         User user = commonFormToUser(userCommonForm, userService.getById(userId));
         userService.save(user);
-        attrs.addFlashAttribute("success","データの更新に成功しました");    
+        attrs.addFlashAttribute("success","データの更新に成功しました");
         return "redirect:/user/profile/main/info";
     }
 
@@ -306,12 +307,23 @@ public class UserController {
 
     //TODO 一覧表示もformを使用
     //************ 管理者用 ************
-    @GetMapping("/admin/index")
-    public String index(Model model){
-        //Collection<User> users = userService.getAll();
+    @GetMapping("/admin/customer-index")
+    public String customerIndex(Model model){
         Collection<User> users = userService.getAll();
         model.addAttribute("users", users);
-        return "users/admins/index";
+        return "users/admins/customer_index";
+    }
+
+    @GetMapping("/admin/corp-index")
+    public String corpIndex(Model model){
+        Collection<User> users = userService.getAll();
+        model.addAttribute("users", users);
+        return "users/admins/corp_index";
+    }
+
+    @GetMapping("/admin/create")
+    public String createCorpMember(){
+        return "users/admins/create";
     }
 
     //管理者用編集
