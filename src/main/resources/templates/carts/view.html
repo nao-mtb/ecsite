@@ -16,19 +16,22 @@
         <table class="table">
         <thead>
             <tr>
-                <th>購入</th><th>商品名</th><th>個数</th><th>合計金額</th>                
+                <th>購入</th><th>商品名</th><th>価格(内税)</th><th>個数</th><th>税込合計金額</th>
             </tr>
         </thead>
         <tbody>
             <th:block th:unless="${cart} eq null">
                 <tr th:each="cartDetail : ${cart.cartDetails}">
-                    <td hidden>[[${cartDetail.id}]]</td>
-                    <td>
-                        <input type="checkbox" th:name="cartDetailId" th:value="${cartDetail.id}" checked>
-                    </td>
-                    <td>[[${cartDetail.product.name}]]</td>
-                    <td>[[${cartDetail.quantity}]]</td>
-                    <td><span th:text="${cartDetail.quantity * cartDetail.product.sellingPrice}"></span></td>                    
+                    <div th:with="price=${#numbers.formatDecimal(cartDetail.product.sellingPrice + cartDetail.product.sellingPrice * cartDetail.product.tax.rate, 1, 0)}">
+                        <td hidden>[[${cartDetail.id}]]</td>
+                        <td>
+                            <input type="checkbox" th:name="cartDetailId" th:value="${cartDetail.id}" checked>
+                        </td>
+                        <td>[[${cartDetail.product.name}]]</td>
+                        <td><span th:text="${price}"></span></td>
+                        <td>[[${cartDetail.quantity}]]</td>
+                        <td><span th:text="${cartDetail.quantity} * ${price}"></span></td>
+                    </div>
                 </tr>
             </th:block>
         </tbody>
@@ -36,7 +39,7 @@
             <tr>
                 <th class="total">カート内合計金額</th>
                 <tr th:unless="${cart} eq null">
-                    <td><span th:text="${#aggregates.sum(cart.cartDetails.![quantity * product.sellingPrice])}"></span></td>
+                    <td><span th:text="${totalCartPrice}"></span></td>
                 </tr>
 
                 <tr th:if="${cart} eq null or ${#lists.isEmpty(cart.cartDetails)}">

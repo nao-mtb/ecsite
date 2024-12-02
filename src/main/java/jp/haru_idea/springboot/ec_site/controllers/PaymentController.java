@@ -116,7 +116,7 @@ public class PaymentController {
             orderDetail.setOrder(order);
             orderDetail.setProduct(cartDetail.getProduct());              
             orderDetail.setPrice(cartDetail.getProduct().getSellingPrice());
-            orderDetail.setTax(0.1);
+            orderDetail.setTax(cartDetail.getProduct().getTax().getRate());
             orderDetail.setNumber(cartDetail.getQuantity());
             orderDetailsService.save(orderDetail);
         }
@@ -129,7 +129,7 @@ public class PaymentController {
             invoiceDetail.setInvoice(invoice);
             invoiceDetail.setProduct(cartDetail.getProduct());
             invoiceDetail.setPrice(cartDetail.getProduct().getSellingPrice());
-            invoiceDetail.setTax(0.1);
+            invoiceDetail.setTax(cartDetail.getProduct().getTax().getRate());
             invoiceDetail.setNumber(cartDetail.getQuantity());
             invoiceDetailsService.save(invoiceDetail);
         }
