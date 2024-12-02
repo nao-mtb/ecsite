@@ -7,12 +7,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import jp.haru_idea.springboot.ec_site.models.LoginUserDetails;
 import jp.haru_idea.springboot.ec_site.models.User;
 import jp.haru_idea.springboot.ec_site.repositories.UserRepository;
+import jp.haru_idea.springboot.ec_site.securities.LoginUserDetails;
 
 @Service
-public class LoginUserService implements UserDetailsService{
+public class LoginService implements UserDetailsService{
 
     @Autowired
     private UserRepository userRepository;

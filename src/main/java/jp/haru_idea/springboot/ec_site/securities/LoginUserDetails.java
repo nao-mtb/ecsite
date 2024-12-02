@@ -1,9 +1,11 @@
-package jp.haru_idea.springboot.ec_site.models;
+package jp.haru_idea.springboot.ec_site.securities;
 
 import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import jp.haru_idea.springboot.ec_site.models.User;
 
 public class LoginUserDetails implements UserDetails{
     private User user;

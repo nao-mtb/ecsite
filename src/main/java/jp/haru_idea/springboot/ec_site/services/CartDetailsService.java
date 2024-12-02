@@ -42,21 +42,17 @@ public class CartDetailsService {
         return cartDetailsRepository.findById(id);
     }
 
-    // private Collection<CartDetail> getByAllCartId(int cartId){
-    //     return cartDetailsRepository.findAllByCartId(cartId);
-    // }
-
     public int totalQuantity(int cartId){
-        // return getByAllCartId(cartId).size();
         return cartDetailsRepository.findAllByCartId(cartId).size();
     }
 
     public int totalPrice(int cartId){        
-        // Collection<CartDetail> cartDetails = getByAllCartId(cartId);
         Collection<CartDetail> cartDetails = cartDetailsRepository.findAllByCartId(cartId);
         int price = 0;
         for(CartDetail cartDetail : cartDetails){
-            price = price + cartDetail.getProduct().getSellingPrice() * cartDetail.getQuantity();
+            double tax = cartDetail.getProduct().getTax().getRate();
+            int product_price = cartDetail.getProduct().getSellingPrice();
+            price = price + (product_price + (int)Math.floor(product_price * tax )) * cartDetail.getQuantity();
         }
         return price;
     }
