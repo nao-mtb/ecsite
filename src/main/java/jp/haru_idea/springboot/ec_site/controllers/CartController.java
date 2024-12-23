@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jp.haru_idea.springboot.ec_site.configs.CartModelAttributeAdvice;
 import jp.haru_idea.springboot.ec_site.models.Cart;
 import jp.haru_idea.springboot.ec_site.models.CartDetail;
 import jp.haru_idea.springboot.ec_site.models.Product;
@@ -20,12 +21,13 @@ import jp.haru_idea.springboot.ec_site.models.User;
 import jp.haru_idea.springboot.ec_site.securities.SecuritySession;
 import jp.haru_idea.springboot.ec_site.services.CartDetailsService;
 import jp.haru_idea.springboot.ec_site.services.CartService;
+import jp.haru_idea.springboot.ec_site.services.DiscountService;
 import jp.haru_idea.springboot.ec_site.services.ProductService;
 import jp.haru_idea.springboot.ec_site.services.UserService;
 
 @RequestMapping("/cart")
 @Controller
-public class CartController {
+public class CartController{
     @Autowired
     private CartService cartService;
 
@@ -41,10 +43,21 @@ public class CartController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private DiscountService discountService;
+
     @GetMapping("/view")
     public String viewUser(Model model){
         int userId = securitySession.getUserId();
-        model.addAttribute("cart", cartService.getByUserId(userId));
+        Cart cart = cartService.getByUserId(userId);
+        model.addAttribute("cart", cart);
+        if(discountService.currentSale() != null){
+            // double discountRate = discountService.currentSale().get().getRate();
+            double discountRate = discountService.currentSale().getRate();
+            int discountPrice = (int)(cartDetailsService.totalPrice(cart.getId()) * (1 - discountRate));
+            model.addAttribute("discountRate", (1 - discountRate));
+            model.addAttribute("discountPrice", discountPrice);
+        }
         return "carts/view";
     }
 

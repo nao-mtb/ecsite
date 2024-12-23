@@ -16,7 +16,7 @@
         <table class="table">
         <thead>
             <tr>
-                <th>購入</th><th>商品名</th><th>価格(内税)</th><th>個数</th><th>税込合計金額</th>
+                <th>購入</th><th>商品名</th><th>価格(内税)</th><th></th><th>個数</th><th>税込合計金額</th><th></th>
             </tr>
         </thead>
         <tbody>
@@ -37,11 +37,13 @@
         </tbody>
         <tfoot>
             <tr>
-                <th class="total">カート内合計金額</th>
+                <th class="total">ご注文合計金額</th><th>割引後合計金額</th>
                 <tr th:unless="${cart} eq null">
                     <td><span th:text="${totalCartPrice}"></span></td>
-                </tr>
-
+                    <tr th:unless="${discountPrice} eq null">
+                        <td><span th:text="${discountPrice}"></span></td>
+                    </tr>
+                </tr>    
                 <tr th:if="${cart} eq null or ${#lists.isEmpty(cart.cartDetails)}">
                     <td><span th:text="買い物かごに商品が入っていません"></span></td>
                 </tr>
