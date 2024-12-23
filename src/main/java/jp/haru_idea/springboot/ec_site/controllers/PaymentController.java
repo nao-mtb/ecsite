@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jp.haru_idea.springboot.ec_site.models.Cart;
 import jp.haru_idea.springboot.ec_site.models.CartDetail;
 import jp.haru_idea.springboot.ec_site.models.CreditCard;
+import jp.haru_idea.springboot.ec_site.models.Discount;
 import jp.haru_idea.springboot.ec_site.models.Invoice;
 import jp.haru_idea.springboot.ec_site.models.InvoiceDetail;
 import jp.haru_idea.springboot.ec_site.models.Order;
@@ -37,6 +39,7 @@ import jp.haru_idea.springboot.ec_site.securities.SecuritySession;
 import jp.haru_idea.springboot.ec_site.services.CartDetailsService;
 import jp.haru_idea.springboot.ec_site.services.CartService;
 import jp.haru_idea.springboot.ec_site.services.CreditCardService;
+import jp.haru_idea.springboot.ec_site.services.DiscountService;
 import jp.haru_idea.springboot.ec_site.services.InvoiceDetailsService;
 import jp.haru_idea.springboot.ec_site.services.InvoiceService;
 import jp.haru_idea.springboot.ec_site.services.OrderDetailsService;
@@ -72,8 +75,12 @@ public class PaymentController {
     private InvoiceDetailsService invoiceDetailsService;
 
     @Autowired
+    private DiscountService discountService;
+
+    @Autowired
     private SecuritySession securitySession;
     
+    //TODO Javascriptでカート画面操作を作成
     @GetMapping("/card")
     public String payment(@Valid
             Model model, RedirectAttributes attrs, HttpSession session,
@@ -111,6 +118,8 @@ public class PaymentController {
         order.setUser(userService.getById(userId));
         order.setOrderDate(new Date());
         orderService.save(order);
+        Discount discount = discountService.currentSale();
+        // Discount discount = discountService.currentSale().get();
         for(CartDetail cartDetail : cartDetails){
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrder(order);
@@ -118,6 +127,7 @@ public class PaymentController {
             orderDetail.setPrice(cartDetail.getProduct().getSellingPrice());
             orderDetail.setTax(cartDetail.getProduct().getTax().getRate());
             orderDetail.setNumber(cartDetail.getQuantity());
+            orderDetail.setDiscount(discount);
             orderDetailsService.save(orderDetail);
         }
         Invoice invoice = new Invoice();
@@ -131,7 +141,8 @@ public class PaymentController {
             invoiceDetail.setPrice(cartDetail.getProduct().getSellingPrice());
             invoiceDetail.setTax(cartDetail.getProduct().getTax().getRate());
             invoiceDetail.setNumber(cartDetail.getQuantity());
-            invoiceDetailsService.save(invoiceDetail);
+            invoiceDetail.setDiscount(discount);
+        invoiceDetailsService.save(invoiceDetail);
         }
         for(CartDetail cartDetail : cartDetails){
             cartDetailsService.delete(cartDetail.getId());
