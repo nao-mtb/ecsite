@@ -35,6 +35,10 @@ public class OrderDetail {
     @JoinColumn(name="order_id", nullable = false)
     private Order order;
 
+    @ManyToOne
+    @JoinColumn(name="discount_id")
+    private Discount discount;
+
     @NotNull
     @Column(nullable = false)
     private int number;
@@ -87,6 +91,14 @@ public class OrderDetail {
         this.order = order;
     }
 
+    public Discount getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Discount discount) {
+        this.discount = discount;
+    }
+    
     public int getNumber() {
         return number;
     }
@@ -142,5 +154,4 @@ public class OrderDetail {
     public void setVersion(int version) {
         this.version = version;
     }
-    
 }
