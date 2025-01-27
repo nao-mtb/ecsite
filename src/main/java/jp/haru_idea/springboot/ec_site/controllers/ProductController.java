@@ -19,13 +19,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jp.haru_idea.springboot.ec_site.models.DiscontinuedFlag;
 import jp.haru_idea.springboot.ec_site.models.Product;
+import jp.haru_idea.springboot.ec_site.models.Tax;
 import jp.haru_idea.springboot.ec_site.services.ProductService;
+import jp.haru_idea.springboot.ec_site.services.TaxService;
 
 @RequestMapping("/product")
 @Controller
 public class ProductController {
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private TaxService taxService;
 
     @GetMapping("/index")
     public String index(Model model){
@@ -37,16 +42,21 @@ public class ProductController {
     }
 
     @GetMapping("/create")
-    public String create(@ModelAttribute Product product){
-        return "products/create";        
+    public String create(@ModelAttribute Product product, Model model){
+        Collection<Tax> taxes = taxService.getAll();
+        model.addAttribute("taxes", taxes);
+        return "products/create";
     }
     @PostMapping("/save")
     public String save(
-            @Validated    
+            @Validated
             @ModelAttribute Product product,
-            BindingResult result,
+            BindingResult result, Model model,
             RedirectAttributes attrs){
         if(result.hasErrors()){
+            // TODO model再読み込みをしない方法を検討
+            Collection<Tax> taxes = taxService.getAll();
+            model.addAttribute("taxes", taxes);
             return "products/create";
         }
         productService.save(product);
