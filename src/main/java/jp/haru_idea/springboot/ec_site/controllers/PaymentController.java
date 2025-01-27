@@ -100,7 +100,7 @@ public class PaymentController {
             attrs.addFlashAttribute("success", "購入商品がありません");
             return "redirect:/cart/view/";
         }
-    } 
+    }
 
     @Transactional
     @PatchMapping("/order")
@@ -110,43 +110,18 @@ public class PaymentController {
             HttpServletResponse response, RedirectAttributes attrs,
             User user){
         int userId = securitySession.getUserId();
-        Collection<CartDetail> cartDetails = new ArrayList<CartDetail>() ;
-        for(Integer cartDetailId : cartDetailsIds){
-            cartDetails.add(cartDetailsService.getById(cartDetailId));
-        }
+
+        Collection<CartDetail> cartDetails = cartDetailsService.purchaseCartDetails(cartDetailsIds);
         Order order = new Order();
-        order.setUser(userService.getById(userId));
-        order.setOrderDate(new Date());
-        orderService.save(order);
+        orderService.createOrder(order, userService.getById(userId));
         Discount discount = discountService.currentSale();
-        // Discount discount = discountService.currentSale().get();
-        for(CartDetail cartDetail : cartDetails){
-            OrderDetail orderDetail = new OrderDetail();
-            orderDetail.setOrder(order);
-            orderDetail.setProduct(cartDetail.getProduct());              
-            orderDetail.setPrice(cartDetail.getProduct().getSellingPrice());
-            orderDetail.setTax(cartDetail.getProduct().getTax().getRate());
-            orderDetail.setNumber(cartDetail.getQuantity());
-            orderDetail.setDiscount(discount);
-            orderDetailsService.save(orderDetail);
-        }
+        orderDetailsService.copyFromCartDetail(cartDetails, order, discount);
+
         Invoice invoice = new Invoice();
-        invoice.setOrder(order);
-        invoice.setCreditCard(creditCardService.getById(Integer.parseInt(request.getParameter("creditCard"))));
-        invoiceService.save(invoice);
-        for(CartDetail cartDetail : cartDetails){
-            InvoiceDetail invoiceDetail = new InvoiceDetail();
-            invoiceDetail.setInvoice(invoice);
-            invoiceDetail.setProduct(cartDetail.getProduct());
-            invoiceDetail.setPrice(cartDetail.getProduct().getSellingPrice());
-            invoiceDetail.setTax(cartDetail.getProduct().getTax().getRate());
-            invoiceDetail.setNumber(cartDetail.getQuantity());
-            invoiceDetail.setDiscount(discount);
-        invoiceDetailsService.save(invoiceDetail);
-        }
-        for(CartDetail cartDetail : cartDetails){
-            cartDetailsService.delete(cartDetail.getId());
-        }
+        CreditCard  creditCard = creditCardService.getById(Integer.parseInt(request.getParameter("creditCard")));
+        invoiceService.createInvoice(invoice, order, creditCard);
+        invoiceDetailsService.copyFromCartDetail(cartDetails, invoice, discount);  
+        cartDetailsService.deletePurchasedCartDetails(cartDetails);
         attrs.addFlashAttribute("success", "商品の購入が完了しました");
         return "redirect:/cart/view/";
     }

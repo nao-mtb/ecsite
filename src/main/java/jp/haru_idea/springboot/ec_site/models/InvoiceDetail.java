@@ -34,6 +34,10 @@ public class InvoiceDetail {
     @JoinColumn(name="invoice_id", nullable = false)
     private Invoice invoice;
 
+    @ManyToOne
+    @JoinColumn(name="discount_id")
+    private Discount discount;
+
     @NotNull
     @Column(nullable = false)
     private int number;
@@ -84,6 +88,14 @@ public class InvoiceDetail {
 
     public void setInvoice(Invoice invoice) {
         this.invoice = invoice;
+    }
+
+    public Discount getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Discount discount) {
+        this.discount = discount;
     }
 
     public int getNumber() {
@@ -140,6 +152,5 @@ public class InvoiceDetail {
 
     public void setVersion(int version) {
         this.version = version;
-    }
-    
+    }    
 }

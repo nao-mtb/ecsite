@@ -1,5 +1,7 @@
 package jp.haru_idea.springboot.ec_site.services;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -9,8 +11,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
+import com.mysql.cj.x.protobuf.MysqlxCrud.Order;
+
 import jp.haru_idea.springboot.ec_site.models.Cart;
 import jp.haru_idea.springboot.ec_site.models.CartDetail;
+import jp.haru_idea.springboot.ec_site.models.Discount;
+import jp.haru_idea.springboot.ec_site.models.OrderDetail;
 import jp.haru_idea.springboot.ec_site.repositories.CartDetailsRepository;
 import jp.haru_idea.springboot.ec_site.repositories.CartRepository;
 
@@ -55,6 +61,20 @@ public class CartDetailsService {
             price = price + (product_price + (int)Math.floor(product_price * tax )) * cartDetail.getQuantity();
         }
         return price;
+    }
+
+    public Collection<CartDetail> purchaseCartDetails(Collection<Integer> cartDetailsIds){
+        Collection<CartDetail> cartDetails = new ArrayList<CartDetail>();
+        for(Integer cartDetailId : cartDetailsIds){
+            cartDetails.add(getById(cartDetailId));
+        }
+        return cartDetails;
+    }
+
+    public void deletePurchasedCartDetails(Collection<CartDetail> cartDetails){
+        for(CartDetail cartDetail : cartDetails){
+            delete(cartDetail.getId());
+        }
     }
 
     // @Query("SELECT * FROM Carts INNER JOIN CartDetails on cart.id = cartDetails.cartId WHERE orderFlag = ?2")
