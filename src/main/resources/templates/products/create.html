@@ -43,6 +43,14 @@
             <input type="text" th:field="*{weight}" th:errorclass="bg-warning">
             <span th:errors="*{weight}"></span>
         </div>
+        <div class="container">
+            <label for="tax">消費税</label>
+            <select th:field="*{tax}" id="tax">
+                <option th:each="t : ${taxes}" th:value="${t.id}" th:text="${t.rate}"
+                    selected="${tax==t.id}">
+                </option>
+            </select>
+        </div>
         <input type="submit" value="登録">
     </form>
 </body>
