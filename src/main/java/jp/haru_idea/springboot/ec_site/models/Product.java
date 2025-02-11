@@ -61,10 +61,6 @@ public class Product {
     @Positive
     private Integer sellingPrice;
 
-    @NotNull
-    @Positive
-    private Double weight;
-
     //TODO 編集画面で作成
     @Column(nullable = false, columnDefinition = "int default 0")
     private Integer discontinuedFlag = 0;
@@ -150,15 +146,7 @@ public class Product {
     public void setSellingPrice(Integer sellingPrice) {
         this.sellingPrice = sellingPrice;
     }
-    
-    public Double getWeight() {
-        return weight;
-    }
-
-    public void setWeight(Double weight) {
-        this.weight = weight;
-    }
-    
+        
     public Integer getDiscontinuedFlag() {
         return discontinuedFlag;
     }
