@@ -37,11 +37,6 @@
             <span th:errors="*{sellingPrice}"></span>
         </div>
         <div class="container">
-            <label for="weight">重量</label>
-            <input type="text" id="weight" name="weight" th:value="*{unitPrice}" th:errorclass="bg-warning">
-            <span th:errors="*{weight}"></span>
-        </div>
-        <div class="container">
             <label for="discontinuedFlag">廃番</label>
             <select th:field="*{discontinuedFlag}">
                 <option value="0">ー</option>

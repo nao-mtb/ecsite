@@ -13,7 +13,7 @@
     <table class="table">
         <thead>
         <tr>
-            <th></th><th>商品名</th><th>価格</th><th>重量</th><th>注文数</th>
+            <th></th><th>商品名</th><th>価格</th><th>注文数</th>
         </tr>
         </thead>
         <tbody>
@@ -25,7 +25,6 @@
                     <a th:href="@{/product/shopping/detail/{productId}(productId=${product.id})}">[[${product.name}]]</a>&nbsp;
                 </td>
                 <td>[[${product.sellingPrice}]]</td>
-                <td>[[${product.weight}]]</td>
                 <td>
                     <form th:method="PATCH" th:action="@{/cart/shoppingcart}">
                         <input type="number" name="quantity" size="4" value="1" min="1">
