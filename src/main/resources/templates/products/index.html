@@ -14,7 +14,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th><th>製品番号</th><th>製品名</th><th>説明</th><th>単価</th><th>販売価格</th><th>廃番</th>    
+                <th>ID</th><th>製品番号</th><th>製品名</th><th>説明</th><th>単価</th><th>販売価格</th><th>消費税率</th><th>廃番</th>    
             </tr>
         </thead>
         <tbody>
@@ -25,6 +25,7 @@
                 <td>[[${product.info}]]</td>
                 <td>[[${product.unitPrice}]]</td>
                 <td>[[${product.sellingPrice}]]</td>
+                <td>[[${product.tax.rate}]]</td>
                 <td>[[${product.discontinuedFlag}]]</td>
                 <td>
                     <a th:href="@{/product/edit/{productId}(productId=${product.id})}">編集</a>&nbsp;

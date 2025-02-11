@@ -51,30 +51,17 @@ public class CartController{
         int userId = securitySession.getUserId();
         Cart cart = cartService.getByUserId(userId);
         model.addAttribute("cart", cart);
+        double discountRate = 0.0;
         if(discountService.currentSale() != null){
-            // double discountRate = discountService.currentSale().get().getRate();
-            double discountRate = discountService.currentSale().getRate();
-            int discountPrice = (int)(cartDetailsService.totalPrice(cart.getId()) * (1 - discountRate));
-            model.addAttribute("discountRate", (1 - discountRate));
-            model.addAttribute("discountPrice", discountPrice);
+            discountRate = discountService.currentSale().getRate();
         }
+        //TODO 端数調整・Javascriptを使用してチェックしたアイテムのみの合計金額を表示
+        int totalCartPrice = (int)(cartDetailsService.totalPrice(cart.getId()) * (1 - discountRate));
+        model.addAttribute("cart", cart);
+        model.addAttribute("discountRate", (1 - discountRate));
+        model.addAttribute("totalCartPrice", totalCartPrice);
         return "carts/view";
     }
-
-    //確認用テストコード
-    @GetMapping("/view-test/{id}")
-    public String view(@PathVariable int id, Model model){
-        model.addAttribute("cart", cartService.getById(id));
-        return "carts/view-test";
-    }
-
-
-    // @GetMapping("/view/{cacheString}")
-    // public String view(@PathVariable String cacheString, Model model){
-    //     // Collection<Cart> carts = cartService.getAllByCash(cashString);
-    //     model.addAttribute("cart", carts);
-    //     return "carts/view";
-    // }
 
     @PatchMapping("/shoppingcart")
     public String addCart(
@@ -103,5 +90,5 @@ public class CartController{
         cartDetailsService.save(cartDetail);
         attrs.addFlashAttribute("success", "商品を追加しました");
         return "redirect:/cart/view";
-    }    
+    }
 }

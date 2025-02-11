@@ -37,6 +37,14 @@
             <span th:errors="*{sellingPrice}"></span>
         </div>
         <div class="container">
+            <label for="tax">消費税</label>
+            <select th:field="*{tax}" id="tax">
+                <option th:each="t : ${taxes}" th:value="${t.id}" th:text="${t.rate}"
+                    selected="${tax==t.id}">
+                </option>
+            </select>
+        </div>
+        <div class="container">
             <label for="discontinuedFlag">廃番</label>
             <select th:field="*{discontinuedFlag}">
                 <option value="0">ー</option>

@@ -16,34 +16,33 @@
         <table class="table">
         <thead>
             <tr>
-                <th>購入</th><th>商品名</th><th>価格(内税)</th><th></th><th>個数</th><th>税込合計金額</th><th></th>
+                <th>購入</th><th>商品名</th><th>販売価格(内税)</th><th>個数</th><th>小計</th>
             </tr>
         </thead>
         <tbody>
             <th:block th:unless="${cart} eq null">
                 <tr th:each="cartDetail : ${cart.cartDetails}">
-                    <div th:with="price=${#numbers.formatDecimal(cartDetail.product.sellingPrice + cartDetail.product.sellingPrice * cartDetail.product.tax.rate, 1, 0)}">
+                    <div th:with="price=${#numbers.formatDecimal(cartDetail.product.sellingPrice + cartDetail.product.sellingPrice * cartDetail.product.tax.rate, 1, 0)},
+                                discountPrice=${price}*${discountRate},
+                                discountPrice=${#numbers.formatDecimal(discountPrice, 1, 0)}">
                         <td hidden>[[${cartDetail.id}]]</td>
                         <td>
                             <input type="checkbox" th:name="cartDetailId" th:value="${cartDetail.id}" checked>
                         </td>
                         <td>[[${cartDetail.product.name}]]</td>
-                        <td><span th:text="${price}"></span></td>
+                        <td>[[${discountPrice}]]</td>
                         <td>[[${cartDetail.quantity}]]</td>
-                        <td><span th:text="${cartDetail.quantity} * ${price}"></span></td>
+                        <td>[[${discountPrice} * ${cartDetail.quantity}]]</td>
                     </div>
                 </tr>
             </th:block>
         </tbody>
         <tfoot>
             <tr>
-                <th class="total">ご注文合計金額</th><th>割引後合計金額</th>
+                <th class="total">ご注文合計金額</th>
                 <tr th:unless="${cart} eq null">
                     <td><span th:text="${totalCartPrice}"></span></td>
-                    <tr th:unless="${discountPrice} eq null">
-                        <td><span th:text="${discountPrice}"></span></td>
-                    </tr>
-                </tr>    
+                </tr>
                 <tr th:if="${cart} eq null or ${#lists.isEmpty(cart.cartDetails)}">
                     <td><span th:text="買い物かごに商品が入っていません"></span></td>
                 </tr>
