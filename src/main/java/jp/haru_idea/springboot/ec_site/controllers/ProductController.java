@@ -3,7 +3,6 @@ package jp.haru_idea.springboot.ec_site.controllers;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jp.haru_idea.springboot.ec_site.models.DiscontinuedFlag;
 import jp.haru_idea.springboot.ec_site.models.Product;
 import jp.haru_idea.springboot.ec_site.models.Tax;
+import jp.haru_idea.springboot.ec_site.services.DiscountService;
 import jp.haru_idea.springboot.ec_site.services.ProductService;
 import jp.haru_idea.springboot.ec_site.services.TaxService;
 
@@ -32,6 +32,9 @@ public class ProductController {
     @Autowired
     private TaxService taxService;
 
+    @Autowired
+    private DiscountService discountService;
+    
     @GetMapping("/index")
     public String index(Model model){
         Collection<Product> products = productService.getAll();
@@ -69,6 +72,8 @@ public class ProductController {
         Product product = productService.getById(productId);
         product.setOldCode(product.getName());
         model.addAttribute("product", product);
+        Collection<Tax> taxes = taxService.getAll();
+        model.addAttribute("taxes", taxes);
         return "products/edit";
     }
     @PatchMapping("/update/{productId}")
@@ -76,9 +81,12 @@ public class ProductController {
             @PathVariable int productId, 
             @Validated
             @ModelAttribute Product product,
-            BindingResult result,
+            BindingResult result, Model model,
             RedirectAttributes attrs){
         if(result.hasErrors()){
+            // TODO model再読み込みをしない方法を検討
+            Collection<Tax> taxes = taxService.getAll();
+            model.addAttribute("taxes", taxes);
             return "products/edit";
         }
         product.setId(productId);
@@ -103,8 +111,12 @@ public class ProductController {
     //TODO FIXカート追加→ログイン後の挙動
     @GetMapping("/shopping/index")
     public String shoppingIndex(Model model){
-        Collection<Product> products = productService.getByDiscontinuedFlag(0); 
+        Collection<Product> products = productService.getByDiscontinuedFlag(0);
         model.addAttribute("products", products);
+        if(discountService.currentSale() != null){
+            double discountRate = discountService.currentSale().getRate();
+            model.addAttribute("discountRate", (1 - discountRate));
+        }
         return "products/shoppings/index";
     }
 
