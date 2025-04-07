@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -59,9 +60,6 @@ public class User{
     @Column(nullable = false, columnDefinition = "int default 0")
     private Integer deleteFlag = 0;
 
-    @Column(nullable = false, columnDefinition = "boolean default false")
-    private boolean verified = false;
-
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     @Column(updatable = false, nullable = false)
@@ -93,6 +91,10 @@ public class User{
 
     @OneToOne(mappedBy = "user")
     private Token token;
+
+    @ManyToOne
+    @JoinColumn(name="memberRank_id")
+    private MemberRank memberRank;
 
     public int getId() {
         return id;
@@ -223,6 +225,14 @@ public class User{
         this.token = token;
     }
     
+    public MemberRank getMemberRank() {
+        return memberRank;
+    }
+
+    public void setMemberRank(MemberRank memberRank) {
+        this.memberRank = memberRank;
+    }
+
     @Override
     public String toString() {
         return "User [id=" + id + ", lastName=" + lastName + ", firstName=" + firstName + ", mail=" + mail
