@@ -1,10 +1,12 @@
 package jp.haru_idea.springboot.ec_site.services;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
@@ -41,13 +43,22 @@ public class OrderDetailsService {
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrder(order);
             orderDetail.setProduct(cartDetail.getProduct());              
-            orderDetail.setPrice(cartDetail.getProduct().getSellingPrice());
+            orderDetail.setSellingPrice(cartDetail.getProduct().getSellingPrice());
             orderDetail.setTax(cartDetail.getProduct().getTax().getRate());
-            orderDetail.setNumber(cartDetail.getQuantity());
+            orderDetail.setQuantity(cartDetail.getQuantity());
             orderDetail.setDiscount(discount);
             save(orderDetail);
         }
     }
 
+    public Collection<OrderDetail> getAllByOrderDetails(Collection<Order> orders){
+        Collection<OrderDetail> orderDetails = new ArrayList<OrderDetail>();
+        if(orders != null){
+            for(Order order : orders){
+                orderDetails.addAll(orderDetailsRepository.findAllByOrder(order));
+            }
+        }
+        return orderDetails;
+    }
 
 }
