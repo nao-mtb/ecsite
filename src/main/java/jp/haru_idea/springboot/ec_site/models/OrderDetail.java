@@ -41,7 +41,7 @@ public class OrderDetail {
 
     @NotNull
     @Column(nullable = false)
-    private int number;
+    private int quantity;
 
     @NotNull
     @Column(nullable = false)
@@ -49,8 +49,12 @@ public class OrderDetail {
 
     @NotNull
     @Column(nullable = false)
-    private int price;
+    private int sellingPrice;
 
+    @NotNull
+    @Column(nullable = false)
+    private int purchasePrice;    
+    
     @Column(nullable = false, columnDefinition = "int default 0")
     private int deleteFlag;
 
@@ -99,12 +103,12 @@ public class OrderDetail {
         this.discount = discount;
     }
     
-    public int getNumber() {
-        return number;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public double getTax() {
@@ -115,12 +119,20 @@ public class OrderDetail {
         this.tax = tax;
     }
 
-    public int getPrice() {
-        return price;
+    public int getSellingPrice() {
+        return sellingPrice;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public void setSellingPrice(int sellingPrice) {
+        this.sellingPrice = sellingPrice;
+    }
+
+    public int getPurchasePrice() {
+        return purchasePrice;
+    }
+
+    public void setPurchasePrice(int purchasePrice) {
+        this.purchasePrice = purchasePrice;
     }
 
     public int getDeleteFlag() {

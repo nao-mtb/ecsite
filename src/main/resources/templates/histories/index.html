@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <h3>購入履歴</h3>
+    <form th:method="GET" th:action="@{/order-history/index}">
+        <table class="table">
+        <thead>
+            <tr>
+                <th></th><th>購入商品名</th><th>購入単価金額</th><th>注文個数</th><th>小計</th><th>注文日</th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            <div th:with="currentId=${orderDetails[0].order.id}">
+                <th:block th:if="${orderDetails}"
+                    th:each="orderDetail, iterStat : ${orderDetails}"
+                    th:with="previousId=${iterStat.index == 0 ? currentId : orderDetails[iterStat.index - 1].order.id}">
+                    <th:block th:if="${orderDetail.order.id != previousId}">
+                        <tr>
+                            <td colspan="6"></td>
+                        </tr>
+                    </th:block>
+                    <tr>
+                        <td>[[${orderDetail.order.id}]]</td>
+                        <td>[[${orderDetail.product.name}]]</td>
+                        <td><span th:text="${orderDetail.purchasePrice}"></span></td>
+                        <td>[[${orderDetail.quantity}]]</td>
+                        <td><span th:text="${orderDetail.purchasePrice} * ${orderDetail.quantity}"></span></td>
+                        <td><span th:text="${#dates.format(orderDetail.order.createdAt, 'yyyy-M-d')}"></span></td>
+                    </tr>
+                </th:block>
+                <th:block th:unless="${orderDetails}">
+                    <span th:text="購入履歴はありません"></span>
+                </th:block>
+            </div>
+</body>
+</html>

@@ -1,5 +1,6 @@
 package jp.haru_idea.springboot.ec_site.services;
 
+import java.util.Collection;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,10 @@ public class OrderService {
 
     public Order getById(int id){
         return orderRepository.findById(id);
+    }
+
+    public Collection<Order> getAllByUser(User user){
+        return orderRepository.findAllByUser(user);
     }
 
     public void createOrder(Order order, User user){
