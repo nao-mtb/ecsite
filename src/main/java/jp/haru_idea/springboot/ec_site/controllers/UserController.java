@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jp.haru_idea.springboot.ec_site.models.MemberRank;
 import jp.haru_idea.springboot.ec_site.models.Role;
 import jp.haru_idea.springboot.ec_site.models.RoleUser;
 import jp.haru_idea.springboot.ec_site.models.Token;
@@ -50,6 +51,7 @@ import jp.haru_idea.springboot.ec_site.services.MailService;
 import jp.haru_idea.springboot.ec_site.services.RoleUserService;
 import jp.haru_idea.springboot.ec_site.services.TokenService;
 import jp.haru_idea.springboot.ec_site.services.UserService;
+import jp.haru_idea.springboot.ec_site.services.MemberRankService;
 
 @RequestMapping("/user")
 // @SessionAttributes("mail")
@@ -69,6 +71,9 @@ public class UserController {
     private MailService mailService;
 
     @Autowired
+    private MemberRankService memberRankService;
+
+    @Autowired
     private RoleUserService roleUserService;
 
     @GetMapping("/profile/main/info")
@@ -80,6 +85,7 @@ public class UserController {
 
     //新規作成
     //TODO ロール紐づけ
+    //TODO 生年月日制御
     @GetMapping("/create")
     public String createUser(@ModelAttribute UserCreateForm userCreateForm){
         return "users/create";
@@ -407,6 +413,7 @@ public class UserController {
         UserCreateForm userCreateForm = (UserCreateForm) userCommonForm;
         // user.setPassword(userCreateForm.getPassword());
         user.setPassword(encodePassword(userCreateForm.getPassword()));
+        user.setMemberRank(memberRankService.getById(1));
         return user;
     }
 
