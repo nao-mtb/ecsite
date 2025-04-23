@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import jp.haru_idea.springboot.ec_site.models.Role;
 import jp.haru_idea.springboot.ec_site.models.RoleUser;
 
 @Repository
@@ -14,5 +15,6 @@ public interface RoleUserRepository extends JpaRepository<RoleUser, Integer>{
     Collection<RoleUser> findAllById(int id);
     List<RoleUser> findByUserId(int userId);
     // RoleUser findByUserId(int userId);
-
+    Collection<RoleUser> findDistinctByRole(Role role);
+    Collection<RoleUser> findDistinctByRoleNotIn(Collection<Role> role);
 }
