@@ -315,15 +315,15 @@ public class UserController {
     //************ 管理者用 ************
     @GetMapping("/admin/customer-index")
     public String customerIndex(Model model){
-        Collection<User> users = userService.getAll();
-        model.addAttribute("users", users);
+        Collection<User> roleUsers = userService.getUsersByRoleType("ROLE_USER");
+        model.addAttribute("roleUsers", roleUsers);
         return "users/admins/customer_index";
     }
 
     @GetMapping("/admin/corp-index")
     public String corpIndex(Model model){
-        Collection<User> users = userService.getAll();
-        model.addAttribute("users", users);
+        Collection<User> roleUsers = userService.getUsersByNotRoleType("ROLE_USER");
+        model.addAttribute("roleUsers", roleUsers);
         return "users/admins/corp_index";
     }
 

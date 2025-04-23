@@ -1,5 +1,6 @@
 package jp.haru_idea.springboot.ec_site.services;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jp.haru_idea.springboot.ec_site.models.RoleUser;
 import jp.haru_idea.springboot.ec_site.models.User;
 import jp.haru_idea.springboot.ec_site.repositories.UserRepository;
 
@@ -16,7 +18,10 @@ import jp.haru_idea.springboot.ec_site.repositories.UserRepository;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
-    
+
+    @Autowired
+    private RoleUserService roleUserService;
+
     // @Autowired
     // BCryptPasswordEncoder passwordEncoder;
 
@@ -25,6 +30,26 @@ public class UserService {
 
     public Collection<User> getAll(){
         return userRepository.findAll();
+    }
+
+    public Collection<User> getUsersByRoleType(String roleType){
+        Collection<RoleUser> roleUsers = roleUserService.getRoleType(roleType);
+        Collection<User> users = new ArrayList<User>();
+        for(RoleUser roleUser : roleUsers){
+            users.add(roleUser.getUser());
+        }
+        return users;
+    }
+
+    public Collection<User> getUsersByNotRoleType(String roleType){
+        Collection<RoleUser> roleUsers = roleUserService.getNotRoleType(roleType);
+        Collection<User> users = new ArrayList<User>();
+        for(RoleUser roleUser : roleUsers){
+            if (!users.contains(roleUser.getUser())){
+                users.add(roleUser.getUser());                
+            }
+        }
+        return users;
     }
 
     // @Bean

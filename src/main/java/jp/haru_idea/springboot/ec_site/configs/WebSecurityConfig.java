@@ -32,7 +32,7 @@ import org.springframework.security.web.authentication.logout.HeaderWriterLogout
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import jp.haru_idea.springboot.ec_site.services.LoginUserService;
+import jp.haru_idea.springboot.ec_site.services.LoginService;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -52,13 +52,16 @@ public class WebSecurityConfig {
             .antMatchers("/login").permitAll()     //指定URLに全てのユーザがアクセス可能
             .antMatchers("/user/create/**","/user/save", "/user/profile/password/reset/**").permitAll()
             .antMatchers("/product/shopping/index").permitAll()
-            .antMatchers("/user/admin/index").hasAnyRole("ADMIN","SYSTEM","OWNER","SUPPORT")  //指定URLに指定したロールユーザのみアクセス可能
+            .antMatchers("/user/admin/customer-index").hasAnyRole("ADMIN","SUPPORT")  //指定URLに指定したロールユーザのみアクセス可能
+            .antMatchers("/user/admin/corp-index").hasAnyRole("ADMIN","SYSTEM","OWNER")
+            .antMatchers("/user/admin/create","/user/admin/save","/user/admin/role/**").hasAnyRole("ADMIN")
             .antMatchers("/user/admin/**").hasAnyRole("ADMIN","SYSTEM")
             // .antMatchers("/product/shopping/**").authenticated() //URLに認証を要求
             .antMatchers("/product/shopping/**").hasRole("USER")
             .antMatchers("/product/index","/product/edit/**","/product/update/**").hasAnyRole("ADMIN","SYSTEM","OWNER","CONTENT")
             .antMatchers("/product/**").hasAnyRole("ADMIN","SYSTEM","OWNER")
-            .antMatchers("/user/**","/cart/**","/payment/**").hasRole("USER")
+            .antMatchers("/user/**","/cart/**","/payment/**","/order-history/**").hasRole("USER")
+
             // .antMatchers("/user/**","/cart/**","/payment/**").authenticated()
             // .anyRequest().access(manager)
             // .anyRequest().authenticated()          //他のURLはログイン後のみアクセス可能

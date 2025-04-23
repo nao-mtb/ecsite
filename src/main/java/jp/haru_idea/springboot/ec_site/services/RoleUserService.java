@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jp.haru_idea.springboot.ec_site.models.Role;
 import jp.haru_idea.springboot.ec_site.models.RoleUser;
 import jp.haru_idea.springboot.ec_site.models.User;
 import jp.haru_idea.springboot.ec_site.repositories.RoleUserRepository;
@@ -48,4 +49,15 @@ public class RoleUserService {
         roleUser.setUser(user);
         roleUserRepository.save(roleUser);
     }
+
+    public Collection<RoleUser> getRoleType(String roleType){
+        Role role = roleService.getByName(roleType);
+        return roleUserRepository.findDistinctByRole(role);
+    }
+
+    public Collection<RoleUser> getNotRoleType(String roleType){
+        Role role = roleService.getByName(roleType);
+        return roleUserRepository.findDistinctByRoleNotIn(List.of(role));
+    }
+
 }
