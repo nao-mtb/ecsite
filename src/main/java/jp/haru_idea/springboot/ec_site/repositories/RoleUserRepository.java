@@ -15,6 +15,6 @@ public interface RoleUserRepository extends JpaRepository<RoleUser, Integer>{
     Collection<RoleUser> findAllById(int id);
     List<RoleUser> findByUserId(int userId);
     // RoleUser findByUserId(int userId);
-    Collection<RoleUser> findDistinctByRole(Role role);
-    Collection<RoleUser> findDistinctByRoleNotIn(Collection<Role> role);
+    Collection<RoleUser> findByRole(Role role);
+    Collection<RoleUser> findByRoleNotIn(Collection<Role> role);
 }

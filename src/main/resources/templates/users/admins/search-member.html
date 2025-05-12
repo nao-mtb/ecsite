@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <div th:replace="layouts/header::header"></div>    
+    <h3>ユーザ検索</h3>
+    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
+    <form th:method="post" th:action="@{/user/admin/result/member/list}" novalidate>
+        <div class="container">
+            <label for="roleId">権限タイプ</label>
+            <select id="roleId" name="roleId">
+                <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}"></option>
+            </select>
+        </div>
+        <div class="container">
+            <label for="lastName">姓 (部分一致可)</label>
+            <input type="text" name="lastName">
+        </div>
+        <input type="submit" value="検索">
+    </form>
+    </div>
+</body>
+</html>

@@ -8,19 +8,18 @@
     <title>Document</title>
 </head>
 <body>
-    <h3>顧客一覧</h3>
+    <h3>検索結果</h3>
     <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th><th>氏名</th><th>Email</th><th>生年月日</th><th>退会</th>
+                <th>ID</th><th>氏名</th><th>生年月日</th><th>退会</th>
             </tr>
         </thead>
         <tbody>
-            <tr th:each="user : ${roleUsers}">
-                <td>[[${user.id}]]</td>
+            <tr th:each="user : ${users}">
+                <td><a th:href="@{/user/admin/result/detail/{id}(id=${user.id})}">[[${user.id}]]</a></td>
                 <td>[[${user.lastName}]]　[[${user.firstName}]]</td>
-                <td>[[${user.mail}]]</td>
                 <td>[[${user.birthDate}]]</td>
                 <td>[[${user.deleteFlag}]]</td>
                 <td>

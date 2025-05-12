@@ -83,4 +83,13 @@ public class UserService {
     public boolean isUserExists(String mail){
         return getByMail(mail) != null;
     }
+
+    public Collection<User> searchEndUsers(int roleId, String lastName, String firstName){
+        return userRepository.findUsersByRoleAndName(roleId, lastName, firstName);
+    }
+
+    public Collection<User> searchInternalUsers(int roleId, String lastName){
+        return userRepository.findUsersByRoleAndLastName(roleId, lastName);
+    }
+
 }
