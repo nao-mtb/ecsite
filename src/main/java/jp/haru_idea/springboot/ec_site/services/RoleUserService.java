@@ -52,12 +52,12 @@ public class RoleUserService {
 
     public Collection<RoleUser> getRoleType(String roleType){
         Role role = roleService.getByName(roleType);
-        return roleUserRepository.findDistinctByRole(role);
+        return roleUserRepository.findByRole(role);
     }
 
     public Collection<RoleUser> getNotRoleType(String roleType){
         Role role = roleService.getByName(roleType);
-        return roleUserRepository.findDistinctByRoleNotIn(List.of(role));
+        return roleUserRepository.findByRoleNotIn(List.of(role));
     }
 
 }

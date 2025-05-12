@@ -13,6 +13,7 @@ import javax.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -33,8 +34,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jp.haru_idea.springboot.ec_site.models.EndUserSearchForm;
+import jp.haru_idea.springboot.ec_site.models.InternalUserSearchForm;
 import jp.haru_idea.springboot.ec_site.models.MemberRank;
 import jp.haru_idea.springboot.ec_site.models.Role;
 import jp.haru_idea.springboot.ec_site.models.RoleUser;
@@ -52,6 +56,7 @@ import jp.haru_idea.springboot.ec_site.services.RoleUserService;
 import jp.haru_idea.springboot.ec_site.services.TokenService;
 import jp.haru_idea.springboot.ec_site.services.UserService;
 import jp.haru_idea.springboot.ec_site.services.MemberRankService;
+import jp.haru_idea.springboot.ec_site.services.RoleService;
 
 @RequestMapping("/user")
 // @SessionAttributes("mail")
@@ -75,6 +80,9 @@ public class UserController {
 
     @Autowired
     private RoleUserService roleUserService;
+
+    @Autowired
+    private RoleService roleService;
 
     @GetMapping("/profile/main/info")
     public String profile(Model model){
@@ -313,18 +321,57 @@ public class UserController {
 
     //TODO 一覧表示もformを使用
     //************ 管理者用 ************
-    @GetMapping("/admin/customer-index")
-    public String customerIndex(Model model){
-        Collection<User> roleUsers = userService.getUsersByRoleType("ROLE_USER");
-        model.addAttribute("roleUsers", roleUsers);
-        return "users/admins/customer_index";
-    }
-
-    @GetMapping("/admin/corp-index")
-    public String corpIndex(Model model){
+    @GetMapping("/admin/index")
+    public String index(Model model){
         Collection<User> roleUsers = userService.getUsersByNotRoleType("ROLE_USER");
         model.addAttribute("roleUsers", roleUsers);
-        return "users/admins/corp_index";
+        return "users/admins/index";
+    }
+
+//TODO roleTypeにリンクで飛ばす処理を追加
+    @GetMapping("/admin/extract/{roleType}")
+    public String extractRoleType(@PathVariable String roleType, Model model){
+        if(roleType.equals("ROLE_USER")){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        Collection<User> roleUsers = userService.getUsersByRoleType(roleType);
+        model.addAttribute("roleUsers", roleUsers);
+        return "users/admins/index";
+    }
+
+    @GetMapping("/admin/search/customer")
+    public String SearchEndUser(Model model){
+        Role role = roleService.getByName("ROLE_USER");
+        model.addAttribute("role", role);
+        return "users/admins/search-customer";
+    }
+
+    @GetMapping("/admin/search/member")
+    public String SearchInternalUser(Model model){
+        Collection<Role> roles = roleService.getExcludedName("ROLE_USER");
+        model.addAttribute("roles", roles);
+        return "users/admins/search-member";
+    }
+
+    @PostMapping("/admin/result/customer/list")
+    public String resultEndUserList(@ModelAttribute EndUserSearchForm searchForm, Model model){
+        Collection<User> users = userService.searchEndUsers(searchForm.getRoleId(), searchForm.getLastName(), searchForm.getFirstName());
+        model.addAttribute("users", users);
+        return "users/admins/result-customer";
+    }
+
+    @PostMapping("/admin/result/member/list")
+    public String resultInternalUserList(@ModelAttribute InternalUserSearchForm searchForm, Model model){
+        Collection<User> users = userService.searchInternalUsers(searchForm.getRoleId(), searchForm.getLastName());
+        model.addAttribute("users", users);
+        return "users/admins/result-member";
+    }
+
+    @GetMapping("/admin/result/detail/{id}")
+    public String resultUserDetail(@PathVariable int id, Model model){
+        User user = userService.getById(id);
+        model.addAttribute("user", user);
+        return "users/admins/details-customer";
     }
 
     @GetMapping("/admin/create")

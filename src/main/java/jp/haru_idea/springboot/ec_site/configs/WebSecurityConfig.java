@@ -52,8 +52,9 @@ public class WebSecurityConfig {
             .antMatchers("/login").permitAll()     //指定URLに全てのユーザがアクセス可能
             .antMatchers("/user/create/**","/user/save", "/user/profile/password/reset/**").permitAll()
             .antMatchers("/product/shopping/index").permitAll()
-            .antMatchers("/user/admin/customer-index").hasAnyRole("ADMIN","SUPPORT")  //指定URLに指定したロールユーザのみアクセス可能
-            .antMatchers("/user/admin/corp-index").hasAnyRole("ADMIN","SYSTEM","OWNER")
+            .antMatchers("/user/admin/search/customer").hasAnyRole("ADMIN","SUPPORT")  //指定URLに指定したロールユーザのみアクセス可能
+            .antMatchers("/user/admin/index","/user/admin/search/member").hasAnyRole("ADMIN","SYSTEM","OWNER")
+            .antMatchers("/user/admin/result/**").hasAnyRole("ADMIN","SUPPORT","SYSTEM","OWNER")
             .antMatchers("/user/admin/create","/user/admin/save","/user/admin/role/**").hasAnyRole("ADMIN")
             .antMatchers("/user/admin/**").hasAnyRole("ADMIN","SYSTEM")
             // .antMatchers("/product/shopping/**").authenticated() //URLに認証を要求

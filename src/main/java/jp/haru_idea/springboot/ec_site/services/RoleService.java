@@ -1,5 +1,8 @@
 package jp.haru_idea.springboot.ec_site.services;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,4 +21,7 @@ public class RoleService {
         return roleRepository.findByName(name);
     }   
 
+    public Collection<Role> getExcludedName(String name){
+        return roleRepository.findByNameNotIn(List.of(name));
+    }
 }

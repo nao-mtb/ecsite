@@ -8,25 +8,27 @@
     <title>Document</title>
 </head>
 <body>
-    <div th:replace="layouts/header::header"></div>
-    <h3>顧客一覧</h3>
-    <a th:href="@{/user/create}">新規登録</a>
+    <h3>検索結果</h3>
     <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th><th>氏名</th><th>Email</th><th>生年月日</th><th>退会</th>
+                <th>ID</th><th>氏名</th><th>Email</th><th>退会</th><th>保有権限</th>
             </tr>
         </thead>
         <tbody>
-            <tr th:each="user : ${roleUsers}">
+            <tr th:each="user : ${users}">
                 <td>[[${user.id}]]</td>
                 <td>[[${user.lastName}]]　[[${user.firstName}]]</td>
                 <td>[[${user.mail}]]</td>
-                <td>[[${user.birthDate}]]</td>
                 <td>[[${user.deleteFlag}]]</td>
                 <td>
-                    <div sec:authorize="hasAnyRole('ADMIN','SYSTEM')">
+                    <ul>
+                        <li th:each="roleUser : ${user.roleUsers}" th:text="${roleUser.role.name}"></li>
+                    </ul>
+                </td>
+                <td>
+                    <div sec:authorize="hasAnyRole('ADMIN')">
                         <a th:href="@{/user/admin/edit/{id}(id=${user.id})}">編集</a>&nbsp;
                         <a th:href="@{/user/admin/show/{id}(id=${user.id})}">削除</a>&nbsp;
                     </div>
