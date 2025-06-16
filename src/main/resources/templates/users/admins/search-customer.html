@@ -10,22 +10,23 @@
 <body>
     <div th:replace="layouts/header::header"></div>    
     <h3>ユーザ検索</h3>
-    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
-    <form th:method="post" th:action="@{/user/admin/result/customer/list}" novalidate>
+    <form th:method="post" th:action="@{/user/admin/result/customer/list}" th:object="${endUserSearchForm}" novalidate>
         <div class="container">
             <label for="roleId"></label>
-            <input type="hidden" id="roleId" name="roleId" th:value="${role.id}">
+            <input type="hidden" id="roleId" th:field="*{roleId}">
+            <!-- <input type="hidden" id="roleId" th:field="*{roleId}" th:value="${role.id}"> -->
         </div>
         <div class="container">
             <label for="lastName">姓</label>
-            <input type="text" name="lastName">
+            <input type="text" th:field="*{lastName}">
+            <span th:errors="*{lastName}"></span>
         </div>
         <div class="container">
             <label for="lastName">名</label>
-            <input type="text" name="firstName">
+            <input type="text" th:field="*{firstName}">
+            <span th:errors="*{firstName}"></span>
         </div>
         <input type="submit" value="検索">
     </form>
-    </div>
 </body>
 </html>

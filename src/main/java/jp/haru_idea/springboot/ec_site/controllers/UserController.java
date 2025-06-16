@@ -63,6 +63,8 @@ import jp.haru_idea.springboot.ec_site.services.RoleService;
 @Controller
 public class UserController {
 
+    private static final String endUser = "ROLE_ENDUSER";
+
     @Autowired
     private UserService userService;
 
@@ -162,7 +164,7 @@ public class UserController {
             return "users/verify-regenerate";
         }
         User user = userService.getByMail(mail);
-        roleUserService.addRoleUser(user, "ROLE_USER");
+        roleUserService.addRoleUser(user, endUser);
         tokenService.deleteById(token.getId());
         attrs.addFlashAttribute("success","認証に成功しました");
         return "redirect:/user/address/create";
@@ -323,7 +325,7 @@ public class UserController {
     //************ 管理者用 ************
     @GetMapping("/admin/index")
     public String index(Model model){
-        Collection<User> roleUsers = userService.getUsersByNotRoleType("ROLE_USER");
+        Collection<User> roleUsers = userService.getUsersByNotRoleType(endUser);
         model.addAttribute("roleUsers", roleUsers);
         return "users/admins/index";
     }
@@ -331,7 +333,7 @@ public class UserController {
 //TODO roleTypeにリンクで飛ばす処理を追加
     @GetMapping("/admin/extract/{roleType}")
     public String extractRoleType(@PathVariable String roleType, Model model){
-        if(roleType.equals("ROLE_USER")){
+        if(roleType.equals(endUser)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         Collection<User> roleUsers = userService.getUsersByRoleType(roleType);
@@ -340,28 +342,48 @@ public class UserController {
     }
 
     @GetMapping("/admin/search/customer")
-    public String SearchEndUser(Model model){
-        Role role = roleService.getByName("ROLE_USER");
-        model.addAttribute("role", role);
+    public String searchEndUser(@ModelAttribute EndUserSearchForm searchForm, Model model){
+        Role role = roleService.getByName(endUser);
+        // model.addAttribute("role", role);
+        searchForm.setRoleId(role.getId());
         return "users/admins/search-customer";
     }
 
     @GetMapping("/admin/search/member")
-    public String SearchInternalUser(Model model){
-        Collection<Role> roles = roleService.getExcludedName("ROLE_USER");
+    public String searchInternalUser(@ModelAttribute InternalUserSearchForm searchForm, Model model){
+        Collection<Role> roles = roleService.getExcludedName(endUser);
         model.addAttribute("roles", roles);
         return "users/admins/search-member";
     }
 
     @PostMapping("/admin/result/customer/list")
-    public String resultEndUserList(@ModelAttribute EndUserSearchForm searchForm, Model model){
+    public String resultEndUserList(
+            @Validated
+            @ModelAttribute EndUserSearchForm searchForm,
+            BindingResult result,
+            Model model, RedirectAttributes attrs){
+        if(result.hasErrors()){
+            // Role role = roleService.getByName("ROLE_USER");
+            Role role = roleService.getById(searchForm.getRoleId());
+            model.addAttribute("role", role);
+            return "users/admins/search-customer";
+        }
         Collection<User> users = userService.searchEndUsers(searchForm.getRoleId(), searchForm.getLastName(), searchForm.getFirstName());
         model.addAttribute("users", users);
         return "users/admins/result-customer";
     }
 
     @PostMapping("/admin/result/member/list")
-    public String resultInternalUserList(@ModelAttribute InternalUserSearchForm searchForm, Model model){
+    public String resultInternalUserList(
+            @Validated
+            @ModelAttribute InternalUserSearchForm searchForm,
+            BindingResult result,
+            Model model){
+        if(result.hasErrors()){
+            Collection<Role> roles = roleService.getExcludedName(endUser);
+            model.addAttribute("roles", roles);
+            return "users/admins/search-member";
+        }
         Collection<User> users = userService.searchInternalUsers(searchForm.getRoleId(), searchForm.getLastName());
         model.addAttribute("users", users);
         return "users/admins/result-member";
