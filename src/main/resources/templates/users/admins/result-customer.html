@@ -17,18 +17,24 @@
             </tr>
         </thead>
         <tbody>
-            <tr th:each="user : ${users}">
-                <td><a th:href="@{/user/admin/result/detail/{id}(id=${user.id})}">[[${user.id}]]</a></td>
-                <td>[[${user.lastName}]]　[[${user.firstName}]]</td>
-                <td>[[${user.birthDate}]]</td>
-                <td>[[${user.deleteFlag}]]</td>
-                <td>
-                    <div sec:authorize="hasAnyRole('ADMIN')">
-                        <a th:href="@{/user/admin/edit/{id}(id=${user.id})}">編集</a>&nbsp;
-                        <a th:href="@{/user/admin/show/{id}(id=${user.id})}">削除</a>&nbsp;
-                    </div>
-                </td>
-            </tr>
+            <th:block th:unless="${#lists.isEmpty(users)}">
+                <tr th:each="user : ${users}">
+                    <td><a th:href="@{/user/admin/result/detail/{id}(id=${user.id})}">[[${user.id}]]</a></td>
+                    <td>[[${user.lastName}]]　[[${user.firstName}]]</td>
+                    <td>[[${user.birthDate}]]</td>
+                    <td>[[${user.deleteFlag}]]</td>
+                    <td>
+                        <div sec:authorize="hasAnyRole('ADMIN')">
+                            <a th:href="@{/user/admin/edit/{id}(id=${user.id})}">編集</a>&nbsp;
+                            <a th:href="@{/user/admin/show/{id}(id=${user.id})}">削除</a>&nbsp;
+                        </div>
+                    </td>
+                </tr>    
+            </th:block>
+            <th:block th:if="${#lists.isEmpty(users)}">
+                <span th:text="該当するユーザはいません"></span>
+                <a href="@{/user/admin/search/customer}">戻る</a>
+            </th:block>
         </tbody>
     </table>
 </body>
