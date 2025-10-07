@@ -36,6 +36,7 @@ public class User{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    //TODO フリガナ欄追加、ユーザ検索もフリガナ検索
     @Column(length = 64, nullable = false)
     private String lastName;
 

@@ -13,7 +13,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th><th>氏名</th><th>Email</th><th>退会</th><th>保有権限</th>
+                <th>ID</th><th>氏名</th><th>Email</th><th>保有権限</th>
             </tr>
         </thead>
         <tbody>
@@ -22,7 +22,6 @@
                     <td>[[${user.id}]]</td>
                     <td>[[${user.lastName}]]　[[${user.firstName}]]</td>
                     <td>[[${user.mail}]]</td>
-                    <td>[[${user.deleteFlag}]]</td>
                     <td>
                         <ul>
                             <li th:each="roleUser : ${user.roleUsers}" th:text="${roleUser.role.roleType}"></li>
@@ -30,8 +29,8 @@
                     </td>
                     <td>
                         <div sec:authorize="hasAnyRole('ADMIN')">
-                            <a th:href="@{/user/admin/edit/{id}(id=${user.id})}">編集</a>&nbsp;
-                            <a th:href="@{/user/admin/show/{id}(id=${user.id})}">削除</a>&nbsp;
+                            <a th:href="@{/user/admin/edit/{id}(id=${user.id})}">権限編集</a>&nbsp;
+                            <a th:href="@{/user/admin/show/{id}(id=${user.id})}">無効化</a>&nbsp;
                         </div>
                     </td>
                 </tr>    

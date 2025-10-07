@@ -26,12 +26,13 @@ public class UserCommonForm {
 
     //TODO バリデーションエラー時のリセット対処
     //"[yyyy-MM-dd][yyyy/MM/dd]"から[yyyy/MM/dd]を削除
+    //TODO 年齢制限のバリデーションを作成
     @NotNull
     @DateTimeFormat(pattern = "[yyyy-MM-dd]")
     private LocalDate birthDate;
 
     private Integer deleteFlag = 0;
-        
+
     public String getLastName() {
         return lastName;
     }
