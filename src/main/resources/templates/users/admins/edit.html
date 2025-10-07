@@ -9,10 +9,11 @@
 </head>
 <body>
     <h3>編集</h3>
-    <form th:method="patch" th:action="@{/user/admin/update/{id}(id=${userAdminForm.id})}" th:object="${userAdminForm}">
+    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
+    <form th:method="patch" th:action="@{/user/admin/update/{id}(id=${id})}" th:object="${userAdminForm}">
         <div class="container">
             <label for="id">ID</label>
-            <input type="text" id="user" name="user" th:value="${id}" readonly>
+            <input type="text" id="id" name="id" th:value="${id}" readonly>
         </div>
         <div class="container">
             <label for="lastName">姓</label>
@@ -30,12 +31,20 @@
             <label for="birthDate">生年月日</label>
             <input type="hidden" th:field="*{birthDate}">
         </div>
-        <div class="container">
-            <label for="deleteFlag">退会</label>
-            <select th:field="*{deleteFlag}">
-                <option value="0">ー</option>
-                <option value="1">退会</option>
-            </select>
+        <div hidden class="container">
+            <label for="deleteFlag">有効/無効</label>
+            <input type="hidden" th:field="*{deleteFlag}">
+        </div>
+        <div sec:authorize="hasAnyRole('ADMIN')">
+            <div class="container">
+                <select multiple="multiple" name="roleTypes">
+                    <option th:each = "roleType : ${roleTypes}"
+                            th:value="${roleType}"
+                            th:text="${roleType}"
+                            th:selected="${#lists.contains(userAdminForm.roleUsers,roleType)}">
+                    </option>
+                </select>
+            </div>
         </div>
         <input type="submit" value="更新">
     </form>        

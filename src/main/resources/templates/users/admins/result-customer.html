@@ -13,7 +13,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th><th>氏名</th><th>生年月日</th><th>退会</th>
+                <th>ID</th><th>氏名</th><th>生年月日</th><th>退会済み</th>
             </tr>
         </thead>
         <tbody>
@@ -25,8 +25,7 @@
                     <td>[[${user.deleteFlag}]]</td>
                     <td>
                         <div sec:authorize="hasAnyRole('ADMIN')">
-                            <a th:href="@{/user/admin/edit/{id}(id=${user.id})}">編集</a>&nbsp;
-                            <a th:href="@{/user/admin/show/{id}(id=${user.id})}">削除</a>&nbsp;
+                            <a th:href="@{/user/admin/show/{id}(id=${user.id})}">退会</a>&nbsp;
                         </div>
                     </td>
                 </tr>    
