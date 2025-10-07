@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,9 +27,13 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    // @NotBlank
+    // @Column(length = 64, nullable = false)
+    // private String name;
+
     @NotBlank
-    @Column(length = 64, nullable = false)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private RoleType roleType;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
@@ -53,13 +59,21 @@ public class Role {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public RoleType getRoleType() {
+        return roleType;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setRoleType(RoleType roleType) {
+        this.roleType = roleType;
     }
+    
+    // public String getName() {
+    //     return name;
+    // }
+
+    // public void setName(String name) {
+    //     this.name = name;
+    // }
 
     public Date getCreatedAt() {
         return createdAt;

@@ -6,10 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import jp.haru_idea.springboot.ec_site.models.Role;
+import jp.haru_idea.springboot.ec_site.models.RoleType;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Integer>{
     Role findById(int id);
-    Role findByName(String name);
-    Collection<Role> findByNameNotIn(Collection<String> name);    
+    Role findByRoleType(RoleType roleType);
+    Collection<Role> findByRoleTypeNotIn(Collection<RoleType> roleType);    
 }

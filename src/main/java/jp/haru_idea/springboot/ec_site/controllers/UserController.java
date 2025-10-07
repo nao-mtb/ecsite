@@ -41,6 +41,7 @@ import jp.haru_idea.springboot.ec_site.models.EndUserSearchForm;
 import jp.haru_idea.springboot.ec_site.models.InternalUserSearchForm;
 import jp.haru_idea.springboot.ec_site.models.MemberRank;
 import jp.haru_idea.springboot.ec_site.models.Role;
+import jp.haru_idea.springboot.ec_site.models.RoleType;
 import jp.haru_idea.springboot.ec_site.models.RoleUser;
 import jp.haru_idea.springboot.ec_site.models.Token;
 import jp.haru_idea.springboot.ec_site.models.User;
@@ -63,7 +64,7 @@ import jp.haru_idea.springboot.ec_site.services.RoleService;
 @Controller
 public class UserController {
 
-    private static final String endUser = "ROLE_ENDUSER";
+    private static final RoleType endUser = RoleType.ROLE_ENDUSER;
 
     @Autowired
     private UserService userService;
@@ -226,7 +227,7 @@ public class UserController {
         }
         user.setPassword(encodePassword(userChangePasswordForm.getPassword()));
         userService.save(user);
-        attrs.addFlashAttribute("success","データの更新に成功しました");    
+        attrs.addFlashAttribute("success","データの更新に成功しました");
         return "redirect:/user/profile/main/info";
     }
 
@@ -295,7 +296,7 @@ public class UserController {
         user.setPassword(encodePassword(userResetPasswordForm.getPassword()));
         userService.save(user);
         tokenService.deleteById(tokenId);
-        attrs.addFlashAttribute("success","データの更新に成功しました");    
+        attrs.addFlashAttribute("success","データの更新に成功しました");
         return "redirect:/user/profile/main/info";
     }
 
@@ -317,7 +318,7 @@ public class UserController {
         User user = commonFormToUser(userCommonForm, userService.getById(userId));
         user.setDeleteFlag(1);
         userService.save(user);
-        attrs.addFlashAttribute("success","ご利用ありがとうございました");    
+        attrs.addFlashAttribute("success","ご利用ありがとうございました");
         return "redirect:/user/login";
     }
 
@@ -332,7 +333,7 @@ public class UserController {
 
 //TODO roleTypeにリンクで飛ばす処理を追加
     @GetMapping("/admin/extract/{roleType}")
-    public String extractRoleType(@PathVariable String roleType, Model model){
+    public String extractRoleType(@PathVariable RoleType roleType, Model model){
         if(roleType.equals(endUser)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -343,7 +344,7 @@ public class UserController {
 
     @GetMapping("/admin/search/customer")
     public String searchEndUser(@ModelAttribute EndUserSearchForm searchForm, Model model){
-        Role role = roleService.getByName(endUser);
+        Role role = roleService.getByRoleType(endUser);
         // model.addAttribute("role", role);
         searchForm.setRoleId(role.getId());
         return "users/admins/search-customer";
@@ -351,7 +352,7 @@ public class UserController {
 
     @GetMapping("/admin/search/member")
     public String searchInternalUser(@ModelAttribute InternalUserSearchForm searchForm, Model model){
-        Collection<Role> roles = roleService.getExcludedName(endUser);
+        Collection<Role> roles = roleService.getExcludedRoleType(endUser);
         model.addAttribute("roles", roles);
         return "users/admins/search-member";
     }
@@ -363,7 +364,6 @@ public class UserController {
             BindingResult result,
             Model model, RedirectAttributes attrs){
         if(result.hasErrors()){
-            // Role role = roleService.getByName("ROLE_USER");
             Role role = roleService.getById(searchForm.getRoleId());
             model.addAttribute("role", role);
             return "users/admins/search-customer";
@@ -380,7 +380,7 @@ public class UserController {
             BindingResult result,
             Model model){
         if(result.hasErrors()){
-            Collection<Role> roles = roleService.getExcludedName(endUser);
+            Collection<Role> roles = roleService.getExcludedRoleType(endUser);
             model.addAttribute("roles", roles);
             return "users/admins/search-member";
         }
@@ -407,21 +407,25 @@ public class UserController {
         User user = userService.getById(id);
         UserAdminForm userAdminForm = convertUserAdminForm(user);
         model.addAttribute("id", id);
+        model.addAttribute("roleTypes", RoleType.values());
         model.addAttribute("userAdminForm", userAdminForm);
         return "users/admins/edit";
     }
     //管理者用更新
+    @Transactional
     @PatchMapping("/admin/update/{id}")
     public String update(
             @PathVariable int id,
             @Validated
             @ModelAttribute UserAdminForm userAdminForm,
+            @ModelAttribute RoleType roleType,
             BindingResult result,
             RedirectAttributes attrs){
         User user = adminFormToUser(userAdminForm, userService.getById(id));
         userService.save(user);
+        roleUserService.addRoleUser(user, roleType);
         attrs.addFlashAttribute("success", "データの更新に成功しました");
-        return "redirect:/user/index";
+        return "redirect:/user/admin/result/customer/list";
     }
 
     //管理者用削除
@@ -431,7 +435,7 @@ public class UserController {
         UserAdminForm userAdminForm = convertUserAdminForm(user);
         model.addAttribute("id", user.getId());
         model.addAttribute("userAdminForm", userAdminForm);
-        return "users/admins/show";    
+        return "users/admins/show";
     }
     @DeleteMapping("/admin/delete/{id}")
     public String delete(@PathVariable int id, RedirectAttributes attrs){
@@ -473,7 +477,7 @@ public class UserController {
     private User adminFormToUser(UserCommonForm userCommonForm, User insertUser){
         User user = commonFormToUser(userCommonForm, insertUser);
         UserAdminForm userAdminForm = (UserAdminForm) userCommonForm;
-        user.setId(userAdminForm.getId()); 
+        user.setId(userAdminForm.getId());
         return user;
     }
 
