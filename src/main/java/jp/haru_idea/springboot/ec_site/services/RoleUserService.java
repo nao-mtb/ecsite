@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jp.haru_idea.springboot.ec_site.models.Role;
+import jp.haru_idea.springboot.ec_site.models.RoleType;
 import jp.haru_idea.springboot.ec_site.models.RoleUser;
 import jp.haru_idea.springboot.ec_site.models.User;
 import jp.haru_idea.springboot.ec_site.repositories.RoleUserRepository;
@@ -35,7 +36,7 @@ public class RoleUserService {
         List<RoleUser> roleUsers = roleUserRepository.findByUserId(userId); 
         String[] roles = new String[roleUsers.size()];
         for(int i = 0; i < roleUsers.size(); i++ ){
-            roles[i] = roleUsers.get(i).getRole().getName();
+            roles[i] = roleUsers.get(i).getRole().getRoleType().getRoleName();
         }
         return roles;
     }
@@ -43,20 +44,20 @@ public class RoleUserService {
     //     return roleUserRepository.findByUserId(userId);
     // }
 
-    public void addRoleUser(User user, String roleType){
+    public void addRoleUser(User user, RoleType roleType){
         RoleUser roleUser = new RoleUser();
-        roleUser.setRole(roleService.getByName(roleType));
+        roleUser.setRole(roleService.getByRoleType(roleType));
         roleUser.setUser(user);
         roleUserRepository.save(roleUser);
     }
 
-    public Collection<RoleUser> getRoleType(String roleType){
-        Role role = roleService.getByName(roleType);
+    public Collection<RoleUser> getRoleType(RoleType roleType){
+        Role role = roleService.getByRoleType(roleType);
         return roleUserRepository.findByRole(role);
     }
 
-    public Collection<RoleUser> getNotRoleType(String roleType){
-        Role role = roleService.getByName(roleType);
+    public Collection<RoleUser> getNotRoleType(RoleType roleType){
+        Role role = roleService.getByRoleType(roleType);
         return roleUserRepository.findByRoleNotIn(List.of(role));
     }
 

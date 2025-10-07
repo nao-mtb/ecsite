@@ -25,7 +25,7 @@
                     <td>[[${user.deleteFlag}]]</td>
                     <td>
                         <ul>
-                            <li th:each="roleUser : ${user.roleUsers}" th:text="${roleUser.role.name}"></li>
+                            <li th:each="roleUser : ${user.roleUsers}" th:text="${roleUser.role.roleType}"></li>
                         </ul>
                     </td>
                     <td>
@@ -38,7 +38,7 @@
             </th:block>
             <th:block th:if="${#lists.isEmpty(users)}">
                 <span th:text="該当するユーザはいません"></span>
-                <a href="@{/user/admin/search/member}">戻る</a>
+                <a th:href="@{/user/admin/search/member}">戻る</a>
             </th:block>
         </tbody>
     </table>

@@ -14,7 +14,7 @@
         <div class="container">
             <label for="roleId">権限タイプ</label>
             <select id="roleId" th:field="*{roleId}">
-                <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}"></option>
+                <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.roleType}"></option>
             </select>
         </div>
         <div class="container">

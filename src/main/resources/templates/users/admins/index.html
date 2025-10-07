@@ -13,7 +13,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th><th>氏名</th><th>Email</th><th>生年月日</th><th>退会</th><th>保有権限</th>
+                <th>ID</th><th>氏名</th><th>Email</th><th>生年月日</th><th>保有権限</th><th>状態</th>
             </tr>
         </thead>
         <tbody>
@@ -25,7 +25,7 @@
                 <td>[[${user.deleteFlag}]]</td>
                 <td>
                     <ul>
-                        <li th:each="roleUser : ${user.roleUsers}" th:text="${roleUser.role.name}"></li>
+                        <li th:each="roleUser : ${user.roleUsers}" th:text="${roleUser.role.roleType}"></li>
                     </ul>
                 </td>
                 <td>

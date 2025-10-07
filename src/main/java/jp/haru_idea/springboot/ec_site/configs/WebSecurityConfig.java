@@ -58,10 +58,10 @@ public class WebSecurityConfig {
             .antMatchers("/user/admin/create","/user/admin/save","/user/admin/role/**").hasAnyRole("ADMIN")
             .antMatchers("/user/admin/**").hasAnyRole("ADMIN","SYSTEM")
             // .antMatchers("/product/shopping/**").authenticated() //URLに認証を要求
-            .antMatchers("/product/shopping/**").hasRole("USER")
+            .antMatchers("/product/shopping/**").hasRole("ENDUSER")
             .antMatchers("/product/index","/product/edit/**","/product/update/**").hasAnyRole("ADMIN","SYSTEM","OWNER","CONTENT")
             .antMatchers("/product/**").hasAnyRole("ADMIN","SYSTEM","OWNER")
-            .antMatchers("/user/**","/cart/**","/payment/**","/order-history/**").hasRole("USER")
+            .antMatchers("/user/**","/cart/**","/payment/**","/order-history/**").hasRole("ENDUSER")
 
             // .antMatchers("/user/**","/cart/**","/payment/**").authenticated()
             // .anyRequest().access(manager)

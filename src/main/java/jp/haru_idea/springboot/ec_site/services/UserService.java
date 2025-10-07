@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jp.haru_idea.springboot.ec_site.models.RoleType;
 import jp.haru_idea.springboot.ec_site.models.RoleUser;
 import jp.haru_idea.springboot.ec_site.models.User;
 import jp.haru_idea.springboot.ec_site.repositories.UserRepository;
@@ -32,7 +33,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Collection<User> getUsersByRoleType(String roleType){
+    public Collection<User> getUsersByRoleType(RoleType roleType){
         Collection<RoleUser> roleUsers = roleUserService.getRoleType(roleType);
         Collection<User> users = new ArrayList<User>();
         for(RoleUser roleUser : roleUsers){
@@ -41,7 +42,7 @@ public class UserService {
         return users;
     }
 
-    public Collection<User> getUsersByNotRoleType(String roleType){
+    public Collection<User> getUsersByNotRoleType(RoleType roleType){
         Collection<RoleUser> roleUsers = roleUserService.getNotRoleType(roleType);
         Collection<User> users = new ArrayList<User>();
         for(RoleUser roleUser : roleUsers){
