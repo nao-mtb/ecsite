@@ -2,7 +2,7 @@
 This project is for studying
 
 <h2>Introduction</h2>
-<p>This project is for studing to improve coding skill<br>
+<p>This project is for studing to improve my coding skills<br>
   Using languages are below</p>
 <ul>
   <li>Spring Boot</li>
@@ -13,6 +13,6 @@ This project is for studying
 <p>Will push a littele by little </p>
 
 <h2>About me</h2>
-<p>Work for It field for 5+ Years<br>
-  Haven't experienced about coding at office<br>
-  Took Java and MySQL lessons so far, then create a Web Application using SpringBoot</p>
+<p>Having experienced across the software development lifecycle, from design to maintenance<br>
+  Currently developing web applications using Java while continuing to learn new things<br>
+  Use Python at work</p>
