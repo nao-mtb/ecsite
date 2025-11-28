@@ -9,13 +9,26 @@
 </head>
 <body>
     <h3>編集</h3>
-    <form th:method="delete" th:action="@{/user/admin/delete/{id}(id=${userAdminForm.id})}" th:object="${userAdminForm}">
+    <form th:method="patch" th:object="${userAdminForm}">
+        <!-- CSRFトークンを明示的に追加 -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
         <ul>
             <li >ID: [[*{id}]]</li>
             <li>氏名:[[*{lastName}]] [[*{firstName}]]</li>
             <li>メールアドレス: [[*{mail}]]</li>
         </ul>
-        <input type="submit" value="削除">
+        <div sec:authorize="hasRole('ADMIN')">
+            <div th:unless="${roleUsers.?[role.roleType=='ENDUSER']}">
+                <input type="submit" value="退職" th:formaction="@{/user/admin/leave/{id}(id=${userAdminForm.id})}">
+            </div>
+            <div th:if="${roleUsers.?[role.roleType=='ENDUSER']}">
+                <input type="submit" value="退会" th:formaction="@{/user/admin/withdraw/{id}(id=${userAdminForm.id})}">
+            </div>
+        </div>
+        <div sec:authorize="hasRole('SYSTEM') and !hasRole('ADMIN')">
+            <input type="submit" value="退職" th:formaction="@{/user/admin/leave/{id}(id=${userAdminForm.id})}">
+        </div>
     </form>
 </body>
 </html>

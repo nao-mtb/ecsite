@@ -2,6 +2,7 @@ package jp.haru_idea.springboot.ec_site.services;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -53,6 +54,16 @@ public class UserService {
         return users;
     }
 
+    public Collection<User> getInternalUsers(RoleType roleType){
+        Collection<User> allUsers = userRepository.findAll();
+        Collection<User> notEndUsers = new ArrayList<User>();
+        for(User user : allUsers){
+            if(!(user.getRoleUsers().stream().map(roleUser -> roleUser.getRole().getRoleType()).collect(Collectors.toList()).contains(roleType))){
+                notEndUsers.add(user);
+            }
+        }
+        return notEndUsers;
+    }
     // @Bean
     // public PasswordEncoder passwordEncoder(){
     //     return new BCryptPasswordEncoder();
@@ -72,6 +83,15 @@ public class UserService {
     public void delete(int id){
         userRepository.deleteById(id);
     }   
+
+    public void activateAccount(User user, boolean isActive){
+        int flg = 0;
+        if(!isActive){
+            flg = 1;
+        }
+        user.setDeleteFlag(flg);
+        save(user);
+    }
 
     public User getById(int id){
         return userRepository.findById(id);

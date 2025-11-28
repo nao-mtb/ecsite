@@ -324,16 +324,18 @@ public class UserController {
         return "redirect:/user/login";
     }
 
-    //TODO 一覧表示もformを使用
     //************ 管理者用 ************
-    @GetMapping("/admin/index")
-    public String index(Model model){
+    //TODO 一覧表示もformを使用
+    //display all users that have authority except endUser
+    @GetMapping("/admin/index/authorized-members")
+    public String indexWithRoles(Model model){
         Collection<User> roleUsers = userService.getUsersByNotRoleType(endUser);
         model.addAttribute("roleUsers", roleUsers);
         return "users/admins/index";
     }
 
-//TODO roleTypeにリンクで飛ばす処理を追加
+    //TODO roleTypeにリンクで飛ばす処理を追加
+    //display users that have specific authority except endUser
     @GetMapping("/admin/extract/{roleType}")
     public String extractRoleType(@PathVariable RoleType roleType, Model model){
         if(roleType.equals(endUser)){
@@ -341,6 +343,15 @@ public class UserController {
         }
         Collection<User> roleUsers = userService.getUsersByRoleType(roleType);
         model.addAttribute("roleUsers", roleUsers);
+        return "users/admins/index";
+    }
+
+    //社員テーブルを使用した場合は、社員テーブルのユーザを呼び出すロジックに変更
+    //display all users except endUser(both authorised and unauthorised users)
+    @GetMapping("/admin/index/internal-members")
+    public String index(Model model){
+        Collection<User> users = userService.getInternalUsers(endUser);
+        model.addAttribute("roleUsers", users);
         return "users/admins/index";
     }
 
@@ -360,7 +371,7 @@ public class UserController {
     }
 
     @PostMapping("/admin/result/customer/list")
-    public String resultEndUserList(
+    public String resultEndUsers(
             @Validated
             @ModelAttribute EndUserSearchForm searchForm,
             BindingResult result,
@@ -376,7 +387,7 @@ public class UserController {
     }
 
     @PostMapping("/admin/result/member/list")
-    public String resultInternalUserList(
+    public String resultInternalUsers(
             @Validated
             @ModelAttribute InternalUserSearchForm searchForm,
             BindingResult result,
@@ -403,6 +414,7 @@ public class UserController {
         return "users/admins/create";
     }
 
+    //TODO URL変更(pathvariableでidを直接使用しない)
     //管理者用編集
     @GetMapping("/admin/edit/{id}")
     public String edit(@PathVariable int id, Model model){
@@ -421,30 +433,39 @@ public class UserController {
             @PathVariable int id,
             @Validated
             @ModelAttribute UserAdminForm userAdminForm,
-            @RequestParam("roleTypes") List<RoleType> roleTypes,
+            @RequestParam(value = "roleTypes", required = false) List<RoleType> roleTypes,
             BindingResult result,
             RedirectAttributes attrs){
-        User user = adminFormToUser(userAdminForm, userService.getById(id));
-        userService.save(user);
+        User user = userService.getById(userAdminForm.getId());
         roleUserService.editRoleUser(user, roleTypes);
         attrs.addFlashAttribute("success", "データの更新に成功しました");
         return "redirect:/user/admin/search/member";
     }
 
-    //管理者用削除
+    //管理者用無効化
     @GetMapping("/admin/show/{id}")
     public String show(@PathVariable int id, Model model){
         User user = userService.getById(id);
         UserAdminForm userAdminForm = convertUserAdminForm(user);
-        model.addAttribute("id", user.getId());
+        model.addAttribute("roleUsers", user.getRoleUsers());
         model.addAttribute("userAdminForm", userAdminForm);
         return "users/admins/show";
     }
-    @DeleteMapping("/admin/delete/{id}")
-    public String delete(@PathVariable int id, RedirectAttributes attrs){
-        userService.delete(id);
-        attrs.addFlashAttribute("success","データの削除に成功しました");
-        return "redirect:/user/index";
+    @PatchMapping("/admin/leave/{id}")
+    public String leave(@PathVariable int id, RedirectAttributes attrs){
+        User user = userService.getById(id);
+        roleUserService.deleteRoleUser(user);
+        userService.activateAccount(user, false);
+        attrs.addFlashAttribute("success","退職処理が完了しました");
+        return "redirect:/user/admin/index/internal-members";
+    }
+
+    @PatchMapping("/admin/withdraw/{id}")
+    public String withdraw(@PathVariable int id, RedirectAttributes attrs){
+        User user = userService.getById(id);
+        userService.activateAccount(user, false);
+        attrs.addFlashAttribute("success","退会処理が完了しました");
+        return "redirect:/user/admin/search/customer";
     }
 
     private UserCommonForm convertUserCommonForm(User user){
@@ -478,12 +499,12 @@ public class UserController {
         return user;
     }
 
-    private User adminFormToUser(UserCommonForm userCommonForm, User insertUser){
-        User user = commonFormToUser(userCommonForm, insertUser);
-        UserAdminForm userAdminForm = (UserAdminForm) userCommonForm;
-        user.setId(userAdminForm.getId());
-        return user;
-    }
+    // private User adminFormToUser(UserCommonForm userCommonForm, User insertUser){
+    //     User user = commonFormToUser(userCommonForm, insertUser);
+    //     UserAdminForm userAdminForm = (UserAdminForm) userCommonForm;
+    //     user.setId(userAdminForm.getId());
+    //     return user;
+    // }
 
     private User createFormToUser(UserCommonForm userCommonForm, User insertUser){
         User user = commonFormToUser(userCommonForm, insertUser);

@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import jp.haru_idea.springboot.ec_site.models.Role;
 import jp.haru_idea.springboot.ec_site.models.RoleType;
@@ -22,9 +23,6 @@ public class RoleUserService {
 
     @Autowired
     private RoleService roleService;
-
-    // @Autowired
-    // private UserService userService;
 
     public Collection<RoleUser> getAll(){
         return roleUserRepository.findAll();
@@ -64,9 +62,17 @@ public class RoleUserService {
     @Transactional
     public void editRoleUser(User user, List<RoleType> roleTypes){
         roleUserRepository.deleteByUserId(user.getId());
-        for (RoleType roleType : roleTypes){
-            addRoleUser(user, roleType);
+        if (!CollectionUtils.isEmpty(roleTypes)){
+            for (RoleType roleType : roleTypes){
+                addRoleUser(user, roleType);
+            }
         }
+    }
+
+    @Transactional
+    public void deleteRoleUser(User user){
+        roleUserRepository.deleteByUserId(user.getId());
+        // user.setDeleteFlag(1);
     }
 
     public Collection<RoleUser> getRoleType(RoleType roleType){

@@ -30,14 +30,18 @@
                 <td>
                     <div th:switch="${user.deleteFlag}">
                         <p th:case="0">Active</p>
-                        <p th:case="1">Inactive</p>
-                        <p th:case="9">Retirement</p>
+                        <p th:case="1">Retirement</p>
                     </div>
                 </td>
                 <td>
-                    <div sec:authorize="hasAnyRole('ADMIN')">
-                        <a th:href="@{/user/admin/edit/{id}(id=${user.id})}">権限編集</a>&nbsp;
-                        <a th:href="@{/user/admin/show/{id}(id=${user.id})}">無効化</a>&nbsp;
+                    <div sec:authorize="hasRole('ADMIN')">
+                        <a th:href="@{/user/admin/edit/{id}(id=${user.id})}">権限編集</a>
+                        <a th:href="@{/user/admin/show/{id}(id=${user.id})}">無効化</a>
+                    </div>
+                </td>
+                <td>
+                    <div sec:authorize="hasRole('SYSTEM') and !hasRole('ADMIN')">
+                        <a th:href="@{/user/admin/show/{id}(id=${user.id})}">退職</a>
                     </div>
                 </td>
             </tr>
