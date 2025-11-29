@@ -13,7 +13,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th><th>氏名</th><th>生年月日</th><th>mail</th><th>退会</th><th>アカウント登録日</th>
+                <th>ID</th><th>氏名</th><th>生年月日</th><th>mail</th><th>退会</th><th>アカウント登録日</th><th>退会日</th>
             </tr>
         </thead>
         <tbody>
@@ -23,12 +23,9 @@
                 <td>[[*{mail}]]</td>
                 <td>[[*{deleteFlag}]]</td>
                 <td>[[*{createdAt}]]</td>
-                <td>
-                    <div sec:authorize="hasAnyRole('ADMIN')">
-                        <a th:href="@{/user/admin/edit/{id}(id=${user.id})}">編集</a>&nbsp;
-                        <a th:href="@{/user/admin/show/{id}(id=${user.id})}">削除</a>&nbsp;
-                    </div>
-                </td>
+                <th:block th:if="${user.deleteFlag}==1">
+                    <td>[[*{updatedAt}]]</td>
+                </th:block>
             </tr>
         </tbody>
     </table>

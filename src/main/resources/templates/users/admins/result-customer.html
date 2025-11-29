@@ -25,10 +25,12 @@
                     <td>[[${user.deleteFlag}]]</td>
                     <td>
                         <div sec:authorize="hasAnyRole('ADMIN')">
-                            <a th:href="@{/user/admin/show/{id}(id=${user.id})}">退会</a>&nbsp;
+                            <th:block th:if="${user.deleteFlag}==0">
+                                <a th:href="@{/user/admin/show/{id}(id=${user.id})}">退会</a>&nbsp;
+                            </th:block>
                         </div>
                     </td>
-                </tr>    
+                </tr>
             </th:block>
             <th:block th:if="${#lists.isEmpty(users)}">
                 <span th:text="該当するユーザはいません"></span>

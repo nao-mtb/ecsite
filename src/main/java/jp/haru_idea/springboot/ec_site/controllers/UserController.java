@@ -447,7 +447,12 @@ public class UserController {
     public String show(@PathVariable int id, Model model){
         User user = userService.getById(id);
         UserAdminForm userAdminForm = convertUserAdminForm(user);
-        model.addAttribute("roleUsers", user.getRoleUsers());
+        Collection<User> roleUsers = userService.getUsersByRoleType(endUser);
+        boolean isEndUser = false;
+        if(roleUsers.contains(user)){
+            isEndUser = true;
+        }
+        model.addAttribute("endUser", isEndUser);
         model.addAttribute("userAdminForm", userAdminForm);
         return "users/admins/show";
     }
@@ -466,6 +471,14 @@ public class UserController {
         userService.activateAccount(user, false);
         attrs.addFlashAttribute("success","退会処理が完了しました");
         return "redirect:/user/admin/search/customer";
+    }
+
+    @PatchMapping("/admin/re-entry/{id}")
+    public String reenter(@PathVariable int id, RedirectAttributes attrs){
+        User user = userService.getById(id);
+        userService.activateAccount(user, true);
+        attrs.addFlashAttribute("success","再登録処理が完了しました");
+        return "redirect:/user/admin/index/internal-members";
     }
 
     private UserCommonForm convertUserCommonForm(User user){

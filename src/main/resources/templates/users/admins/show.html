@@ -18,17 +18,25 @@
             <li>氏名:[[*{lastName}]] [[*{firstName}]]</li>
             <li>メールアドレス: [[*{mail}]]</li>
         </ul>
-        <div sec:authorize="hasRole('ADMIN')">
-            <div th:unless="${roleUsers.?[role.roleType=='ENDUSER']}">
+        <th:block th:if="${userAdminForm.deleteFlag}==0">
+            <div sec:authorize="hasRole('ADMIN')">
+                <th:block th:unless="${endUser}">
+                    <input type="submit" value="退職" th:formaction="@{/user/admin/leave/{id}(id=${userAdminForm.id})}">
+                </th:block>
+                <th:block th:if="${endUser}">
+                    <input type="submit" value="退会" th:formaction="@{/user/admin/withdraw/{id}(id=${userAdminForm.id})}">
+                </th:block>
+            </div>
+            <div sec:authorize="hasRole('SYSTEM') and !hasRole('ADMIN')">
                 <input type="submit" value="退職" th:formaction="@{/user/admin/leave/{id}(id=${userAdminForm.id})}">
             </div>
-            <div th:if="${roleUsers.?[role.roleType=='ENDUSER']}">
-                <input type="submit" value="退会" th:formaction="@{/user/admin/withdraw/{id}(id=${userAdminForm.id})}">
+        </th:block>
+
+        <th:block th:if="${userAdminForm.deleteFlag}==1">
+            <div sec:authorize="hasRole('SYSTEM')">
+                <input type="submit" value="再登録" th:formaction="@{/user/admin/re-entry/{id}(id=${userAdminForm.id})}">
             </div>
-        </div>
-        <div sec:authorize="hasRole('SYSTEM') and !hasRole('ADMIN')">
-            <input type="submit" value="退職" th:formaction="@{/user/admin/leave/{id}(id=${userAdminForm.id})}">
-        </div>
+        </th:block>
     </form>
 </body>
 </html>

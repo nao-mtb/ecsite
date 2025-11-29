@@ -29,8 +29,18 @@
                     </td>
                     <td>
                         <div sec:authorize="hasAnyRole('ADMIN')">
-                            <a th:href="@{/user/admin/edit/{id}(id=${user.id})}">権限編集</a>&nbsp;
-                            <a th:href="@{/user/admin/show/{id}(id=${user.id})}">無効化</a>&nbsp;
+                            <th:block th:if="${user.deleteFlag}==0">
+                                <a th:href="@{/user/admin/edit/{id}(id=${user.id})}">権限編集</a>&nbsp;
+                                <a th:href="@{/user/admin/show/{id}(id=${user.id})}">無効化</a>&nbsp;
+                            </th:block>
+                        </div>
+                        <div sec:authorize="hasRole('SYSTEM') and !hasRole('ADMIN')">
+                            <th:block th:if="${user.deleteFlag}==0">
+                                <a th:href="@{/user/admin/show/{id}(id=${user.id})}">退職</a>&nbsp;
+                            </th:block>
+                            <th:block th:unless="${user.deleteFlag}==0">
+                                <a th:href="@{/user/admin/show/{id}(id=${user.id})}">再登録</a>&nbsp;
+                            </th:block>
                         </div>
                     </td>
                 </tr>    
