@@ -30,16 +30,30 @@
                     <td>
                         <div sec:authorize="hasAnyRole('ADMIN')">
                             <th:block th:if="${user.deleteFlag}==0">
-                                <a th:href="@{/user/admin/edit/{id}(id=${user.id})}">権限編集</a>&nbsp;
-                                <a th:href="@{/user/admin/show/{id}(id=${user.id})}">無効化</a>&nbsp;
+                                <form th:method="post" th:action="@{/user/admin/edit}">
+                                    <input type="hidden" th:name="id" th:value="${user.id}">
+                                    <button type="submit">権限編集</button>
+                                </form>
+                                <form th:method="patch" th:action="@{/user/admin/leave}">
+                                    <input type="hidden" th:name="id" th:value="${user.id}">
+                                    <button type="submit">退職</button>
+                                </form>
                             </th:block>
                         </div>
                         <div sec:authorize="hasRole('SYSTEM') and !hasRole('ADMIN')">
                             <th:block th:if="${user.deleteFlag}==0">
-                                <a th:href="@{/user/admin/show/{id}(id=${user.id})}">退職</a>&nbsp;
+                                <form th:method="patch" th:action="@{/user/admin/leave}">
+                                    <input type="hidden" th:name="id" th:value="${user.id}">
+                                    <button type="submit">退職</button>
+                                </form>
                             </th:block>
+                        </div>
+                        <div sec:authorize="hasRole('SYSTEM')">
                             <th:block th:unless="${user.deleteFlag}==0">
-                                <a th:href="@{/user/admin/show/{id}(id=${user.id})}">再登録</a>&nbsp;
+                                <form th:method="patch" th:action="@{/user/admin/re-entry}">
+                                    <input type="hidden" th:name="id" th:value="${user.id}">
+                                    <button type="submit">再登録</button>
+                                </form>
                             </th:block>
                         </div>
                     </td>

@@ -1,6 +1,7 @@
 package jp.haru_idea.springboot.ec_site.controllers;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiPredicate;
@@ -321,7 +322,7 @@ public class UserController {
         user.setDeleteFlag(1);
         userService.save(user);
         attrs.addFlashAttribute("success","ご利用ありがとうございました");
-        return "redirect:/user/login";
+        return "redirect:/home";
     }
 
     //************ 管理者用 ************
@@ -402,9 +403,15 @@ public class UserController {
         return "users/admins/result-member";
     }
 
-    @GetMapping("/admin/result/detail/{id}")
-    public String resultUserDetail(@PathVariable int id, Model model){
-        User user = userService.getById(id);
+    @PostMapping("/admin/select/detail")
+    public String selectUserDetail(@RequestParam int id, HttpSession session) {
+        session.setAttribute("userId", id);
+        return "redirect:/user/admin/result/detail";
+    }
+    
+    @GetMapping("/admin/result/detail")
+    public String resultUserDetail(HttpSession session, Model model){
+        User user = userService.getById((Integer)session.getAttribute("userId"));
         model.addAttribute("user", user);
         return "users/admins/details-customer";
     }
@@ -414,23 +421,20 @@ public class UserController {
         return "users/admins/create";
     }
 
-    //TODO URL変更(pathvariableでidを直接使用しない)
     //管理者用編集
-    @GetMapping("/admin/edit/{id}")
-    public String edit(@PathVariable int id, Model model){
+    @PostMapping("/admin/edit")
+    public String edit(@RequestParam int id, Model model){
         User user = userService.getById(id);
         UserAdminForm userAdminForm = convertUserAdminForm(user);
-        model.addAttribute("id", id);
-        model.addAttribute("roleTypes", RoleType.values());
+        model.addAttribute("roleTypes", EnumSet.complementOf(EnumSet.of(RoleType.ROLE_ENDUSER)));
         model.addAttribute("userAdminForm", userAdminForm);
         return "users/admins/edit";
     }
 
     //管理者用更新
     @Transactional
-    @PatchMapping("/admin/update/{id}")
+    @PatchMapping("/admin/update")
     public String update(
-            @PathVariable int id,
             @Validated
             @ModelAttribute UserAdminForm userAdminForm,
             @RequestParam(value = "roleTypes", required = false) List<RoleType> roleTypes,
@@ -439,44 +443,30 @@ public class UserController {
         User user = userService.getById(userAdminForm.getId());
         roleUserService.editRoleUser(user, roleTypes);
         attrs.addFlashAttribute("success", "データの更新に成功しました");
-        return "redirect:/user/admin/search/member";
+        return "redirect:/user/admin/index/internal-members";
     }
 
-    //管理者用無効化
-    @GetMapping("/admin/show/{id}")
-    public String show(@PathVariable int id, Model model){
+    @PatchMapping("/admin/leave")
+    public String leave(@RequestParam int id, RedirectAttributes attrs){
         User user = userService.getById(id);
-        UserAdminForm userAdminForm = convertUserAdminForm(user);
-        Collection<User> roleUsers = userService.getUsersByRoleType(endUser);
-        boolean isEndUser = false;
-        if(roleUsers.contains(user)){
-            isEndUser = true;
-        }
-        model.addAttribute("endUser", isEndUser);
-        model.addAttribute("userAdminForm", userAdminForm);
-        return "users/admins/show";
-    }
-    @PatchMapping("/admin/leave/{id}")
-    public String leave(@PathVariable int id, RedirectAttributes attrs){
-        User user = userService.getById(id);
-        roleUserService.deleteRoleUser(user);
-        userService.activateAccount(user, false);
+        roleUserService.deleteAllRole(user);
+        userService.deactivateAccount(user);
         attrs.addFlashAttribute("success","退職処理が完了しました");
         return "redirect:/user/admin/index/internal-members";
     }
 
-    @PatchMapping("/admin/withdraw/{id}")
-    public String withdraw(@PathVariable int id, RedirectAttributes attrs){
+    @PatchMapping("/admin/withdraw")
+    public String withdraw(@RequestParam int id, RedirectAttributes attrs){
         User user = userService.getById(id);
-        userService.activateAccount(user, false);
+        userService.deactivateAccount(user);
         attrs.addFlashAttribute("success","退会処理が完了しました");
         return "redirect:/user/admin/search/customer";
     }
 
-    @PatchMapping("/admin/re-entry/{id}")
-    public String reenter(@PathVariable int id, RedirectAttributes attrs){
+    @PatchMapping("/admin/re-entry")
+    public String reenter(@RequestParam int id, RedirectAttributes attrs){
         User user = userService.getById(id);
-        userService.activateAccount(user, true);
+        userService.activateAccount(user);
         attrs.addFlashAttribute("success","再登録処理が完了しました");
         return "redirect:/user/admin/index/internal-members";
     }

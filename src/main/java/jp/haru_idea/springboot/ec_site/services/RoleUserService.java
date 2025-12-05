@@ -70,9 +70,8 @@ public class RoleUserService {
     }
 
     @Transactional
-    public void deleteRoleUser(User user){
+    public void deleteAllRole(User user){
         roleUserRepository.deleteByUserId(user.getId());
-        // user.setDeleteFlag(1);
     }
 
     public Collection<RoleUser> getRoleType(RoleType roleType){

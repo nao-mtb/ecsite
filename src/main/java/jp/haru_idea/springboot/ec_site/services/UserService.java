@@ -84,12 +84,13 @@ public class UserService {
         userRepository.deleteById(id);
     }   
 
-    public void activateAccount(User user, boolean isActive){
-        int flg = 0;
-        if(!isActive){
-            flg = 1;
-        }
-        user.setDeleteFlag(flg);
+    public void activateAccount(User user){
+        user.setDeleteFlag(0);
+        save(user);
+    }
+
+    public void deactivateAccount(User user){
+        user.setDeleteFlag(1);
         save(user);
     }
 

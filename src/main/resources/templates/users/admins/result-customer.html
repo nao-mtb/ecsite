@@ -13,20 +13,29 @@
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th><th>氏名</th><th>生年月日</th><th>退会済み</th>
+                <th></th><th>ID</th><th>氏名</th><th>生年月日</th><th>退会済み</th>
             </tr>
         </thead>
         <tbody>
             <th:block th:unless="${#lists.isEmpty(users)}">
                 <tr th:each="user : ${users}">
-                    <td><a th:href="@{/user/admin/result/detail/{id}(id=${user.id})}">[[${user.id}]]</a></td>
+                    <td>
+                        <form th:method="post" th:action="@{/user/admin/select/detail/}">
+                            <input type="hidden" th:name="id" th:value="${user.id}">
+                            <button type="submit">詳細データ</button>
+                        </form>
+                    </td>
+                    <td>[[${user.id}]]</td>
                     <td>[[${user.lastName}]]　[[${user.firstName}]]</td>
                     <td>[[${user.birthDate}]]</td>
                     <td>[[${user.deleteFlag}]]</td>
                     <td>
                         <div sec:authorize="hasAnyRole('ADMIN')">
                             <th:block th:if="${user.deleteFlag}==0">
-                                <a th:href="@{/user/admin/show/{id}(id=${user.id})}">退会</a>&nbsp;
+                                <form th:method="patch" th:action="@{/user/admin/withdraw}">
+                                    <input type="hidden" th:name="id" th:value="${user.id}">
+                                    <button type="submit">退会</button>
+                                </form>
                             </th:block>
                         </div>
                     </td>
