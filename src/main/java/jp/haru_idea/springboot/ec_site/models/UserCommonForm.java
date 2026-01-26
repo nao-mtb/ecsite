@@ -9,13 +9,16 @@ import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import jp.haru_idea.springboot.ec_site.validators.annotations.AgeVerification;
+
+@AgeVerification
 public class UserCommonForm {
     @NotBlank
-    @Pattern(regexp = "[^!\"#$%&'()*+,-./:;<=>?@[]^_`{]+$]{0,64}", message = "64文字以内の文字（記号を除く）を入力してください")
+    @Pattern(regexp = "[^!\"#$%&'()*+,-./:;<=>?@[]^_`{]+$　]{0,64}", message = "64文字以内の文字（記号を除く）を入力してください")
     private String lastName;
     
     @NotBlank
-    @Pattern(regexp = "[^!\"#$%&'()*+,-./:;<=>?@[]^_`{]+$]{0,64}", message = "64文字以内の文字（記号を除く）を入力してください")
+    @Pattern(regexp = "[^!\"#$%&'()*+,-./:;<=>?@[]^_`{]+$　]{0,64}", message = "64文字以内の文字（記号を除く）を入力してください")
     private String firstName;
     
     //TODO メール正規表現整理
@@ -26,6 +29,7 @@ public class UserCommonForm {
 
     //TODO バリデーションエラー時のリセット対処
     //"[yyyy-MM-dd][yyyy/MM/dd]"から[yyyy/MM/dd]を削除
+    
     //TODO 年齢制限のバリデーションを作成
     @NotNull
     @DateTimeFormat(pattern = "[yyyy-MM-dd]")
