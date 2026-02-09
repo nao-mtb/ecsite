@@ -1,4 +1,4 @@
-package jp.haru_idea.springboot.ec_site.configs;
+package jp.haru_idea.springboot.ec_site.advices;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ControllerAdvice;
