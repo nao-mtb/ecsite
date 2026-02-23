@@ -1,38 +1,11 @@
 package jp.haru_idea.springboot.ec_site.configs;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.reactive.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authorization.AuthorityAuthorizationManager;
-import org.springframework.security.authorization.AuthorizationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
-import org.springframework.security.web.access.intercept.RequestMatcherDelegatingAuthorizationManager;
-import org.springframework.security.web.authentication.RequestMatcherDelegatingAuthenticationManagerResolver;
-import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
-import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import jp.haru_idea.springboot.ec_site.services.LoginService;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -50,6 +23,7 @@ public class WebSecurityConfig {
         .authorizeHttpRequests()
             // .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll  //"/CSS/**"などはログインなしでもアクセス可能
             .antMatchers("/login").permitAll()     //指定URLに全てのユーザがアクセス可能
+            .antMatchers("/backoffice/home").hasAnyRole("ADMIN","SUPPORT","SYSTEM","OWNER","CONTENT")
             .antMatchers("/user/create/**","/user/save", "/user/profile/password/reset/**").permitAll()
             .antMatchers("/product/shopping/index").permitAll()
             .antMatchers("/user/admin/search/customer").hasAnyRole("ADMIN","SUPPORT")  //指定URLに指定したロールユーザのみアクセス可能
@@ -81,7 +55,17 @@ public class WebSecurityConfig {
         .logout()
             .logoutUrl("/user/logout")             //POSTでログアウト
             // .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))  //Getでログアウト
-            .logoutSuccessUrl("/home")           //ログアウト成功後のリダイレクト先URL
+            .logoutSuccessHandler((request, response, authentication) -> {
+                var authorities = authentication.getAuthorities();                
+                boolean isEndUser = authorities.stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ENDUSER"));
+                if (isEndUser) {
+                    response.sendRedirect("/home");       // エンドユーザログアウト後
+                }else{
+                    response.sendRedirect("/backoffice/home"); // 管理者ログアウト後
+                }
+            })
+            // .logoutSuccessUrl("/home")           //ログアウト成功後のリダイレクト先URL
             // .deleteCookies("")                    //ログアウト時に削除するクッキー名
             .invalidateHttpSession(true);         //ログアウト時のセッション破棄有無(tureは破棄)
             return http.build();

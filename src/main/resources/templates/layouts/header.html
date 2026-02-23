@@ -19,10 +19,12 @@
                     <li><a th:href="@{/user/profile/main/info}">
                         <span sec:authentication="principal.lastName"> </span>
                         <span sec:authentication="principal.firstName"></span>さんの登録情報
-                    </a></li>
+                        </a>
+                    </li>
                 </div>
                 <li><a th:href="@{/product/shopping/index}">商品ページ</a></li>
-                <li><a th:href="@{/cart/view}">カート</a>
+                <li>
+                    <a th:href="@{/cart/view}">カート</a>
                     <ul class="details">
                         <li>商品数: <span th:text="${totalCartQuantity}"></span></li>
                         <li>金額: <span th:text="${totalCartPrice}"></span></li>

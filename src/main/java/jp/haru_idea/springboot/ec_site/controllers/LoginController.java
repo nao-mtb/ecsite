@@ -1,7 +1,6 @@
 package jp.haru_idea.springboot.ec_site.controllers;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
@@ -14,5 +13,10 @@ public class LoginController {
     @GetMapping("/home")
     public String home(){
         return "home";
+    }
+
+    @GetMapping("/backoffice/home")
+    public String backofficHome() {
+        return "backoffice-home";
     }
 }
