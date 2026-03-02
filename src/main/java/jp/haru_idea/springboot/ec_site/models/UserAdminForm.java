@@ -2,7 +2,7 @@ package jp.haru_idea.springboot.ec_site.models;
 
 import java.util.Collection;
 
-import javax.persistence.OneToMany;
+import jakarta.persistence.OneToMany;
 
 public class UserAdminForm extends UserCommonForm{
     private int id;

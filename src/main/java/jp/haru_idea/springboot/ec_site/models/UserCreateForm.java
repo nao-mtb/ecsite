@@ -1,7 +1,7 @@
 package jp.haru_idea.springboot.ec_site.models;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 public class UserCreateForm extends UserCommonForm{    
     @NotBlank

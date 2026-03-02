@@ -5,8 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.Collection;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;

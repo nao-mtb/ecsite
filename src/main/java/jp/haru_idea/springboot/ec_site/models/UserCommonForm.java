@@ -2,10 +2,10 @@ package jp.haru_idea.springboot.ec_site.models;
 
 import java.time.LocalDate;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -30,7 +30,6 @@ public class UserCommonForm {
     //TODO バリデーションエラー時のリセット対処
     //"[yyyy-MM-dd][yyyy/MM/dd]"から[yyyy/MM/dd]を削除
     
-    //TODO 年齢制限のバリデーションを作成
     @NotNull
     @DateTimeFormat(pattern = "[yyyy-MM-dd]")
     private LocalDate birthDate;

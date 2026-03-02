@@ -1,7 +1,7 @@
 package jp.haru_idea.springboot.ec_site.models;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import jp.haru_idea.springboot.ec_site.validators.annotations.CreditCardExpirationDate;
 

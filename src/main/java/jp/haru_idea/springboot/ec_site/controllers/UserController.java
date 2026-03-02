@@ -7,10 +7,10 @@ import java.util.UUID;
 import java.util.function.BiPredicate;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.transaction.Transactional;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,7 +99,6 @@ public class UserController {
 
     //新規作成
     //TODO ロール紐づけ
-    //TODO 生年月日制御
     @GetMapping("/create")
     public String createUser(@ModelAttribute UserCreateForm userCreateForm){
         return "users/create";
