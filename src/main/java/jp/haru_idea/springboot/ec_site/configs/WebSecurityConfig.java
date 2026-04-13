@@ -36,7 +36,7 @@ public class WebSecurityConfig {
         .logout(logout -> logout
             .logoutUrl("/user/logout")             //POSTでログアウト
             .logoutSuccessUrl("/home")           //ログアウト成功後のリダイレクト先URL
-            // .deleteCookies("")                    //ログアウト時に削除するクッキー名
+            .deleteCookies("JSESSIONID")                    //ログアウト時に削除するクッキー名
             .invalidateHttpSession(true)         //ログアウト時のセッション破棄有無(tureは破棄)
         );
         return http.build();
@@ -48,8 +48,8 @@ public class WebSecurityConfig {
         http
         .securityMatcher("/backoffice/**", "/product/backoffice/**")
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/backoffice/login", "/backoffice/logout", "/backoffice/home").permitAll()
-            .requestMatchers("/backoffice/search/customer").hasAnyRole("ADMIN","SUPPORT")  //指定URLに指定したロールユーザのみアクセス可能
+            .requestMatchers("/backoffice/login", "/backoffice/logout").permitAll()
+            .requestMatchers("/backoffice/home").hasAnyRole("ADMIN","SYSTEM","OWNER","CONTENT","SUPPORT")            .requestMatchers("/backoffice/search/customer").hasAnyRole("ADMIN","SUPPORT")  //指定URLに指定したロールユーザのみアクセス可能
             .requestMatchers("/backoffice/index/**","/backoffice/search/member").hasAnyRole("ADMIN","SYSTEM","OWNER")
             .requestMatchers("/backoffice/result/**").hasAnyRole("ADMIN","SUPPORT","SYSTEM","OWNER")
             .requestMatchers("/backoffice/create","/backoffice/save","/backoffice/edit","/backoffice/withdraw").hasRole("ADMIN")
@@ -67,7 +67,8 @@ public class WebSecurityConfig {
         })
         .logout(logout -> logout
             .logoutUrl("/backoffice/logout")
-            .logoutSuccessUrl("/backoffice/home")
+            .logoutSuccessUrl("/backoffice/login")
+            .deleteCookies("JSESSIONID")
             .invalidateHttpSession(true)
         );
         return http.build();
