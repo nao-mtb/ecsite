@@ -10,9 +10,9 @@
 <body>
     <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
     <h3>ご登録の住所</h3>
-    <a th:href="@{/user/profile/address/info/}">全表示</a>
-    <a th:href="@{/user/profile/address/info/category/(category='shipping')}">お届け先に指定の住所のみ表示</a>
-    <a th:href="@{/user/profile/address/info/category/(category='billing')}">請求書送付先に指定の住所のみ表示</a>
+    <a th:href="@{/user/profile/address/info}">全表示</a>
+    <a th:href="@{/user/profile/address/info/category(category='shipping')}">お届け先に指定の住所のみ表示</a>
+    <a th:href="@{/user/profile/address/info/category(category='billing')}">請求書送付先に指定の住所のみ表示</a>
     <div th:each="address:${addresses}">
         <div th:switch="${address.addressType}">
             <p th:case="0">お届け先/請求書送付先</p>
@@ -57,7 +57,7 @@
             <span class="label">電話番号：</span>
             <span class="value">[[${address.tel}]]</span>
         </div>
-        <a th:href="@{/user/profile/address/edit/{addressId}/(addressId=${address.id})}">住所変更</a>
+        <a th:href="@{/user/profile/address/edit/{addressId}(addressId=${address.id})}">住所変更</a>
     </div>
 </body>
 </html>

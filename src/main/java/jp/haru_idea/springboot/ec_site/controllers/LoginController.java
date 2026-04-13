@@ -5,18 +5,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class LoginController {
-    @GetMapping("/login")
+    @GetMapping("/user/login")
     public String login(){
-        return "users/login";    
+        return "users/login";
     }
 
-    @GetMapping("/home")
+    @GetMapping("/backoffice/login")
+    public String backofficeLogin(){
+        return "backoffices/login";
+    }
+
+    @GetMapping({"/user/home", "/home"})
     public String home(){
         return "home";
     }
 
     @GetMapping("/backoffice/home")
     public String backofficHome() {
-        return "backoffice-home";
+        return "backoffices/home";
     }
 }

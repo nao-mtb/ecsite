@@ -9,7 +9,7 @@
 </head>
 <body>
     <h3>製品一覧</h3>
-    <a th:href="@{/product/create}">新規登録</a>
+    <a th:href="@{/product/backoffice/create}">新規登録</a>
     <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
     <table class="table">
         <thead>
@@ -28,8 +28,8 @@
                 <td>[[${product.tax.rate}]]</td>
                 <td>[[${product.discontinuedFlag}]]</td>
                 <td>
-                    <a th:href="@{/product/edit/{productId}(productId=${product.id})}">編集</a>&nbsp;
-                    <a th:href="@{/product/show/{productId}(productId=${product.id})}">削除</a>&nbsp;
+                    <a th:href="@{/product/backoffice/edit/{productId}(productId=${product.id})}">編集</a>&nbsp;
+                    <a th:href="@{/product/backoffice/show/{productId}(productId=${product.id})}">削除</a>&nbsp;
                 </td>
             </tr>    
         </tbody>

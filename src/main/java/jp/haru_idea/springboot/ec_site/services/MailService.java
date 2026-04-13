@@ -25,7 +25,7 @@ public class MailService {
 
         }else if(status.equals("resetPassword")){
             subject = "【XXXX】Reset Password";
-            url = "http://localhost:8080/user/profile/password/reset?token=" + token;
+            url = "http://localhost:8080/password/reset?token=" + token;
         }
 
         contents.put("subject", subject);

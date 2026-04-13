@@ -8,32 +8,34 @@
     <title>Document</title>
 </head>
 <body>
-    <h3>編集</h3>
-    <form th:method="patch" th:action="@{/product/update/{productId}(productId=${product.id})}" th:object="${product}">
+    <h3>製品登録</h3>
+    <form method="POST" th:action="@{/product/backoffice/save}" th:object="${product}">
+    <ul th:if="${#fields.hasErrors('*')}">
+        <li th:each="err:${#fields.errors('*')}" th:text="${err}"></li>
+    </ul>
         <div class="container">
             <label for="code">製品番号</label>
-            <input type="hidden" id="oldCode" name="oldCode" th:value="*{oldCode}">
-            <input type="text" id="code" name="code" th:value="*{code}" th:errorclass="bg-warning">
+            <input type="text" th:field="*{code}" th:errorclass="bg-warning">
             <span th:errors="*{code}"></span>
         </div>
         <div class="container">
             <label for="name">製品名</label>
-            <input type="text" id="name" name="name" th:value="*{name}" th:errorclass="bg-warning">
+            <input type="text" th:field="*{name}" th:errorclass="bg-warning">
             <span th:errors="*{name}"></span>
         </div>
         <div class="container">
             <label for="info">説明</label>
-            <input type="text" id="info" name="info" th:value="*{info}" th:errorclass="bg-warning">
+            <input type="text" th:field="*{info}" th:errorclass="bg-warning">
             <span th:errors="*{info}"></span>
         </div>
         <div class="container">
             <label for="unitPrice">単価</label>
-            <input type="text" id="unitPrice" name="unitPrice" th:value="*{unitPrice}" th:errorclass="bg-warning">
+            <input type="text" th:field="*{unitPrice}" th:errorclass="bg-warning">
             <span th:errors="*{unitPrice}"></span>
         </div>
         <div class="container">
             <label for="sellingPrice">販売価格</label>
-            <input type="text" id="sellingPrice" name="sellingPrice" th:value="*{sellingPrice}" th:errorclass="bg-warning">
+            <input type="text" th:field="*{sellingPrice}" th:errorclass="bg-warning">
             <span th:errors="*{sellingPrice}"></span>
         </div>
         <div class="container">
@@ -44,14 +46,7 @@
                 </option>
             </select>
         </div>
-        <div class="container">
-            <label for="discontinuedFlag">廃番</label>
-            <select th:field="*{discontinuedFlag}">
-                <option value="0">ー</option>
-                <option value="1">廃番</option>
-            </select>
-        </div>
-        <input type="submit" value="更新">
+        <input type="submit" value="登録">
     </form>
 </body>
 </html>

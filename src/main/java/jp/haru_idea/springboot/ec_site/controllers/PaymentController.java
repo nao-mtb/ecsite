@@ -90,7 +90,7 @@ public class PaymentController {
         if (cartDetailsIds != null){
             Collection<CreditCard> creditCards = creditCardService.getUserIdOrderByCardDefaultDesc(userId);
             if (creditCards.size() == 0) {
-                return "redirect:/user/credit-card/create/";
+                return "redirect:/user/credit-card/create";
             }else{
                 model.addAttribute("creditCards", creditCards);
                 model.addAttribute("cartDetailsIds", cartDetailsIds);
@@ -98,7 +98,7 @@ public class PaymentController {
             }
         }else{
             attrs.addFlashAttribute("success", "購入商品がありません");
-            return "redirect:/cart/view/";
+            return "redirect:/cart/view";
         }
     }
 
@@ -123,6 +123,6 @@ public class PaymentController {
         invoiceDetailsService.copyFromCartDetail(cartDetails, invoice, discount);  
         cartDetailsService.deletePurchasedCartDetails(cartDetails);
         attrs.addFlashAttribute("success", "商品の購入が完了しました");
-        return "redirect:/cart/view/";
+        return "redirect:/cart/view";
     }
 }

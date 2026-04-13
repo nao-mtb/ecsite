@@ -15,7 +15,7 @@
     <div class="alert" th:if="${param.error}">
         ユーザ名/パスワード名が正しくありません
     </div>
-    <form th:method="post" th:action="@{/user/login}">
+    <form th:method="post" th:action="@{/backoffice/login}">
         <div class="container">
             <label for="usr">ログインID</label>
             <input type="text" id="usr" name="usr"><br>
@@ -24,7 +24,6 @@
             <a class="reset-button" th:href="@{/password/reset/request}">パスワードを忘れた方はこちら</a>
         </div>
         <input class="button" type="submit" value="ログイン"><br>
-        <a class="button" th:href="@{/user/create}">新規会員登録</a>
     </form>
     </div>
 </body>

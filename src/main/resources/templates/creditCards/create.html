@@ -11,7 +11,7 @@
     <h3>新規クレジットカード情報登録</h3>
     <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
     <div th:if="${error}" class="alert alert-danger">[[${error}]]</div>
-    <form th:method="post" th:action="@{/user/credit-card/save/}" th:object="${creditCard}">
+    <form th:method="post" th:action="@{/user/credit-card/save}" th:object="${creditCard}">
         <ul th:if="${#fields.hasErrors('*')}">
             <li th:each="err:${#fields.errors('*')}" th:text="${err}"></li>
         </ul> 

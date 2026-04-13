@@ -39,7 +39,7 @@
                 </form>
             </div>
             <div sec:authorize="!isAuthenticated()">
-                <form method="get" th:action="@{/login}">
+                <form method="get" th:action="@{/user/login}">
                     <button class="login">ログイン/新規会員登録</button>
                 </form>
             </div>

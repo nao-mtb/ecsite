@@ -23,6 +23,10 @@ public class TokenService {
         return tokenRepository.findByToken(token);
     }
 
+    public Token getById(int tokenId){
+        return tokenRepository.findById(tokenId);
+    }
+
     public void deleteById(int id){
         tokenRepository.deleteById(id);
     }   

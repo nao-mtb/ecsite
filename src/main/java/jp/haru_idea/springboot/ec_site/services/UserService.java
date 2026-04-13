@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -114,4 +115,8 @@ public class UserService {
         return userRepository.findUsersByRoleAndLastName(roleId, lastName);
     }
 
+
+    public boolean isEndUser(User user){
+        return user.getRoleUsers().stream().anyMatch(roleUser -> roleUser.getRole().getRoleType().equals(RoleType.ROLE_ENDUSER));
+    }
 }

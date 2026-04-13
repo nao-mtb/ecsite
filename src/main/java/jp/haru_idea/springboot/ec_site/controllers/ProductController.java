@@ -35,22 +35,22 @@ public class ProductController {
     @Autowired
     private DiscountService discountService;
     
-    @GetMapping("/index")
+    @GetMapping("/backoffice/index")
     public String index(Model model){
         Collection<Product> products = productService.getAll();
         model.addAttribute("CONTINUED", DiscontinuedFlag.CONTINUED);
         model.addAttribute("DISCONTINUED", DiscontinuedFlag.DISCONTINUED);
         model.addAttribute("products", products);
-        return "products/index";
+        return "products/backoffices/index";
     }
 
-    @GetMapping("/create")
+    @GetMapping("/backoffice/create")
     public String create(@ModelAttribute Product product, Model model){
         Collection<Tax> taxes = taxService.getAll();
         model.addAttribute("taxes", taxes);
-        return "products/create";
+        return "products/backoffices/create";
     }
-    @PostMapping("/save")
+    @PostMapping("/backoffice/save")
     public String save(
             @Validated
             @ModelAttribute Product product,
@@ -60,23 +60,23 @@ public class ProductController {
             // TODO model再読み込みをしない方法を検討
             Collection<Tax> taxes = taxService.getAll();
             model.addAttribute("taxes", taxes);
-            return "products/create";
+            return "products/backoffices/create";
         }
         productService.save(product);
         attrs.addFlashAttribute("success", "データの登録に成功しました。");
-        return "redirect:/product/index";
+        return "redirect:/product/backoffice/index";
     }
 
-    @GetMapping("/edit/{productId}")
+    @GetMapping("/backoffice/edit/{productId}")
     public String edit(@PathVariable int productId, Model model){
         Product product = productService.getById(productId);
         product.setOldCode(product.getName());
         model.addAttribute("product", product);
         Collection<Tax> taxes = taxService.getAll();
         model.addAttribute("taxes", taxes);
-        return "products/edit";
+        return "products/backoffices/edit";
     }
-    @PatchMapping("/update/{productId}")
+    @PatchMapping("/backoffice/update/{productId}")
     public String update(
             @PathVariable int productId, 
             @Validated
@@ -87,25 +87,25 @@ public class ProductController {
             // TODO model再読み込みをしない方法を検討
             Collection<Tax> taxes = taxService.getAll();
             model.addAttribute("taxes", taxes);
-            return "products/edit";
+            return "products/backoffices/edit";
         }
         product.setId(productId);
         productService.save(product);
         attrs.addFlashAttribute("success", "データの更新に成功しました");
-        return "redirect:/product/index";
+        return "redirect:/product/backoffice/index";
     }
     
-    @GetMapping("/show/{productId}")
+    @GetMapping("/backoffice/show/{productId}")
     public String show(@PathVariable int productId, Model model){
         Product product = productService.getById(productId);
         model.addAttribute("product", product);
-        return "products/show";
+        return "products/backoffices/show";
     }
-    @DeleteMapping("/delete/{productId}")
+    @DeleteMapping("/backoffice/delete/{productId}")
     public String delete(@PathVariable int productId, RedirectAttributes attrs){
         productService.delete(productId);
         attrs.addFlashAttribute("success","データの削除に成功しました");
-        return "redirect:/product/index";
+        return "redirect:/product/backoffice/index";
     }
 
     //TODO FIXカート追加→ログイン後の挙動

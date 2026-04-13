@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -62,7 +63,6 @@ import jp.haru_idea.springboot.ec_site.services.UserService;
 import jp.haru_idea.springboot.ec_site.services.MemberRankService;
 import jp.haru_idea.springboot.ec_site.services.RoleService;
 
-@RequestMapping("/user")
 // @SessionAttributes("mail")
 @Controller
 public class UserController {
@@ -90,7 +90,7 @@ public class UserController {
     @Autowired
     private RoleService roleService;
 
-    @GetMapping("/profile/main/info")
+    @GetMapping("/user/profile/main/info")
     public String profile(Model model){
         int userId = securitySession.getUserId();
         model.addAttribute("user", userService.getById(userId));
@@ -99,12 +99,12 @@ public class UserController {
 
     //新規作成
     //TODO ロール紐づけ
-    @GetMapping("/create")
+    @GetMapping("/user/create")
     public String createUser(@ModelAttribute UserCreateForm userCreateForm){
         return "users/create";
     }
 
-    @PostMapping("/save")
+    @PostMapping("/user/save")
     public String saveUser(
             @Validated 
             @ModelAttribute UserCreateForm userCreateForm,
@@ -127,16 +127,16 @@ public class UserController {
         mailService.sendMail(user.getMail(), contents.get("subject"), contents.get("message"));
         tokenService.processSaveToken(user, tokenStr);
         attrs.addFlashAttribute("success","メールを送信しました。メールのURLからアクセスしなおしてください");
-        return "redirect:/user/create/";
+        return "redirect:/user/create";
     }
 
-    @GetMapping("/create/auth/resend-request")
+    @GetMapping("/user/create/auth/resend-request")
     public String resendTokenToExistsUser(@RequestParam("mail") String mail, Model model){
         model.addAttribute("mail", mail);
         return "users/verify-regenerate";
     }
 
-    @PatchMapping("/create/auth/resend-completed")
+    @PatchMapping("/user/create/auth/resend-completed")
     public String regenerateToken(@RequestParam("mail") String mail, RedirectAttributes attrs){
         User user = userService.getByMail(mail);
         // send mail with token
@@ -145,11 +145,11 @@ public class UserController {
         mailService.sendMail(user.getMail(), contents.get("subject"), contents.get("message"));
         tokenService.processSaveToken(user, tokenStr);
         attrs.addFlashAttribute("success","メールを送信しました。メールのURLからアクセスしなおしてください");
-        return "redirect:/user/create/";
+        return "redirect:/user/create";
     }
 
     @Transactional
-    @GetMapping("/create/auth/verify")
+    @GetMapping("/user/create/auth/verify")
     public String verifyUser(
             @RequestParam("token") String tokenStr,
             Model model, RedirectAttributes attrs){
@@ -174,7 +174,7 @@ public class UserController {
     }
 
     //編集
-    @GetMapping("/profile/main/edit")
+    @GetMapping("/user/profile/main/edit")
     public String editMain(Model model){
         int userId = securitySession.getUserId();
         User user = userService.getById(userId);
@@ -184,7 +184,7 @@ public class UserController {
     }
 
     //TODO 氏名変更時のヘッダーメニューの氏名反映
-    @PatchMapping("/profile/main/update")
+    @PatchMapping("/user/profile/main/update")
     public String updateMain(
             @Validated
             @ModelAttribute UserCommonForm userCommonForm,
@@ -201,13 +201,13 @@ public class UserController {
     }
 
     //パスワード変更
-    @GetMapping("/profile/password/change")
+    @GetMapping({"/user/profile/password/change", "/backoffice/profile/password/change"})
     public String changePassword(@ModelAttribute UserChangePasswordForm userChangePasswordForm, Model model){
         int userId = securitySession.getUserId();
         model.addAttribute("user", userService.getById(userId));
-        return "users/passwords/change";
+        return "passwords/change";
     }
-    @PatchMapping("/profile/password/update")
+    @PatchMapping({"/user/profile/password/update", "/backoffice/profile/password/update"})
     public String updatePassword(
             @Validated
             @ModelAttribute UserChangePasswordForm userChangePasswordForm,
@@ -215,30 +215,35 @@ public class UserController {
             RedirectAttributes attrs){
         int userId = securitySession.getUserId();
         if(result.hasErrors()){
-            return "users/passwords/change";
+            return "passwords/change";
         }
         User user = userService.getById(userId);
-
+        
         if(!(passwordEncoder().matches(userChangePasswordForm.getOldPassword(), user.getPassword()))){
             attrs.addFlashAttribute("error", "現在のパスワードが一致しません");
-            return "redirect:/user/profile/password/change";
+            if (userService.isEndUser(null)){
+                return "redirect:/user/profile/password/change";
+            }return "redirect:/backoffice/profile/password/change";
         }
         if(!userChangePasswordForm.isNewPassword()){
             attrs.addFlashAttribute("error", "新しいパスワードと確認用の入力が一致しません");
-            return "redirect:/user/profile/password/change";
+            if (userService.isEndUser(null)){
+                return "redirect:/user/profile/password/change";
+            }return "redirect:/backoffice/profile/password/change";
         }
         user.setPassword(encodePassword(userChangePasswordForm.getPassword()));
         userService.save(user);
         attrs.addFlashAttribute("success","データの更新に成功しました");
-        return "redirect:/user/profile/main/info";
+        if (userService.isEndUser(null)){
+            return "redirect:/user/profile/main/info";
+        }return "redirect:/backoffice/profile/main/info";
     }
-
     //パスワード再発行
-    @GetMapping("/profile/password/reset/request")
+    @GetMapping("/password/reset/request")
     public String requestResetPassword(@ModelAttribute UserMailForm userMailForm){
-        return "users/passwords/reset-request";
+        return "passwords/reset-request";
     }
-    @PatchMapping("/profile/password/reset/accept")
+    @PatchMapping("/password/reset/accept")
     public String generateTokenForResetPassword(
             @Validated
             @ModelAttribute UserMailForm userMailForm,
@@ -252,10 +257,10 @@ public class UserController {
             tokenService.processSaveToken(user, tokenStr);
         }
         attrs.addFlashAttribute("success", "メールを送信しました");
-        return "redirect:/user/profile/password/reset/request";
+        return "redirect:/password/reset/request";
     }
 
-    @GetMapping("/profile/password/reset")
+    @GetMapping("/password/reset")
     public String inputResetPassword(
             @RequestParam("token") String tokenStr,
             RedirectAttributes attrs,
@@ -264,18 +269,19 @@ public class UserController {
         Token token = tokenService.getByToken(tokenStr);
         if (token == null){
             attrs.addFlashAttribute("error", "URLが無効です。再度パスワードリセット登録をしてください。");
-            return "redirect:/user/profile/password/reset/request";
+            return "redirect:/password/reset/request";
         }
         if (!tokenService.isExpirationDate(token.getUpdatedAt())){
             attrs.addFlashAttribute("error", "URLの有効期限が切れています。再度パスワードリセット登録をしてください。");
-            return "redirect:/user/profile/password/reset/request";
+            return "redirect:/password/reset/request";
         }
         model.addAttribute("mail", token.getUser().getMail());
         model.addAttribute("tokenId", token.getId());
-        return "users/passwords/reset-token";
+        return "passwords/reset-token";
     }
     
-    @PatchMapping("/profile/password/reset/update")
+    @Transactional
+    @PatchMapping("/password/reset/update")
     public String executeResetPassword(
             @Validated
             @RequestParam("mail") String mail,
@@ -284,7 +290,7 @@ public class UserController {
             BindingResult result, Model model,
             RedirectAttributes attrs){
         if(result.hasErrors()){
-            return "users/passwords/change";
+            return "passwords/change";
         }
 
         //セッションに残した場合
@@ -293,17 +299,22 @@ public class UserController {
         User user = userService.getByMail(mail);
         if(!userResetPasswordForm.isNewPassword()){
             attrs.addFlashAttribute("error", "新しパスワードと確認用の入力が一致しません");
-            return "redirect:/user/profile/password/reset/{}";
+            attrs.addAttribute("token", tokenService.getById(tokenId).getToken());
+            return "redirect:/password/reset";
         }
+        user.setToken(null);
         user.setPassword(encodePassword(userResetPasswordForm.getPassword()));
         userService.save(user);
         tokenService.deleteById(tokenId);
         attrs.addFlashAttribute("success","データの更新に成功しました");
-        return "redirect:/user/profile/main/info";
+        if(userService.isEndUser(user)){
+            return "redirect:/user/profile/main/info";
+        }
+        return "redirect:/backoffice/profile/main/info";
     }
 
     //退会処理
-    @GetMapping("/delete")
+    @GetMapping("/user/delete")
     public String confirmDelete(Model model){
         int userId = securitySession.getUserId();
         UserCommonForm userCommonForm = convertUserCommonForm(userService.getById(userId));
@@ -312,7 +323,7 @@ public class UserController {
     }
 
     //TODO return先をホーム画面に変更
-    @PatchMapping("/user-deleted")
+    @PatchMapping("/user/user-deleted")
     public String delete(
             @ModelAttribute UserCommonForm userCommonForm,
             RedirectAttributes attrs){
@@ -327,50 +338,50 @@ public class UserController {
     //************ 管理者用 ************
     //TODO 一覧表示もformを使用
     //display all users that have authority except endUser
-    @GetMapping("/admin/index/authorized-members")
+    @GetMapping("/backoffice/index/authorized-members")
     public String indexWithRoles(Model model){
         Collection<User> roleUsers = userService.getUsersByNotRoleType(endUser);
         model.addAttribute("roleUsers", roleUsers);
-        return "users/admins/index";
+        return "backoffices/index";
     }
 
     //TODO roleTypeにリンクで飛ばす処理を追加
     //display users that have specific authority except endUser
-    @GetMapping("/admin/extract/{roleType}")
+    @GetMapping("/backoffice/extract/{roleType}")
     public String extractRoleType(@PathVariable RoleType roleType, Model model){
         if(roleType.equals(endUser)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         Collection<User> roleUsers = userService.getUsersByRoleType(roleType);
         model.addAttribute("roleUsers", roleUsers);
-        return "users/admins/index";
+        return "backoffices/index";
     }
 
     //社員テーブルを使用した場合は、社員テーブルのユーザを呼び出すロジックに変更
     //display all users except endUser(both authorised and unauthorised users)
-    @GetMapping("/admin/index/internal-members")
+    @GetMapping("/backoffice/index/internal-members")
     public String index(Model model){
         Collection<User> users = userService.getInternalUsers(endUser);
         model.addAttribute("roleUsers", users);
-        return "users/admins/index";
+        return "backoffices/index";
     }
 
-    @GetMapping("/admin/search/customer")
+    @GetMapping("/backoffice/search/customer")
     public String searchEndUser(@ModelAttribute EndUserSearchForm searchForm, Model model){
         Role role = roleService.getByRoleType(endUser);
         // model.addAttribute("role", role);
         searchForm.setRoleId(role.getId());
-        return "users/admins/search-customer";
+        return "backoffices/search-customer";
     }
 
-    @GetMapping("/admin/search/member")
+    @GetMapping("/backoffice/search/member")
     public String searchInternalUser(@ModelAttribute InternalUserSearchForm searchForm, Model model){
         Collection<Role> roles = roleService.getExcludedRoleType(endUser);
         model.addAttribute("roles", roles);
-        return "users/admins/search-member";
+        return "backoffices/search-member";
     }
 
-    @PostMapping("/admin/result/customer/list")
+    @PostMapping("/backoffice/result/customer/list")
     public String resultEndUsers(
             @Validated
             @ModelAttribute EndUserSearchForm searchForm,
@@ -379,14 +390,14 @@ public class UserController {
         if(result.hasErrors()){
             Role role = roleService.getById(searchForm.getRoleId());
             model.addAttribute("role", role);
-            return "users/admins/search-customer";
+            return "backoffices/search-customer";
         }
         Collection<User> users = userService.searchEndUsers(searchForm.getRoleId(), searchForm.getLastName(), searchForm.getFirstName());
         model.addAttribute("users", users);
-        return "users/admins/result-customer";
+        return "backoffices/result-customer";
     }
 
-    @PostMapping("/admin/result/member/list")
+    @PostMapping("/backoffice/result/member/list")
     public String resultInternalUsers(
             @Validated
             @ModelAttribute InternalUserSearchForm searchForm,
@@ -395,44 +406,44 @@ public class UserController {
         if(result.hasErrors()){
             Collection<Role> roles = roleService.getExcludedRoleType(endUser);
             model.addAttribute("roles", roles);
-            return "users/admins/search-member";
+            return "backoffices/search-member";
         }
         Collection<User> users = userService.searchInternalUsers(searchForm.getRoleId(), searchForm.getLastName());
         model.addAttribute("users", users);
-        return "users/admins/result-member";
+        return "backoffices/result-member";
     }
 
-    @PostMapping("/admin/select/detail")
+    @PostMapping("/backoffice/select/detail")
     public String selectUserDetail(@RequestParam int id, HttpSession session) {
         session.setAttribute("userId", id);
-        return "redirect:/user/admin/result/detail";
+        return "redirect:/backoffice/result/detail";
     }
     
-    @GetMapping("/admin/result/detail")
+    @GetMapping("/backoffice/result/detail")
     public String resultUserDetail(HttpSession session, Model model){
         User user = userService.getById((Integer)session.getAttribute("userId"));
         model.addAttribute("user", user);
-        return "users/admins/details-customer";
+        return "backoffices/details-customer";
     }
 
-    @GetMapping("/admin/create")
+    @GetMapping("/backoffice/create")
     public String createCorpMember(){
-        return "users/admins/create";
+        return "backoffices/create";
     }
 
     //管理者用編集
-    @PostMapping("/admin/edit")
+    @PostMapping("/backoffice/edit")
     public String edit(@RequestParam int id, Model model){
         User user = userService.getById(id);
         UserAdminForm userAdminForm = convertUserAdminForm(user);
         model.addAttribute("roleTypes", EnumSet.complementOf(EnumSet.of(RoleType.ROLE_ENDUSER)));
         model.addAttribute("userAdminForm", userAdminForm);
-        return "users/admins/edit";
+        return "backoffices/edit";
     }
 
     //管理者用更新
     @Transactional
-    @PatchMapping("/admin/update")
+    @PatchMapping("/backoffice/update")
     public String update(
             @Validated
             @ModelAttribute UserAdminForm userAdminForm,
@@ -442,32 +453,32 @@ public class UserController {
         User user = userService.getById(userAdminForm.getId());
         roleUserService.editRoleUser(user, roleTypes);
         attrs.addFlashAttribute("success", "データの更新に成功しました");
-        return "redirect:/user/admin/index/internal-members";
+        return "redirect:/backoffice/index/internal-members";
     }
 
-    @PatchMapping("/admin/leave")
+    @PatchMapping("/backoffice/leave")
     public String leave(@RequestParam int id, RedirectAttributes attrs){
         User user = userService.getById(id);
         roleUserService.deleteAllRole(user);
         userService.deactivateAccount(user);
         attrs.addFlashAttribute("success","退職処理が完了しました");
-        return "redirect:/user/admin/index/internal-members";
+        return "redirect:/backoffice/index/internal-members";
     }
 
-    @PatchMapping("/admin/withdraw")
+    @PatchMapping("/backoffice/withdraw")
     public String withdraw(@RequestParam int id, RedirectAttributes attrs){
         User user = userService.getById(id);
         userService.deactivateAccount(user);
         attrs.addFlashAttribute("success","退会処理が完了しました");
-        return "redirect:/user/admin/search/customer";
+        return "redirect:/backoffice/search/customer";
     }
 
-    @PatchMapping("/admin/re-entry")
+    @PatchMapping("/backoffice/re-entry")
     public String reenter(@RequestParam int id, RedirectAttributes attrs){
         User user = userService.getById(id);
         userService.activateAccount(user);
         attrs.addFlashAttribute("success","再登録処理が完了しました");
-        return "redirect:/user/admin/index/internal-members";
+        return "redirect:/backoffice/index/internal-members";
     }
 
     private UserCommonForm convertUserCommonForm(User user){

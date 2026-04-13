@@ -8,7 +8,7 @@
     <title>Document</title>
 </head>
 <body>
-    <div th:replace="layouts/header::header"></div>    
+    <div th:replace="layouts/backoffice-header::header"></div>    
     <h3>ユーザ検索</h3>
     <form th:method="post" th:action="@{/user/admin/result/member/list}" th:object="${internalUserSearchForm}" novalidate>
         <div class="container">

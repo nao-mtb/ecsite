@@ -9,4 +9,5 @@ import jp.haru_idea.springboot.ec_site.models.Token;
 public interface TokenRepository extends JpaRepository<Token, Integer>{
     Token findByUserId(int userId);
     Token findByToken(String token);
+    Token findById(int id);
 }
