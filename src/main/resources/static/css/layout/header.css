@@ -1,0 +1,32 @@
+/* header common */
+header{
+    min-height: 8em;
+    background: #c2d7d7;
+}
+
+.logo{
+    width: 100px;
+    line-height: 1px;
+    margin-right: 60px;
+}
+.account{
+    width: 200px;
+    height: 80px;
+    line-height: 80px;
+    font-size: 0.75rem;
+    display: inline-block;
+    text-align: left;
+}
+/* topbar */
+.topbar{
+    min-height: 2em;
+    display: flex;
+    background: #97adad;
+}
+
+/* main */
+.menu{
+    min-height: 5em;
+    display: flex;
+    border-bottom: 5rem #b1d6d6;
+}

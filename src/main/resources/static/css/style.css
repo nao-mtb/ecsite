@@ -1,0 +1,11 @@
+body{
+    min-height: 10em;
+
+}
+ul{
+    display: flex;
+    align-items: center;
+}
+li{
+    margin-right: 30px;
+}

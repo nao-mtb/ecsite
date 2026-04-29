@@ -1,16 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">    
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <title>Document</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layouts/backoffice-head::head('顧客検索 | ABCD通販サイト')"></head>
 <body>
-    <div th:replace="layouts/header::header"></div>    
-    <h3>ユーザ検索</h3>
-    <form th:method="post" th:action="@{/user/admin/result/customer/list}" th:object="${endUserSearchForm}" novalidate>
+    <header th:replace="layouts/backoffice-header::header"></header>
+    <h3>顧客検索</h3>
+    <form th:method="post" th:action="@{/backoffice/result/customer/list}" th:object="${endUserSearchForm}" novalidate>
         <div class="container">
             <label for="roleId"></label>
             <input type="hidden" id="roleId" th:field="*{roleId}">

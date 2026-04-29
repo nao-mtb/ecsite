@@ -49,13 +49,14 @@ public class WebSecurityConfig {
         .securityMatcher("/backoffice/**", "/product/backoffice/**")
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/backoffice/login", "/backoffice/logout").permitAll()
-            .requestMatchers("/backoffice/home").hasAnyRole("ADMIN","SYSTEM","OWNER","CONTENT","SUPPORT")            .requestMatchers("/backoffice/search/customer").hasAnyRole("ADMIN","SUPPORT")  //指定URLに指定したロールユーザのみアクセス可能
+            .requestMatchers("/backoffice/home").hasAnyRole("ADMIN","SYSTEM","OWNER","CONTENT","SUPPORT")            
+            .requestMatchers("/backoffice/search/customer").hasAnyRole("ADMIN","SUPPORT")
             .requestMatchers("/backoffice/index/**","/backoffice/search/member").hasAnyRole("ADMIN","SYSTEM","OWNER")
             .requestMatchers("/backoffice/result/**").hasAnyRole("ADMIN","SUPPORT","SYSTEM","OWNER")
             .requestMatchers("/backoffice/create","/backoffice/save","/backoffice/edit","/backoffice/withdraw").hasRole("ADMIN")
             .requestMatchers("/backoffice/**").hasAnyRole("ADMIN","SYSTEM")
-            .requestMatchers("/product/backoffice/edit/**","/product/backoffice/update/**").hasAnyRole("ADMIN","SYSTEM","OWNER","CONTENT")
-            .requestMatchers("/product/backoffice/**").hasAnyRole("ADMIN","SYSTEM","OWNER")
+            .requestMatchers("/product/backoffice/edit/**","/product/backoffice/update/**").hasAnyRole("ADMIN","SYSTEM","CONTENT")
+            .requestMatchers("/product/backoffice/**").hasAnyRole("ADMIN","SYSTEM","OWNER","CONTENT")
         )
             // .anyRequest().access(manager)
             // .anyRequest().authenticated()          //他のURLはログイン後のみアクセス可能
@@ -78,7 +79,7 @@ public class WebSecurityConfig {
     @Order(3)
     public SecurityFilterChain publicSecurityFilterChain(HttpSecurity http) throws Exception{
         http
-        .securityMatcher("/product/**", "/home", "/password/**")
+        .securityMatcher("/product/shopping/**", "/home", "/password/**")
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/product/shopping/index", "/product/shopping/detail/**").permitAll()
             .requestMatchers("/password/reset/**").permitAll()

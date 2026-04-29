@@ -1,0 +1,23 @@
+<div th:fragment="topbar" class="topbar">
+    <div sec:authorize="isAuthenticated()">
+        <nav>
+            <ul>
+                <li><a th:href="@{/backoffice/profile/main/info}">
+                    <span sec:authentication="principal.lastName"> </span>
+                    <span sec:authentication="principal.firstName"></span>さんの登録情報
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="account">
+            <form method="post" th:action="@{/backoffice/logout}">
+                <button class="logout">ログアウト</button>
+            </form>
+        </div>
+    </div>
+    <div sec:authorize="!isAuthenticated()" class="account">
+        <form method="get" th:action="@{/backoffice/login}">
+            <button class="login">ログイン/新規会員登録</button>
+        </form>
+    </div>
+</div>

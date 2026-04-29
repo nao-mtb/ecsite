@@ -1,13 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">    
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <title>Document</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layouts/backoffice-head::head('顧客検索結果 | ABCD通販サイト')"></head>
 <body>
+    <header th:replace="layouts/backoffice-header::header"></header>
     <h3>検索結果</h3>
     <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
     <table class="table">
@@ -20,7 +15,7 @@
             <th:block th:unless="${#lists.isEmpty(users)}">
                 <tr th:each="user : ${users}">
                     <td>
-                        <form th:method="post" th:action="@{/user/admin/select/detail}">
+                        <form th:method="post" th:action="@{/backoffice/select/detail}">
                             <input type="hidden" th:name="id" th:value="${user.id}">
                             <button type="submit">詳細データ</button>
                         </form>
@@ -32,7 +27,7 @@
                     <td>
                         <div sec:authorize="hasAnyRole('ADMIN')">
                             <th:block th:if="${user.deleteFlag}==0">
-                                <form th:method="patch" th:action="@{/user/admin/withdraw}">
+                                <form th:method="patch" th:action="@{/backoffice/withdraw}">
                                     <input type="hidden" th:name="id" th:value="${user.id}">
                                     <button type="submit">退会</button>
                                 </form>
@@ -43,7 +38,7 @@
             </th:block>
             <th:block th:if="${#lists.isEmpty(users)}">
                 <span th:text="該当するユーザはいません"></span>
-                <a th:href="@{/user/admin/search/customer}">戻る</a>
+                <a th:href="@{/backoffice/search/customer}">戻る</a>
             </th:block>
         </tbody>
     </table>

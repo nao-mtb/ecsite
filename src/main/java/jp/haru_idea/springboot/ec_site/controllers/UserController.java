@@ -426,6 +426,7 @@ public class UserController {
         return "backoffices/details-customer";
     }
 
+    //TODO 管理者用新規登録完成
     @GetMapping("/backoffice/create")
     public String createCorpMember(){
         return "backoffices/create";

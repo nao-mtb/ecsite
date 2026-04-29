@@ -1,34 +1,4 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/css/layouts/member-header.css">
-</head>
-<header th:fragment="header">
-    <div class="header">
-        <div sec:authorize="isAuthenticated()">
-            <nav>
-                <ul>
-                    <li><a th:href="@{/backoffice/profile/main/info}">
-                        <span sec:authentication="principal.lastName"> </span>
-                        <span sec:authentication="principal.firstName"></span>さんの登録情報
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-            <div class="account">
-                <form method="post" th:action="@{/backoffice/logout}">
-                    <button class="loguout">ログアウト</button>
-                </form>
-            </div>
-        </div>
-        <div sec:authorize="!isAuthenticated()">
-            <form method="get" th:action="@{/backoffice/login}">
-                <button class="login">ログイン/新規会員登録</button>
-            </form>
-        </div>
-    </div>
+<header th:fragment="header" class="header">
+    <div th:replace="layouts/backoffice-topbar :: topbar"></div>
+    <nav th:replace="layouts/backoffice-menu :: menu"></nav>
 </header>
-</html>

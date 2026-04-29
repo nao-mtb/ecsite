@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">    
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,6 +8,7 @@
     <title>Document</title>
 </head>
 <body>
+    <header th:replace="layouts/backoffice-header::header"></header>
     <h3>編集</h3>
     <form th:method="patch" th:object="${userAdminForm}">
         <!-- CSRFトークンを明示的に追加 -->
@@ -21,20 +22,20 @@
         <th:block th:if="${userAdminForm.deleteFlag}==0">
             <div sec:authorize="hasRole('ADMIN')">
                 <th:block th:unless="${endUser}">
-                    <input type="submit" value="退職" th:formaction="@{/user/admin/leave/{id}(id=${userAdminForm.id})}">
+                    <input type="submit" value="退職" th:formaction="@{/backoffice/leave/{id}(id=${userAdminForm.id})}">
                 </th:block>
                 <th:block th:if="${endUser}">
-                    <input type="submit" value="退会" th:formaction="@{/user/admin/withdraw/{id}(id=${userAdminForm.id})}">
+                    <input type="submit" value="退会" th:formaction="@{/backoffice/withdraw/{id}(id=${userAdminForm.id})}">
                 </th:block>
             </div>
             <div sec:authorize="hasRole('SYSTEM') and !hasRole('ADMIN')">
-                <input type="submit" value="退職" th:formaction="@{/user/admin/leave/{id}(id=${userAdminForm.id})}">
+                <input type="submit" value="退職" th:formaction="@{/backoffice/leave/{id}(id=${userAdminForm.id})}">
             </div>
         </th:block>
 
         <th:block th:if="${userAdminForm.deleteFlag}==1">
             <div sec:authorize="hasRole('SYSTEM')">
-                <input type="submit" value="再登録" th:formaction="@{/user/admin/re-entry/{id}(id=${userAdminForm.id})}">
+                <input type="submit" value="再登録" th:formaction="@{/backoffice/re-entry/{id}(id=${userAdminForm.id})}">
             </div>
         </th:block>
     </form>
