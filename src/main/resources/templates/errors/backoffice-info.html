@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layouts/backoffice-head::head('ABCD通販サイト')"></head>
+<body>
+    <header th:replace="layouts/backoffice-header::header"></header>
+    <p>システム担当者にお問い合わせください</p>
+    <a th:href="@{/backoffice/home}">TOP</a>
+    <h3>[[${errMsg}]]</h3>
+</body>
+</html>

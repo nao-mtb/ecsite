@@ -3,6 +3,7 @@ package jp.haru_idea.springboot.ec_site.services;
 import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import jakarta.transaction.Transactional;
 
@@ -32,7 +33,7 @@ public class RoleUserService {
         return roleUserRepository.findById(id);
     }
 
-    public Collection<RoleUser> getAllbyId(int id){
+    public Collection<RoleUser> getAllById(int id){
         return roleUserRepository.findAllById(id);
     }
 
@@ -44,6 +45,12 @@ public class RoleUserService {
         }
         return roles;
     }
+
+    public boolean hasSpecificRole(int userId, RoleType roleType){
+        String roles[] = getByUserId(userId);
+        return Arrays.asList(roles).contains(roleType.toString());
+    }
+    
     // public RoleUser getByUserId(int userId){
     //     return roleUserRepository.findByUserId(userId);
     // }
