@@ -1,13 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">    
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <title>Document</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layouts/head::head('会員情報 | ABCD通販サイト')"></head>
 <body>
+    <header th:replace="layouts/header::header"></header>
     <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
     <div class="container"> 
         <span class="label">姓：</span>

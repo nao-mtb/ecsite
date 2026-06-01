@@ -30,7 +30,7 @@ public class WebSecurityConfig {
         )
         .formLogin(form -> {
             form.loginPage("/user/login")                   //ログイン画面のURL
-                .defaultSuccessUrl("/user/home");
+                .defaultSuccessUrl("/home");
             confCommonLogin(form);
         })
         .logout(logout -> logout

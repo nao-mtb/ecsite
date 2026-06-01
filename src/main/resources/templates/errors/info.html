@@ -1,15 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">    
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <title>Document</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layouts/head::head('ABCD通販サイト')"></head>
 <body>
+    <header th:replace="layouts/header::header"></header>
     <p>ご迷惑をおかけして申し訳ありません。時間をおいて再度お試しください</p>
     <a th:href="@{/home}">TOP</a>
-    <h3>[[${errMsg}]]</h3>
 </body>
 </html>

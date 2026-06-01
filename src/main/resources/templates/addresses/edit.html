@@ -1,17 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-    />
-    <title>Document</title>
-  </head>
-  <body>
-    <h3>住所</h3>
+<head th:replace="layouts/head::head('住所変更 | ABCD通販サイト')"></head>
+<body>
+    <header th:replace="layouts/header::header"></header>
+    <h3>住所変更</h3>
     <form
       th:method="patch"
       th:action="@{/user/profile/address/update/{addressId}(addressId=${addressId})}"

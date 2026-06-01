@@ -5,9 +5,7 @@ header{
 }
 
 .logo{
-    width: 100px;
-    line-height: 1px;
-    margin-right: 60px;
+    width: auto;
 }
 .account{
     width: 200px;

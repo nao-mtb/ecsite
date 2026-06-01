@@ -1,0 +1,35 @@
+<div th:fragment="topbar" class="topbar">
+    <div class="logo">
+        <a th:href="@{/home}">ABCD通販サイト</a>
+    </div>
+    <nav>
+        <ul>
+            <li sec:authorize="isAuthenticated()">
+                <a th:href="@{/user/profile/main/info}">
+                    <span sec:authentication="principal.lastName"> </span>
+                    <span sec:authentication="principal.firstName"></span>さんの登録情報
+                </a>
+            </li>
+            <li><a th:href="@{/product/shopping/index}">商品ページ</a></li>
+            <li>
+                <a th:href="@{/cart/view}">カート</a>
+                <ul class="details">
+                    <li>商品数: <span th:text="${totalCartQuantity}"></span></li>
+                    <li>金額: <span th:text="${totalCartPrice}"></span></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <div class="account">
+        <div sec:authorize="isAuthenticated()">
+            <form method="post" th:action="@{/user/logout}">
+                <button class="logout">ログアウト</button>
+            </form>
+        </div>
+        <div sec:authorize="!isAuthenticated()">
+            <form method="get" th:action="@{/user/login}">
+                <button class="login">ログイン/新規会員登録</button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,14 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">    
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <title>Document</title>
-</head>
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="layouts/head::head('ログイン | ABCD通販サイト')"></head>
 <body>
+    <header th:replace="layouts/header::header"></header>
     <h3>ログイン</h3>
     <div th:fragment="main">
     <div th:if="${success}" class="alert alert-success">[[${success}]]</div>

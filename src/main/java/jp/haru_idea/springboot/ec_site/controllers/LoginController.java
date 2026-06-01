@@ -15,7 +15,7 @@ public class LoginController {
         return "backoffices/login";
     }
 
-    @GetMapping({"/user/home", "/home"})
+    @GetMapping("/home")
     public String home(){
         return "home";
     }

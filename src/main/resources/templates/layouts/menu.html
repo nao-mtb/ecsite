@@ -1,0 +1,20 @@
+<nav th:fragment="menu" class="menu">
+    <ul class="nav">
+        <li>
+            <a th:href="@{/product/shopping/index}">商品情報</a>
+        </li>
+        <li>
+            <a th:href="@{/order-history/index}">購入履歴</a>
+        </li>
+        <li>
+            アカウント
+            <ul class="sub-menu">
+                <li><a th:href="@{/user/profile/main/info}">アカウント登録情報</a></li>
+                <li><a th:href="@{/user/profile/address/info}">住所登録情報</a></li>
+                <li><a th:href="@{/user/profile/credit-card/info}">クレジットカード登録情報</a></li>
+                <li><a th:href="@{/user/profile/password/change}">パスワード変更</a></li>
+                <li><a th:href="@{/user/delete}">退会</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
