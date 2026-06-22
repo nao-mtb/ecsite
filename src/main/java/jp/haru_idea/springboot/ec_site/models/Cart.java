@@ -2,7 +2,6 @@ package jp.haru_idea.springboot.ec_site.models;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

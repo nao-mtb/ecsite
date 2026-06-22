@@ -2,7 +2,6 @@ package jp.haru_idea.springboot.ec_site.services;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import jakarta.transaction.Transactional;

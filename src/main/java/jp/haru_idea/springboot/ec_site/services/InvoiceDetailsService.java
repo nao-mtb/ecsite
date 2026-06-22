@@ -1,7 +1,6 @@
 package jp.haru_idea.springboot.ec_site.services;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

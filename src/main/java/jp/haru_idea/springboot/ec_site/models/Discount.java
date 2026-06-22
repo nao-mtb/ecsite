@@ -1,6 +1,5 @@
 package jp.haru_idea.springboot.ec_site.models;
 
-import java.beans.ConstructorProperties;
 import java.util.Collection;
 import java.util.Date;
 

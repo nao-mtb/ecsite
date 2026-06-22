@@ -3,8 +3,6 @@ package jp.haru_idea.springboot.ec_site.models;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import org.hibernate.annotations.NotFound;
-
 public class AddressForm {
 
     @NotBlank

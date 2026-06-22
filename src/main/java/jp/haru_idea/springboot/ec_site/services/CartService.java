@@ -1,12 +1,8 @@
 package jp.haru_idea.springboot.ec_site.services;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.Collection;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -14,7 +10,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Transactional;
 
 import jp.haru_idea.springboot.ec_site.models.Cart;
 import jp.haru_idea.springboot.ec_site.repositories.CartRepository;
