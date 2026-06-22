@@ -1,0 +1,5 @@
+<div th:fragment="roleType">
+    <select name="roleType">
+        <option th:each="role:${roles}" th:value="${role.roleType}" th:text="${role.roleType}"></option>
+    </select>
+</div>

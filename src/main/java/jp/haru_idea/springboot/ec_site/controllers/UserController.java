@@ -1,5 +1,7 @@
 package jp.haru_idea.springboot.ec_site.controllers;
 
+import static java.lang.annotation.ElementType.values;
+
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
@@ -64,6 +66,7 @@ import jp.haru_idea.springboot.ec_site.services.MemberRankService;
 import jp.haru_idea.springboot.ec_site.services.RoleService;
 
 // @SessionAttributes("mail")
+@SessionAttributes("roles")
 @Controller
 public class UserController {
 
@@ -336,6 +339,17 @@ public class UserController {
     }
 
     //************ 管理者用 ************
+    //store roles excluding endUser in session
+    @ModelAttribute("roles")
+    public Collection<Role> roles(){
+        return roleService.getExcludedRoleType(endUser);
+    }
+
+    @GetMapping("/backoffice/index-list")
+    public String indexMenu(){
+        return "backoffices/index";
+    }
+    
     //TODO 一覧表示もformを使用
     //display all users that have authority except endUser
     @GetMapping("/backoffice/index/authorized-members")
@@ -345,10 +359,9 @@ public class UserController {
         return "backoffices/index";
     }
 
-    //TODO roleTypeにリンクで飛ばす処理を追加
     //display users that have specific authority except endUser
-    @GetMapping("/backoffice/extract/{roleType}")
-    public String extractRoleType(@PathVariable RoleType roleType, Model model){
+    @GetMapping("/backoffice/extract")
+    public String extractRoleType(@RequestParam RoleType roleType, Model model){
         if(roleType.equals(endUser)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }

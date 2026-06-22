@@ -1,60 +1,18 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layouts/backoffice-head::head('利用者一覧 | ABCD通販サイト')"></head>
+<head th:replace="layouts/backoffice-head::head('顧客登録情報 | ABCD通販サイト')"></head>
 <body>
     <header th:replace="layouts/backoffice-header::header"></header>
-    <h3>利用者一覧</h3>
-        <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th><th>氏名</th><th>Email</th><th>生年月日</th><th>保有権限</th><th>状態</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="user : ${roleUsers}">
-                    <td>[[${user.id}]]</td>
-                    <td>[[${user.lastName}]]　[[${user.firstName}]]</td>
-                    <td>[[${user.mail}]]</td>
-                    <td>[[${user.birthDate}]]</td>
-                    <td>
-                        <ul>
-                            <li th:each="roleUser : ${user.roleUsers}" th:text="${roleUser.role.roleType}"></li>
-                        </ul>
-                    </td>
-                    <td>
-                        <div th:switch="${user.deleteFlag}">
-                            <p th:case="0">Active</p>
-                            <p th:case="1">Retirement</p>
-                        </div>
-                    </td>
-                    <td>
-                        <th:block th:if="${user.deleteFlag==0}">
-                            <div sec:authorize="hasRole('ADMIN')">
-                                <form th:method="post" th:action="@{/backoffice/edit}">
-                                    <input type="hidden" th:name="id" th:value="${user.id}">
-                                    <button type="submit">権限編集</button>
-                                </form>
-                            </div>
-                            <div sec:authorize="hasRole('ADMIN') or hasRole('SYSTEM')">
-                                <form th:method="patch" th:action="@{/backoffice/leave}">
-                                    <input type="hidden" th:name="id" th:value="${user.id}">
-                                    <button type="submit">退職</button>
-                                </form>
-                            </div>
-                        </th:block>
-                        <th:block th:if="${user.deleteFlag==1}">
-                            <div sec:authorize="hasRole('SYSTEM')">
-                                <form th:method="patch" th:action="@{/backoffice/re-entry}">
-                                    <input type="hidden" th:name="id" th:value="${user.id}">
-                                    <button type="submit">再登録</button>
-                                </form>
-                            </div>
-                        </th:block>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </form>
+    <div>
+        <a class="" th:href="@{/backoffice/index/authorized-members}">現利用者</a><br>
+        <a class="" th:href="@{/backoffice/index/internal-members}">過去利用者含む</a><br>
+        <form th:method="GET" th:action="@{/backoffice/extract}">
+            <select name="roleType">
+                <option th:each="role:${roles}" th:value="${role.roleType}" th:text="${role.roleType}"></option>
+            </select>
+            <input type="submit" value="検索">
+        </form>
+    </div>
+    <div th:replace="backoffices/index-result::result"></div>
 </body>
 </html>

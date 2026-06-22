@@ -12,16 +12,15 @@
             </tr>
         </thead>
         <tbody>
-                <td>[[*{id}]]</td>
-                <td>[[*{lastName}]]　[[*{firstName}]]</td>
-                <td>[[*{birthDate}]]</td>
-                <td>[[*{mail}]]</td>
-                <td>[[*{deleteFlag}]]</td>
-                <td>[[*{createdAt}]]</td>
-                <th:block th:if="${user.deleteFlag}==1">
-                    <td>[[*{updatedAt}]]</td>
-                </th:block>
-            </tr>
+            <td>[[*{id}]]</td>
+            <td>[[*{lastName}]]　[[*{firstName}]]</td>
+            <td>[[*{birthDate}]]</td>
+            <td>[[*{mail}]]</td>
+            <td>[[*{deleteFlag}]]</td>
+            <td>[[*{createdAt}]]</td>
+            <th:block th:if="${user.deleteFlag}==1">
+                <td>[[*{updatedAt}]]</td>
+            </th:block>
         </tbody>
     </table>
     </div>
