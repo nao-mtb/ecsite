@@ -4,7 +4,9 @@
 <body>
     <header th:replace="layouts/backoffice-header::header"></header>
     <h3>製品一覧</h3>
-    <a th:href="@{/product/backoffice/create}">新規登録</a>
+    <div sec:authorize="hasAnyRole('ADMIN','SYSTEM','CONTENCT')">
+        <a th:href="@{/product/backoffice/create}">新規登録</a>
+    </div>
     <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
     <table class="table">
         <thead>
@@ -22,7 +24,7 @@
                 <td>[[${product.sellingPrice}]]</td>
                 <td>[[${product.tax.rate}]]</td>
                 <td>[[${product.discontinuedFlag}]]</td>
-                <td>
+                <td sec:authorize="hasAnyRole('ADMIN','SYSTEM','CONTENCT')">
                     <a th:href="@{/product/backoffice/edit/{productId}(productId=${product.id})}">編集</a>&nbsp;
                     <a th:href="@{/product/backoffice/show/{productId}(productId=${product.id})}">削除</a>&nbsp;
                 </td>

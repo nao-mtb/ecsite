@@ -55,7 +55,7 @@ public class WebSecurityConfig {
             .requestMatchers("/backoffice/result/**").hasAnyRole("ADMIN","SUPPORT","SYSTEM","OWNER")
             .requestMatchers("/backoffice/create","/backoffice/save","/backoffice/edit","/backoffice/withdraw").hasRole("ADMIN")
             .requestMatchers("/backoffice/**").hasAnyRole("ADMIN","SYSTEM")
-            .requestMatchers("/product/backoffice/edit/**","/product/backoffice/update/**").hasAnyRole("ADMIN","SYSTEM","CONTENT")
+            .requestMatchers("/product/backoffice/edit/**","/product/backoffice/update/**","/product/backoffice/create","/product/backoffice/save","/product/backoffice/delete/**").hasAnyRole("ADMIN","SYSTEM","CONTENT")
             .requestMatchers("/product/backoffice/**").hasAnyRole("ADMIN","SYSTEM","OWNER","CONTENT")
         )
             // .anyRequest().access(manager)
