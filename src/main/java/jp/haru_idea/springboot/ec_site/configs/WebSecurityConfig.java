@@ -46,7 +46,7 @@ public class WebSecurityConfig {
     @Order(2)
     public SecurityFilterChain backofficeSecurityFilterChain(HttpSecurity http) throws Exception{
         http
-        .securityMatcher("/backoffice/**", "/product/backoffice/**")
+        .securityMatcher("/backoffice/**", "/product/backoffice/**", "/setting/**")
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/backoffice/login", "/backoffice/logout").permitAll()
             .requestMatchers("/backoffice/home").hasAnyRole("ADMIN","SYSTEM","OWNER","CONTENT","SUPPORT")            
@@ -57,6 +57,7 @@ public class WebSecurityConfig {
             .requestMatchers("/backoffice/**").hasAnyRole("ADMIN","SYSTEM")
             .requestMatchers("/product/backoffice/edit/**","/product/backoffice/update/**","/product/backoffice/create","/product/backoffice/save","/product/backoffice/delete/**").hasAnyRole("ADMIN","SYSTEM","CONTENT")
             .requestMatchers("/product/backoffice/**").hasAnyRole("ADMIN","SYSTEM","OWNER","CONTENT")
+            .requestMatchers("/setting/**").hasAnyRole("ADMIN","SYSTEM")
         )
             // .anyRequest().access(manager)
             // .anyRequest().authenticated()          //他のURLはログイン後のみアクセス可能

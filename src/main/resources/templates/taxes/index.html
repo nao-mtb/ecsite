@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layouts/backoffice-head::head('税率登録一覧 | ABCD通販サイト')"></head>
+<body>
+    <header th:replace="layouts/backoffice-header::header"></header>
+    <h3>税率登録一覧</h3>
+    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
+    <div>
+        <a th:href="@{/setting/tax/create}">新規登録</a>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th><th>カテゴリー</th><th>税率</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="tax : ${taxes}">
+                <td>[[${tax.id}]]</td>
+                <td>[[${tax.category}]]</td>
+                <td>[[${tax.rate}]]</td>
+                <td>
+                    <form th:method="post" th:action="@{/setting/tax/delete/{taxId}(taxId=${tax.id})}">
+                        <input type="hidden" name="_method" value="delete">
+                        <button type="submit">削除</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>

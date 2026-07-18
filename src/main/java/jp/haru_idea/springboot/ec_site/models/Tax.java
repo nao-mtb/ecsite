@@ -17,6 +17,7 @@ import jakarta.validation.constraints.Positive;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name="taxes")
@@ -35,6 +36,8 @@ public class Tax {
 
     private String category;
 
+    @NotNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date startDate;
@@ -48,9 +51,6 @@ public class Tax {
     @UpdateTimestamp
     @Column(nullable = false)
     private Date updatedAt;
-
-    @Column(nullable = false, columnDefinition = "int default 0")
-    private int version;
 
     public int getId() {
         return id;
@@ -107,13 +107,4 @@ public class Tax {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
-
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
-    }
-    
 }

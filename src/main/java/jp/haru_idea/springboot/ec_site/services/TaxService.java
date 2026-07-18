@@ -17,4 +17,15 @@ public class TaxService {
         return taxRepository.findAll();
     }
 
+    public Tax getById(int id){
+        return taxRepository.findById(id);
+    }
+
+    public void save(Tax tax){
+        taxRepository.save(tax);
+    }
+
+    public void delete(int id){
+        taxRepository.deleteById(id);
+    }
 }    

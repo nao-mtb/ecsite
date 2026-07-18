@@ -17,6 +17,17 @@
         <li sec:authorize="hasAnyRole('ADMIN','SYSTEM','OWNER','CONTENT')">
             <a th:href="@{/product/backoffice/index}">製品管理</a>
         </li>
+        <li sec:authorize="hasAnyRole('ADMIN','SYSTEM')">
+            設定
+            <ul class="sub-menu">
+                <li>
+                    <a th:href="@{/setting/tax/index}">税率</a>
+                </li>
+                <li>
+                    <a th:href="@{/setting/discount/index}">セール情報</a>
+                </li>
+            </ul>
+        </li>
         <li sec:authorize="hasRole('ADMIN')">
             <a th:href="@{/backoffice/create}">従業員新規登録</a>
         </li>

@@ -7,5 +7,6 @@ import jp.haru_idea.springboot.ec_site.models.Tax;
 
 @Repository
 public interface TaxRepository extends JpaRepository<Tax, Integer>{
+    Tax findById(int id);
     
 }
