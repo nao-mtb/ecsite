@@ -1,5 +1,7 @@
 package jp.haru_idea.springboot.ec_site.services;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 
@@ -17,6 +19,17 @@ public class DiscountService {
     public Collection<Discount> getAll(){
         return discountRepository.findAll();
     }
+    public void save(Discount discount){
+        discountRepository.save(discount);
+    }
+
+    public Discount getById(int id){
+        return discountRepository.findById(id);
+    }
+
+    public void delete(int id){
+        discountRepository.deleteById(id);
+    }
 
     // public Optional<Discount> currentSale(){
     //     Date currentDate = new Date();
@@ -27,13 +40,12 @@ public class DiscountService {
     // }
 
     public Discount currentSale(){
-        Date currentDate = new Date();
+        LocalDateTime currentDate = LocalDateTime.now();
         Collection<Discount> discounts = getAll();
         Discount currentDiscount =  discounts.stream()
-            .filter(discount -> currentDate.after(discount.getSaleFrom()) && currentDate.before(discount.getSaleTo()))
+            .filter(discount -> currentDate.isAfter(discount.getSaleFrom()) && currentDate.isBefore(discount.getSaleTo()))
             .findFirst()
             .orElse(null);
         return currentDiscount;
     }
-
 }

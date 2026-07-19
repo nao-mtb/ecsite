@@ -1,5 +1,6 @@
 package jp.haru_idea.springboot.ec_site.models;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 
@@ -17,6 +18,7 @@ import jakarta.validation.constraints.Positive;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name="discounts")
@@ -34,13 +36,17 @@ public class Discount {
     @Column(nullable = false)
     private Double rate;
     
+    @NotNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
-    private Date saleFrom;
+    private LocalDateTime saleFrom;
     
+    @NotNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
-    private Date saleTo;
+    private LocalDateTime saleTo;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
@@ -85,19 +91,19 @@ public class Discount {
         this.rate = rate;
     }
 
-    public Date getSaleFrom() {
+    public LocalDateTime getSaleFrom() {
         return saleFrom;
     }
 
-    public void setSaleFrom(Date saleFrom) {
+    public void setSaleFrom(LocalDateTime saleFrom) {
         this.saleFrom = saleFrom;
     }
 
-    public Date getSaleTo() {
+    public LocalDateTime getSaleTo() {
         return saleTo;
     }
 
-    public void setSaleTo(Date saleTo) {
+    public void setSaleTo(LocalDateTime saleTo) {
         this.saleTo = saleTo;
     }
 

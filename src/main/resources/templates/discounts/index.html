@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layouts/backoffice-head::head('セール情報登録一覧 | ABCD通販サイト')"></head>
+<body>
+    <header th:replace="layouts/backoffice-header::header"></header>
+    <h3>セール情報登録一覧</h3>
+    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
+    <div>
+        <a th:href="@{/setting/discount/create}">新規登録</a>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th><th>セール名称</th><th>割引率</th><th>開始日</th><th>終了日</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="discount : ${discounts}">
+                <td>[[${discount.id}]]</td>
+                <td>[[${discount.type}]]</td>
+                <td>[[${discount.rate}]]</td>
+                <td>[[${discount.saleFrom}]]</td>
+                <td>[[${discount.saleTo}]]</td>
+                <td><a th:href="@{/setting/discount/edit/{discountId}(discountId=${discount.id})}">編集</a></td>
+                <td>
+                    <form th:method="post" th:action="@{/setting/discount/delete/{discountId}(discountId=${discount.id})}">
+                        <input type="hidden" name="_method" value="delete">
+                        <button type="submit">削除</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>

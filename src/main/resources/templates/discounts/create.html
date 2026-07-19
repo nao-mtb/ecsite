@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layouts/backoffice-head::head('セール情報新規登録 | ABCD通販サイト')"></head>
+<body>
+    <header th:replace="layouts/backoffice-header::header"></header>
+    <h3>セール情報新規登録</h3>
+    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
+    <form th:method="post" th:action="@{/setting/discount/save}" th:object="${discount}">
+        <div class="container">
+            <label for="type">セール名称</label>
+            <input type="text" th:field="*{type}" th:errorclass="bg-warning">
+            <span th:errors="*{type}"></span>
+        </div>
+        <div class="container">
+            <label for="rate">割引率</label>
+            <input type="text" th:field="*{rate}" th:errorclass="bg-warning">
+            <span th:errors="*{rate}"></span>
+        </div>
+        <div class="container">
+            <label for="startFrom">セール開始日</label>
+            <input type="datetime-local" th:field="*{saleFrom}" th:errorclass="bg-warning">
+            <span th:errors="*{saleFrom}"></span>
+        </div>
+        <div class="container">
+            <label for="startTo">セール終了日</label>
+            <input type="datetime-local" th:field="*{saleTo}" th:errorclass="bg-warning">
+            <span th:errors="*{saleTo}"></span>
+        </div>
+        <input type="submit" value="登録">
+    </form>    
+</body>
+</html>
