@@ -21,7 +21,7 @@ public class LoginController {
     }
 
     @GetMapping("/backoffice/home")
-    public String backofficHome() {
+    public String backofficeHome() {
         return "backoffices/home";
     }
 }
