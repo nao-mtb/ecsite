@@ -7,7 +7,7 @@
     <table class="table">
         <thead>
         <tr>
-            <th></th><th>商品名</th><th>定価(内税)</th><th>割引後価格(内税)</th><th>注文数</th>
+            <th></th><th>商品名</th><th>税込み価格</th><th>割引後税込み価格</th><th>注文数</th>
         </tr>
         </thead>
         <tbody>
@@ -16,14 +16,14 @@
                 <td>
                 </td>
                 <td>
-                    <a th:href="@{/product/shopping/detail/{productId}(productId=${product.id})}">[[${product.name}]]</a>&nbsp;
+                    <a th:href="@{/product/shopping/detail/{productId}(productId=${product.id})}">[[${product.name}]]</a>
                 </td>
                 <td>[[${price}]]</td>
                 <th:block th:if="${discountRate}" th:with="discountPrice=${price}*${discountRate}">
                     <td>[[${#numbers.formatDecimal(discountPrice, 1, 0)}]]</td>
                 </th:block>
                 <th:block th:unless="${discountRate}">
-                    <td></td>
+                    <td>ー</td>
                 </th:block>
                 <td>
                     <form th:method="PATCH" th:action="@{/cart/shoppingcart}">

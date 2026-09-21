@@ -8,6 +8,7 @@ import jp.haru_idea.springboot.ec_site.models.Cart;
 import jp.haru_idea.springboot.ec_site.securities.SecuritySession;
 import jp.haru_idea.springboot.ec_site.services.CartDetailsService;
 import jp.haru_idea.springboot.ec_site.services.CartService;
+import jp.haru_idea.springboot.ec_site.services.DiscountService;
 
 @ControllerAdvice
 public class CartModelAttributeAdvice {
@@ -20,6 +21,9 @@ public class CartModelAttributeAdvice {
 
     @Autowired
     private CartDetailsService cartDetailsService;
+
+    @Autowired
+    private DiscountService discountService;
 
     @ModelAttribute("totalCartQuantity")
     public int totalCartQuantity(){
@@ -37,7 +41,13 @@ public class CartModelAttributeAdvice {
         Cart cart = cartService.getByUserId(userId);
         if(cart == null){
             return 0;
-        }        
-        return cartDetailsService.totalPrice(cart.getId());
+        }
+        double discountRate = 0.0;
+        if(discountService.currentSale() != null){
+            discountRate = discountService.currentSale().getRate();
+        }
+        //TODO 端数調整・Javascriptを使用してチェックしたアイテムのみの合計金額を表示
+        int totalCartPrice = (int)(cartDetailsService.totalPrice(cart.getId()) * (1 - discountRate));
+        return totalCartPrice;
     }
 }

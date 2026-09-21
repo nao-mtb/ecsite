@@ -39,13 +39,19 @@ public class OrderDetailsService {
 
     public void copyFromCartDetail(Collection<CartDetail> cartDetails, Order order, Discount discount){
         for(CartDetail cartDetail : cartDetails){
+            int productPrice = cartDetail.getProduct().getSellingPrice();
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrder(order);
-            orderDetail.setProduct(cartDetail.getProduct());              
-            orderDetail.setSellingPrice(cartDetail.getProduct().getSellingPrice());
+            orderDetail.setProduct(cartDetail.getProduct());
+            orderDetail.setSellingPrice(productPrice);
             orderDetail.setTax(cartDetail.getProduct().getTax().getRate());
             orderDetail.setQuantity(cartDetail.getQuantity());
             orderDetail.setDiscount(discount);
+            if(discount != null){
+                orderDetail.setPurchasePrice((int)(productPrice * discount.getRate()));
+            }else{
+                orderDetail.setPurchasePrice(productPrice);
+            }
             save(orderDetail);
         }
     }

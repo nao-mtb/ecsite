@@ -7,11 +7,11 @@
     <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
     <!--<form th:method="GET" th:action="@{/payment/card}">-->
     <!--<form th:method="GET">!-->
-    <form th:method="GET" th:action="@{/payment/card}">
+    <form th:method="GET" th:action="@{/payment/card}" th:object="${cartDetails}">
         <table class="table">
         <thead>
             <tr>
-                <th>購入</th><th>商品名</th><th>販売価格(内税)</th><th>個数</th><th>小計</th>
+                <th>購入</th><th>商品名</th><th>税込み価格</th><th>割引後税込み価格</th><th>個数</th><th>小計</th>
             </tr>
         </thead>
         <tbody>
@@ -25,6 +25,7 @@
                             <input type="checkbox" th:name="cartDetailId" th:value="${cartDetail.id}" checked>
                         </td>
                         <td>[[${cartDetail.product.name}]]</td>
+                        <td>[[${price}]]</td>
                         <td>[[${discountPrice}]]</td>
                         <td>[[${cartDetail.quantity}]]</td>
                         <td>[[${discountPrice} * ${cartDetail.quantity}]]</td>
@@ -44,7 +45,7 @@
             </tr>
         </tfoot>
         </table>
-        <div th:if="${cart} eq null or ${#lists.isEmpty(cart.cartDetails)}">
+        <div th:unless="${cart} eq null or ${#lists.isEmpty(cart.cartDetails)}">
             <input type="submit" value="購入">
         </div>
     </form>
