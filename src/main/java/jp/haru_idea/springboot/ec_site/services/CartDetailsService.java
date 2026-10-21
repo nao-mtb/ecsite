@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jp.haru_idea.springboot.ec_site.models.CartDetail;
+import jp.haru_idea.springboot.ec_site.models.CartDetailView;
 import jp.haru_idea.springboot.ec_site.repositories.CartDetailsRepository;
 import jp.haru_idea.springboot.ec_site.repositories.CartRepository;
 
@@ -38,19 +39,30 @@ public class CartDetailsService {
         return cartDetailsRepository.findById(id);
     }
 
-    public int totalQuantity(int cartId){
-        return cartDetailsRepository.findAllByCartId(cartId).size();
+    public Collection<CartDetail> getAllCartDetails(int cartId){
+        Collection<CartDetail> cartDetails = cartDetailsRepository.findAllByCartId(cartId);
+        return cartDetails;
     }
 
-    public int totalPrice(int cartId){        
-        Collection<CartDetail> cartDetails = cartDetailsRepository.findAllByCartId(cartId);
-        int price = 0;
-        for(CartDetail cartDetail : cartDetails){
-            double tax = cartDetail.getProduct().getTax().getRate();
-            int product_price = cartDetail.getProduct().getSellingPrice();
-            price = price + (product_price + (int)Math.floor(product_price * tax )) * cartDetail.getQuantity();
+    public Collection<CartDetailView> createCartDetailViews(Collection<CartDetail> cartDetails, double discountRate){
+        Collection<CartDetailView> cartDetailViews = new ArrayList<>();
+        for(CartDetail cartDetail: cartDetails){
+            CartDetailView cartDetailView = new CartDetailView();
+            int productPriceWithTax = (int)(cartDetail.getProduct().getSellingPrice() + cartDetail.getProduct().getSellingPrice() * cartDetail.getProduct().getTax().getRate());
+            int sellingPrice = (int)(productPriceWithTax * (1 - discountRate));
+            int subtotal = sellingPrice * cartDetail.getQuantity();
+            cartDetailView.setProductName(cartDetail.getProduct().getName());
+            cartDetailView.setProductPrice(productPriceWithTax);
+            cartDetailView.setQuantity(cartDetail.getQuantity());
+            cartDetailView.setSellingPrice(sellingPrice);
+            cartDetailView.setSubtotal(subtotal);
+            cartDetailViews.add(cartDetailView);
         }
-        return price;
+        return cartDetailViews;
+    }
+
+    public Collection<CartDetailView> createCartDetailViews(Collection<CartDetail> cartDetails){
+        return createCartDetailViews(cartDetails, 0);
     }
 
     public Collection<CartDetail> purchaseCartDetails(Collection<Integer> cartDetailsIds){

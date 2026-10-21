@@ -7,7 +7,7 @@
     <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
     <!--<form th:method="GET" th:action="@{/payment/card}">-->
     <!--<form th:method="GET">!-->
-    <form th:method="GET" th:action="@{/payment/card}" th:object="${cartDetails}">
+    <form th:method="GET" th:action="@{/payment/card}" th:object="${cartDetailViews}">
         <table class="table">
         <thead>
             <tr>
@@ -15,37 +15,33 @@
             </tr>
         </thead>
         <tbody>
-            <th:block th:unless="${cart} eq null">
-                <tr th:each="cartDetail : ${cart.cartDetails}">
-                    <div th:with="price=${#numbers.formatDecimal(cartDetail.product.sellingPrice + cartDetail.product.sellingPrice * cartDetail.product.tax.rate, 1, 0)},
-                                discountPrice=${price}*${discountRate},
-                                discountPrice=${#numbers.formatDecimal(discountPrice, 1, 0)}">
-                        <td hidden>[[${cartDetail.id}]]</td>
-                        <td>
-                            <input type="checkbox" th:name="cartDetailId" th:value="${cartDetail.id}" checked>
-                        </td>
-                        <td>[[${cartDetail.product.name}]]</td>
-                        <td>[[${price}]]</td>
-                        <td>[[${discountPrice}]]</td>
-                        <td>[[${cartDetail.quantity}]]</td>
-                        <td>[[${discountPrice} * ${cartDetail.quantity}]]</td>
-                    </div>
+            <th:block th:unless="${cartView} eq null">
+                <tr th:each="cartDetailView : ${cartView.cartDetailViews}">
+                    <td hidden>[[${cartDetailView.id}]]</td>
+                    <td>
+                        <input type="checkbox" th:name="cartDetailId" th:value="${cartDetailView.id}" checked>
+                    </td>
+                    <td>[[${cartDetailView.productName}]]</td>
+                    <td>[[${cartDetailView.productPrice}]]</td>
+                    <td>[[${cartDetailView.sellingPrice}]]</td>
+                    <td>[[${cartDetailView.quantity}]]</td>
+                    <td>[[${cartDetailView.subtotal}]]</td>
                 </tr>
             </th:block>
         </tbody>
         <tfoot>
             <tr>
                 <th class="total">ご注文合計金額</th>
-                <tr th:unless="${cart} eq null">
-                    <td><span th:text="${totalCartPrice}"></span></td>
+                <tr th:unless="${cartView} eq null">
+                    <td><span th:text="${cartView.totalPrice}"></span></td>
                 </tr>
-                <tr th:if="${cart} eq null or ${#lists.isEmpty(cart.cartDetails)}">
+                <tr th:if="${cartView} eq null">
                     <td><span th:text="買い物かごに商品が入っていません"></span></td>
                 </tr>
             </tr>
         </tfoot>
         </table>
-        <div th:unless="${cart} eq null or ${#lists.isEmpty(cart.cartDetails)}">
+        <div th:unless="${cartView} eq null">
             <input type="submit" value="購入">
         </div>
     </form>

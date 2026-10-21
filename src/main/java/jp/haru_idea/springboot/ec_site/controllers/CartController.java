@@ -1,5 +1,6 @@
 package jp.haru_idea.springboot.ec_site.controllers;
 
+import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,8 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jp.haru_idea.springboot.ec_site.components.CartViewHelper;
 import jp.haru_idea.springboot.ec_site.models.Cart;
 import jp.haru_idea.springboot.ec_site.models.CartDetail;
+import jp.haru_idea.springboot.ec_site.models.CartDetailView;
+import jp.haru_idea.springboot.ec_site.models.CartView;
 import jp.haru_idea.springboot.ec_site.models.Product;
 import jp.haru_idea.springboot.ec_site.models.User;
 import jp.haru_idea.springboot.ec_site.securities.SecuritySession;
@@ -30,6 +34,9 @@ public class CartController{
     @Autowired
     private CartDetailsService cartDetailsService;
 
+    @Autowired 
+    private CartViewHelper cartViewHelper;
+
     @Autowired
     private SecuritySession securitySession;
 
@@ -46,16 +53,19 @@ public class CartController{
     public String viewUser(Model model){
         int userId = securitySession.getUserId();
         Cart cart = cartService.getByUserId(userId);
-        model.addAttribute("cart", cart);
-        double discountRate = 0.0;
+        if(cart == null){
+            model.addAttribute("cartDetailViews", null);
+            model.addAttribute("totalCartPrice", 0);
+            return "carts/view";
+        }
+        Collection<CartDetail> cartDetails = cartDetailsService.getAllCartDetails(cart.getId());
+        double discountRate = 0;
         if(discountService.currentSale() != null){
             discountRate = discountService.currentSale().getRate();
         }
-        //TODO 端数調整・Javascriptを使用してチェックしたアイテムのみの合計金額を表示
-        int totalCartPrice = (int)(cartDetailsService.totalPrice(cart.getId()) * (1 - discountRate));
-        model.addAttribute("cart", cart);
-        model.addAttribute("discountRate", (1 - discountRate));
-        model.addAttribute("totalCartPrice", totalCartPrice);
+        Collection<CartDetailView> cartDetailViews = cartDetailsService.createCartDetailViews(cartDetails, discountRate);
+        CartView cartView = cartViewHelper.createCartView(cartDetailViews);
+        model.addAttribute("cartView", cartView);
         return "carts/view";
     }
 
